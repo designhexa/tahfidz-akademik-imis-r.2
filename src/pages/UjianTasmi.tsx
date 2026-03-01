@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -51,6 +52,7 @@ import { getJuzName } from "@/lib/quran-data";
 import { JuzSelector } from "@/components/JuzSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { TasmiCandidateCard } from "@/components/tasmi/TasmiCandidateCard";
+import { TasmiForm1Juz } from "@/components/tasmi/TasmiForm1Juz";
 import { mockSantriProgress, getNextTasmiJuz } from "@/lib/target-hafalan";
 
 const JUZ_ORDER = [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
@@ -88,11 +90,19 @@ interface PenilaianHalaman { halaman: number; pancingan: number; catatan: string
 interface PenilaianJuz { juz: number; halaman: PenilaianHalaman[]; catatanJuz: string; }
 
 const UjianTasmi = () => {
+  const [searchParams] = useSearchParams();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isForm5JuzOpen, setIsForm5JuzOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedUjian, setSelectedUjian] = useState<typeof dummyHasilUjian[0] | null>(null);
   const [expandedRules, setExpandedRules] = useState(false);
+
+  // Auto-open form from calendar redirect
+  useEffect(() => {
+    if (searchParams.get("santri")) {
+      setIsFormOpen(true);
+    }
+  }, [searchParams]);
   
   const [selectedSantri, setSelectedSantri] = useState("");
   const [selectedJuz, setSelectedJuz] = useState("");
@@ -168,6 +178,13 @@ const UjianTasmi = () => {
                 </div>
               </DialogContent>
             </Dialog>
+            {/* Komponen yang sudah dipisah */}
+            {/* <TasmiForm1Juz 
+              open={isFormOpen} 
+              onOpenChange={setIsFormOpen} 
+              santriList={dummySantri} 
+              getPredikat={getPredikat} 
+            /> */}
 
             <Dialog open={isForm5JuzOpen} onOpenChange={setIsForm5JuzOpen}>
               <DialogTrigger asChild>

@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import SetoranHafalan from "./pages/SetoranHafalan";
+import DrillHafalan from "./pages/DrillHafalan";
 import LaporanHafalan from "./pages/LaporanHafalan";
 import UjianTasmi from "./pages/UjianTasmi";
 import UjianTahfidz from "./pages/UjianTahfidz";
@@ -22,7 +23,7 @@ import NotFound from "./pages/NotFound";
 // Tilawah pages
 import TilawahDashboard from "./pages/TilawahDashboard";
 import TilawahAbsensi from "./pages/TilawahAbsensi";
-import TilawahLaporan from "./pages/TilawahLaporan";
+// TilawahLaporan is now integrated into LaporanHafalan
 import TilawahUjian from "./pages/TilawahUjian";
 
 // Akademik pages
@@ -32,6 +33,8 @@ import AkademikRapor from "./pages/AkademikRapor";
 import AkademikRaporDiniyah from "./pages/AkademikRaporDiniyah";
 import TilawahUjianSemester from "./pages/TilawahUjianSemester";
 import DetailSantri from "./pages/DetailSantri";
+// import TambahDrill from "./pages/TambahDrill";
+import TambahSetoran from "./pages/TambahSetoran";
 // Profil & Pengaturan
 import Profil from "./pages/Profil";
 import Pengaturan from "./pages/Pengaturan";
@@ -50,6 +53,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/setoran" element={<SetoranHafalan />} />
+            <Route path="/drill" element={<DrillHafalan />} />
+            {/* <Route path="/tambah-drill" element={<TambahDrill />} /> */}
             <Route path="/laporan" element={<LaporanHafalan />} />
             <Route path="/ujian-tasmi" element={<UjianTasmi />} />
             <Route path="/ujian-tahfidz" element={<UjianTahfidz />} />
@@ -64,7 +69,7 @@ const App = () => (
             {/* Tilawah Routes */}
             <Route path="/tilawah/dashboard" element={<TilawahDashboard />} />
             <Route path="/tilawah/absensi" element={<TilawahAbsensi />} />
-            <Route path="/tilawah/laporan" element={<TilawahLaporan />} />
+            {/* Tilawah Laporan now integrated into /laporan */}
             <Route path="/tilawah/ujian" element={<TilawahUjian />} />
             <Route path="/tilawah/ujian-semester" element={<TilawahUjianSemester />} />
             

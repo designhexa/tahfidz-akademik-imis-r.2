@@ -9,7 +9,8 @@
  import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
  import { Textarea } from "@/components/ui/textarea";
  import { Search, Plus, BookOpen } from "lucide-react";
- import { useState } from "react";
+ import { useState, useEffect } from "react";
+
  import { 
    MOCK_SETORAN_TILAWAH, 
    MOCK_SANTRI_TILAWAH, 
@@ -21,11 +22,30 @@
  import { MOCK_KELAS } from "@/lib/mock-data";
  import { toast } from "sonner";
 
-export default function TilawahAbsensi() {
+type TilawahAbsensiProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  initialSantriId?: string;
+  initialTanggal?: Date;
+};
+
+export default function TilawahAbsensi({
+  open,
+  onOpenChange,
+  initialSantriId,
+  initialTanggal,
+}: TilawahAbsensiProps) {
   const [search, setSearch] = useState("");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
-   const [dialogOpen, setDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      if (initialSantriId) {
+        setSelectedSantri(initialSantriId);
+      }
+    }
+  }, [open, initialSantriId]);
    
    // Form state
    const [selectedSantri, setSelectedSantri] = useState("");
@@ -76,7 +96,7 @@ export default function TilawahAbsensi() {
      }
      
      toast.success("Setoran tilawah berhasil disimpan");
-     setDialogOpen(false);
+     onOpenChange(false);
      resetForm();
    };
  
@@ -112,7 +132,7 @@ export default function TilawahAbsensi() {
             <h1 className="text-2xl font-bold text-foreground">Setoran Tilawah</h1>
              <p className="text-muted-foreground text-sm mt-1">Kelola setoran tilawah metode Tilawati</p>
           </div>
-           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+           <Dialog open={open} onOpenChange={onOpenChange}>
              <DialogTrigger asChild>
                <Button>
                  <Plus className="w-4 h-4 mr-2" />
@@ -153,11 +173,12 @@ export default function TilawahAbsensi() {
                        <SelectValue placeholder="Pilih jilid..." />
                      </SelectTrigger>
                      <SelectContent>
-                       {TILAWATI_JILID.map((jilid) => (
-                         <SelectItem key={jilid.jilid} value={jilid.jilid.toString()}>
-                           {jilid.nama} (Hal 1-{jilid.totalHalaman})
-                         </SelectItem>
-                       ))}
+                    {TILAWATI_JILID.map((jilid) => (
+                          <SelectItem key={jilid.jilid} value={jilid.jilid.toString()}>
+                            {jilid.nama} (Hal 1-{jilid.totalHalaman})
+                          </SelectItem>
+                        ))}
+                        <SelectItem value="quran">Al-Qur'an</SelectItem>
                      </SelectContent>
                    </Select>
                  </div>
@@ -285,7 +306,7 @@ export default function TilawahAbsensi() {
                  </div>
  
                  <div className="flex justify-end gap-2 pt-4">
-                   <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                   <Button variant="outline" onClick={() => onOpenChange(false)}>
                      Batal
                    </Button>
                    <Button onClick={handleSubmit}>
