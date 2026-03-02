@@ -145,6 +145,7 @@ export function EntryModal({
     setStatus("");
     setCatatan("");
     setJilid("");
+    setInputMode("surah");
     onOpenChange(false);
     toast.success("Data berhasil disimpan!");
   };
