@@ -102,6 +102,7 @@ export function MonthlyCalendar({
               isJumat={isJumat}
               isToday={isToday(day)}
               entries={dayEntries}
+              allowWeekends={allowWeekends}
               onClick={() => {
                 if (inMonth && (!isWeekend || allowWeekends)) {
                   onDateClick(day);

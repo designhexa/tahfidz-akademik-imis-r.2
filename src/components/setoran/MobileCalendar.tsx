@@ -190,7 +190,7 @@ export function MobileCalendar({
                       </div>
 
                       {/* Entries */}
-                      {dayEntries.length > 0 && !isWeekend && (
+                      {dayEntries.length > 0 && (!isWeekend || allowWeekends) && (
                         <div className="mt-0.5 space-y-0.5">
                           {dayEntries.slice(0, 1).map((entry, i) => (
                             <div key={i} className="text-[8px] leading-tight">
