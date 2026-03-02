@@ -38,11 +38,10 @@ interface HasilUjianSemester {
 }
 
 // Generate random halaman dari range setoran terakhir santri
-const generateSoalSemester = (jilid: number, halamanTerakhir: number, jumlahSoal: number = 5): SoalUjianSemester[] => {
+const generateSoalSemester = (jilid: number, halamanTerakhir: number, jumlahSoal: number = 1): SoalUjianSemester[] => {
   const soal: SoalUjianSemester[] = [];
   const usedHalaman = new Set<number>();
   
-  // Range halaman: dari halaman 1 jilid tersebut sampai halaman terakhir santri
   const halamanMulai = 1;
   const halamanAkhir = Math.min(halamanTerakhir, HALAMAN_PER_JILID);
   
