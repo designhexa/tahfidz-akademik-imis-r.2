@@ -655,7 +655,30 @@ const SetoranHafalan = () => {
           date={modalDate}
           santriName={santriData?.nama || ""}
           onSuccess={() => {}}
-          initialSantriId={selectedSantri} // Jika ada dari redirect calendar
+          initialSantriId={selectedSantri}
+        />
+
+        <EntryHistoryPopup
+          open={openHistory}
+          onOpenChange={setOpenHistory}
+          date={modalDate}
+          santriName={santriData?.nama || ""}
+          entries={modalDate ? getEntriesForDate(modalDate) : []}
+          onDelete={handleDeleteEntry}
+          onAddNew={() => {
+            setOpenHistory(false);
+            // Open the appropriate form
+            if (activeTab === "setoran_hafalan") {
+              if (subType === "drill") setOpenDrill(true);
+              else if (subType === "tasmi") setOpenTasmi(true);
+              else setOpenEntry(true);
+            } else if (activeTab === "tilawah") {
+              if (subType === "tilawah_harian") setOpenTilawah(true);
+              else setOpenUjianJilid(true);
+            } else {
+              setOpenEntry(true);
+            }
+          }}
         />
       </div>
     </Layout>
