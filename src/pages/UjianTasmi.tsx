@@ -57,6 +57,11 @@ import { mockSantriProgress, getNextTasmiJuz } from "@/lib/target-hafalan";
 
 const JUZ_ORDER = [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
 
+const getTotalHalamanByJuz = (juz: number) => {
+  if (juz === 30) return 23;
+  return 20;
+};
+
 const getPredikat = (nilai: number): { label: string; color: string; passed: boolean } => {
   if (nilai >= 96) return { label: "Mumtaz Murtafi'", color: "bg-emerald-500", passed: true };
   if (nilai >= 90) return { label: "Mumtaz", color: "bg-green-500", passed: true };
@@ -106,7 +111,22 @@ const UjianTasmi = () => {
   
   const [selectedSantri, setSelectedSantri] = useState("");
   const [selectedJuz, setSelectedJuz] = useState("");
-  const [penilaianHalaman, setPenilaianHalaman] = useState<PenilaianHalaman[]>(Array.from({ length: 20 }, (_, i) => ({ halaman: i + 1, pancingan: 0, catatan: "" })));
+
+  useEffect(() => {
+    if (!selectedJuz) return;
+
+    const totalHalaman = getTotalHalamanByJuz(Number(selectedJuz));
+
+    setPenilaianHalaman(
+      Array.from({ length: totalHalaman }, (_, i) => ({
+        halaman: i + 1,
+        pancingan: 0,
+        catatan: "",
+      }))
+    );
+  }, [selectedJuz]);
+
+  const [penilaianHalaman, setPenilaianHalaman] = useState<PenilaianHalaman[]>([]);
   const [catatanUmum, setCatatanUmum] = useState("");
   const [diberhentikan, setDiberhentikan] = useState(false);
 
@@ -117,17 +137,35 @@ const UjianTasmi = () => {
   const [diberhentikan5Juz, setDiberhentikan5Juz] = useState(false);
 
   const handleSelectJuz5Juz = (juzIndex: number, juzValue: string) => {
+    const juzNumber = parseInt(juzValue);
+
     const newJuzList = [...selectedJuzList];
-    newJuzList[juzIndex] = parseInt(juzValue);
+    newJuzList[juzIndex] = juzNumber;
     setSelectedJuzList(newJuzList);
+
+    const totalHalaman = getTotalHalamanByJuz(juzNumber);
+
     const newPenilaian = [...penilaian5Juz];
-    newPenilaian[juzIndex] = { juz: parseInt(juzValue), halaman: Array.from({ length: 20 }, (_, i) => ({ halaman: i + 1, pancingan: 0, catatan: "" })), catatanJuz: "" };
+    newPenilaian[juzIndex] = {
+      juz: juzNumber,
+      halaman: Array.from({ length: totalHalaman }, (_, i) => ({
+        halaman: i + 1,
+        pancingan: 0,
+        catatan: "",
+      })),
+      catatanJuz: "",
+    };
+
     setPenilaian5Juz(newPenilaian);
   };
 
   const hitungNilaiTotal = () => penilaianHalaman.reduce((t, h) => t + Math.max(0, 5 - h.pancingan), 0);
   const hitungNilaiTotal5Juz = () => penilaian5Juz.reduce((t, j) => t + j.halaman.reduce((th, h) => th + Math.max(0, 5 - h.pancingan), 0), 0);
-  const getMaxScore5Juz = () => penilaian5Juz.length * 100;
+  const getMaxScore5Juz = () =>
+  penilaian5Juz.reduce(
+    (total, juz) => total + juz.halaman.length * 5,
+    0
+  );
   const hitungPersentase5Juz = () => getMaxScore5Juz() === 0 ? 0 : Math.round((hitungNilaiTotal5Juz() / getMaxScore5Juz()) * 100);
 
   const nilaiTotal = hitungNilaiTotal();
@@ -135,7 +173,7 @@ const UjianTasmi = () => {
   const nilaiTotal5Juz = hitungPersentase5Juz();
   const predikat5Juz = getPredikat(nilaiTotal5Juz);
 
-  const resetForm1Juz = () => { setSelectedSantri(""); setSelectedJuz(""); setPenilaianHalaman(Array.from({ length: 20 }, (_, i) => ({ halaman: i + 1, pancingan: 0, catatan: "" }))); setCatatanUmum(""); setDiberhentikan(false); };
+  const resetForm1Juz = () => { setSelectedSantri(""); setSelectedJuz(""); setPenilaianHalaman([]); setDiberhentikan(false); };
   const resetForm5Juz = () => { setSelectedSantri5Juz(""); setSelectedJuzList([]); setPenilaian5Juz([]); setCatatanUmum5Juz(""); setDiberhentikan5Juz(false); };
 
   const handleUjian = (santri: any) => {
