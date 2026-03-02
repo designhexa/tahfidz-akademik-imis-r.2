@@ -25,9 +25,11 @@ import {
 import { MonthlyCalendar } from "@/components/setoran/MonthlyCalendar";
 import { MobileCalendar } from "@/components/setoran/MobileCalendar";
 import { EntryModal } from "@/components/setoran/EntryModal";
+import { EntryHistoryPopup } from "@/components/setoran/EntryHistoryPopup";
 import { type CalendarEntry } from "@/components/setoran/CalendarCell";
 import { MOCK_SANTRI, MOCK_HALAQOH, getSantriByHalaqoh } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 import { AddDrillModal } from "@/components/setoran/AddDrillModal";
 import { TasmiForm1Juz } from "@/components/tasmi/TasmiForm1Juz";
 import { TilawatiUjianForm } from "@/components/tilawah/TilawatiUjianForm";
@@ -202,6 +204,7 @@ const SetoranHafalan = () => {
   const [openTasmi, setOpenTasmi] = useState(false);
   const [openTilawah, setOpenTilawah] = useState(false);
   const [openUjianJilid, setOpenUjianJilid] = useState(false);
+  const [openHistory, setOpenHistory] = useState(false);
 
   // Tasmi' component state
   const dummySantri = [
@@ -230,24 +233,35 @@ const SetoranHafalan = () => {
 
   const santriData = MOCK_SANTRI.find((s) => s.id === selectedSantri);
 
-  // Filter entries for current tab and santri
+  // Filter entries for current tab and santri - each tab has its own calendar
   const filteredEntries = useMemo(() => {
     if (!selectedSantri) return [];
 
-    // hanya jenis yang termasuk aktivitas harian
-    const allowedDailyJenis = [
-      "setoran_hafalan",
-      "murojaah",
-      "tilawah_harian",
-      "murojaah_rumah",
-    ];
+    // Map tab to allowed jenis
+    const tabJenisMap: Record<MainTab, string[]> = {
+      setoran_hafalan: ["setoran_hafalan", "drill", "tasmi"],
+      murojaah: ["murojaah"],
+      tilawah: ["tilawah", "ujian_jilid"],
+      murojaah_rumah: ["murojaah_rumah"],
+    };
+
+    const allowedJenis = tabJenisMap[activeTab] || [];
 
     return entries.filter(
       (e) =>
         e.santriId === selectedSantri &&
-        allowedDailyJenis.includes(e.jenis)
+        allowedJenis.includes(e.jenis)
     );
-  }, [entries, selectedSantri]);
+  }, [entries, selectedSantri, activeTab]);
+
+  // Get entries for a specific date (for history popup)
+  const getEntriesForDate = (date: Date) => {
+    if (!date) return [];
+    const dateStr = format(date, "yyyy-MM-dd");
+    return filteredEntries.filter(
+      (e) => format(e.tanggal, "yyyy-MM-dd") === dateStr
+    );
+  };
 
   const handlePrevMonth = () => {
     if (month === 0) {
@@ -273,6 +287,18 @@ const SetoranHafalan = () => {
 
       setModalDate(date);
 
+      // Check if this date already has an entry for this tab
+      const dateStr = format(date, "yyyy-MM-dd");
+      const existingEntries = filteredEntries.filter(
+        (e) => format(e.tanggal, "yyyy-MM-dd") === dateStr
+      );
+
+      // If already has entry, show history popup
+      if (existingEntries.length > 0) {
+        setOpenHistory(true);
+        return;
+      }
+
       if (activeTab === "setoran_hafalan") {
         if (subType === "drill") {
           setOpenDrill(true);
@@ -296,7 +322,7 @@ const SetoranHafalan = () => {
       // Tab lainnya tetap pakai entry modal
       setOpenEntry(true);
     },
-    [selectedSantri, activeTab, subType]
+    [selectedSantri, activeTab, subType, filteredEntries]
   );
 
   const handleSaveEntry = useCallback(
@@ -315,6 +341,25 @@ const SetoranHafalan = () => {
       setEntries((prev) => [...prev, newEntry]);
     },
     [selectedSantri]
+  );
+
+  const handleDeleteEntry = useCallback(
+    (entry: CalendarEntry) => {
+      setEntries((prev) =>
+        prev.filter(
+          (e) =>
+            !(
+              format(e.tanggal, "yyyy-MM-dd") === format(entry.tanggal, "yyyy-MM-dd") &&
+              e.santriId === entry.santriId &&
+              e.jenis === entry.jenis &&
+              e.juz === entry.juz &&
+              e.surah === entry.surah
+            )
+        )
+      );
+      setOpenHistory(false);
+    },
+    []
   );
 
   const monthOptions = [
@@ -524,6 +569,7 @@ const SetoranHafalan = () => {
                 entries={filteredEntries}
                 onDateClick={handleDateClick}
                 headerTitle={HEADER_TITLES[activeTab]}
+                allowWeekends={activeTab === "murojaah_rumah"}
               />
             ) : (
               <div className="overflow-x-auto">
@@ -534,6 +580,7 @@ const SetoranHafalan = () => {
                     entries={filteredEntries}
                     onDateClick={handleDateClick}
                     headerTitle={HEADER_TITLES[activeTab]}
+                    allowWeekends={activeTab === "murojaah_rumah"}
                   />
                 </div>
               </div>
@@ -610,7 +657,30 @@ const SetoranHafalan = () => {
           date={modalDate}
           santriName={santriData?.nama || ""}
           onSuccess={() => {}}
-          initialSantriId={selectedSantri} // Jika ada dari redirect calendar
+          initialSantriId={selectedSantri}
+        />
+
+        <EntryHistoryPopup
+          open={openHistory}
+          onOpenChange={setOpenHistory}
+          date={modalDate}
+          santriName={santriData?.nama || ""}
+          entries={modalDate ? getEntriesForDate(modalDate) : []}
+          onDelete={handleDeleteEntry}
+          onAddNew={() => {
+            setOpenHistory(false);
+            // Open the appropriate form
+            if (activeTab === "setoran_hafalan") {
+              if (subType === "drill") setOpenDrill(true);
+              else if (subType === "tasmi") setOpenTasmi(true);
+              else setOpenEntry(true);
+            } else if (activeTab === "tilawah") {
+              if (subType === "tilawah_harian") setOpenTilawah(true);
+              else setOpenUjianJilid(true);
+            } else {
+              setOpenEntry(true);
+            }
+          }}
         />
       </div>
     </Layout>

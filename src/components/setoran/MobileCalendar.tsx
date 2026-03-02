@@ -43,6 +43,7 @@ interface MobileCalendarProps {
   entries: CalendarEntry[];
   onDateClick: (date: Date) => void;
   headerTitle: string;
+  allowWeekends?: boolean;
 }
 
 export function MobileCalendar({
@@ -51,6 +52,7 @@ export function MobileCalendar({
   entries,
   onDateClick,
   headerTitle,
+  allowWeekends = false,
 }: MobileCalendarProps) {
   const days = useMemo(() => {
     const monthStart = startOfMonth(new Date(year, month));
@@ -155,11 +157,11 @@ export function MobileCalendar({
                     <div
                       key={weekIdx}
                       onClick={() => {
-                        if (!isWeekend) onDateClick(day);
+                        if (!isWeekend || allowWeekends) onDateClick(day);
                       }}
                       className={cn(
                         "relative min-w-[60px] flex-1 border-r border-border last:border-r-0 p-0.5 min-h-[52px]",
-                        isWeekend
+                        isWeekend && !allowWeekends
                           ? "bg-muted/40 cursor-default"
                           : "bg-card hover:bg-accent/40 cursor-pointer",
                         dayOfWeek === 5 && "bg-[hsl(160,40%,90%)]/30",
@@ -178,7 +180,7 @@ export function MobileCalendar({
                         </div>
                         <span
                           className={cn(
-                            "text-[9px] font-medium leading-none",
+                            "text-[10px] font-medium leading-none",
                             isWeekend ? "text-muted-foreground/60" : "text-muted-foreground",
                             today && "text-primary font-bold"
                           )}
@@ -188,10 +190,10 @@ export function MobileCalendar({
                       </div>
 
                       {/* Entries */}
-                      {dayEntries.length > 0 && !isWeekend && (
+                      {dayEntries.length > 0 && (!isWeekend || allowWeekends) && (
                         <div className="mt-0.5 space-y-0.5">
                           {dayEntries.slice(0, 1).map((entry, i) => (
-                            <div key={i} className="text-[7px] leading-tight">
+                            <div key={i} className="text-[8px] leading-tight">
                               {entry.jenis === "drill" && entry.juz && (
                                 <span className="font-medium">D.J{entry.juz}</span>
                               )}
@@ -219,7 +221,7 @@ export function MobileCalendar({
                               {entry.status && (
                                 <span
                                   className={cn(
-                                    "inline-block ml-0.5 px-0.5 rounded text-[6px] font-semibold",
+                                    "inline-block ml-0.5 px-0.5 rounded text-[7px] font-semibold",
                                     getStatusBadge(entry.status)
                                   )}
                                 >
@@ -229,7 +231,7 @@ export function MobileCalendar({
                             </div>
                           ))}
                           {dayEntries.length > 1 && (
-                            <div className="text-[6px] text-muted-foreground">
+                            <div className="text-[7px] text-muted-foreground">
                               +{dayEntries.length - 1}
                             </div>
                           )}

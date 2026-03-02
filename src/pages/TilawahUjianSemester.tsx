@@ -38,11 +38,10 @@ interface HasilUjianSemester {
 }
 
 // Generate random halaman dari range setoran terakhir santri
-const generateSoalSemester = (jilid: number, halamanTerakhir: number, jumlahSoal: number = 5): SoalUjianSemester[] => {
+const generateSoalSemester = (jilid: number, halamanTerakhir: number, jumlahSoal: number = 1): SoalUjianSemester[] => {
   const soal: SoalUjianSemester[] = [];
   const usedHalaman = new Set<number>();
   
-  // Range halaman: dari halaman 1 jilid tersebut sampai halaman terakhir santri
   const halamanMulai = 1;
   const halamanAkhir = Math.min(halamanTerakhir, HALAMAN_PER_JILID);
   
@@ -82,6 +81,7 @@ const MOCK_UJIAN_SEMESTER: HasilUjianSemester[] = [
 export default function TilawahUjianSemester() {
   const [search, setSearch] = useState("");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
+  const [filterKelas, setFilterKelas] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [ujianList, setUjianList] = useState<HasilUjianSemester[]>(MOCK_UJIAN_SEMESTER);
 
@@ -94,6 +94,13 @@ export default function TilawahUjianSemester() {
   const [catatan, setCatatan] = useState("");
 
   const selectedSantriData = MOCK_SANTRI_TILAWAH.find(s => s.id === selectedSantri);
+
+  // Filter santri by halaqoh/kelas
+  const filteredSantriForForm = MOCK_SANTRI_TILAWAH.filter(s => {
+    const matchHalaqoh = filterHalaqoh === "all" || s.halaqoh === filterHalaqoh;
+    const matchKelas = filterKelas === "all" || s.kelas === filterKelas;
+    return matchHalaqoh && matchKelas;
+  });
 
   const handleSelectSantri = (santriId: string) => {
     setSelectedSantri(santriId);
@@ -189,6 +196,42 @@ export default function TilawahUjianSemester() {
               </DialogHeader>
 
               <div className="space-y-4 pt-4">
+                {/* Filter Halaqoh / Kelas */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Filter Halaqoh</Label>
+                    <Select value={filterHalaqoh} onValueChange={(v) => { setFilterHalaqoh(v); setSelectedSantri(""); setGeneratedSoal([]); }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Semua Halaqoh" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Semua Halaqoh</SelectItem>
+                        {MOCK_HALAQOH.map((h) => (
+                          <SelectItem key={h.id} value={h.nama}>
+                            {h.nama}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Filter Kelas</Label>
+                    <Select value={filterKelas} onValueChange={(v) => { setFilterKelas(v); setSelectedSantri(""); setGeneratedSoal([]); }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Semua Kelas" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Semua Kelas</SelectItem>
+                        {MOCK_KELAS.map((k) => (
+                          <SelectItem key={k.id} value={k.nama_kelas}>
+                            {k.nama_kelas}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
                 {/* Pilih Santri */}
                 <div className="space-y-2">
                   <Label>Pilih Santri</Label>
@@ -197,7 +240,7 @@ export default function TilawahUjianSemester() {
                       <SelectValue placeholder="Pilih santri..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {MOCK_SANTRI_TILAWAH.map(s => (
+                      {filteredSantriForForm.map(s => (
                         <SelectItem key={s.id} value={s.id}>
                           {s.nama} - {s.kelas} (Jilid {s.jilidSaatIni}, Hal {s.halamanSaatIni})
                         </SelectItem>
@@ -242,15 +285,15 @@ export default function TilawahUjianSemester() {
                           Acak Ulang
                         </Button>
                       </div>
-                      <CardDescription>Santri diminta membaca halaman-halaman berikut:</CardDescription>
+                      <CardDescription>Santri diminta membaca 1 halaman acak berikut:</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-5 gap-2">
-                        {generatedSoal.map((soal, idx) => (
-                          <div key={soal.id} className="text-center p-3 bg-primary/5 rounded-lg border border-primary/20">
-                            <p className="text-xs text-muted-foreground">Soal {idx + 1}</p>
-                            <p className="font-bold text-lg text-primary">Hal {soal.halaman}</p>
-                            <p className="text-xs text-muted-foreground">Jilid {soal.jilid}</p>
+                      <div className="flex justify-center">
+                        {generatedSoal.map((soal) => (
+                          <div key={soal.id} className="text-center p-4 bg-primary/5 rounded-lg border border-primary/20 min-w-[120px]">
+                            <p className="text-xs text-muted-foreground">Soal Ujian</p>
+                            <p className="font-bold text-2xl text-primary">Hal {soal.halaman}</p>
+                            <p className="text-sm text-muted-foreground">Jilid {soal.jilid}</p>
                           </div>
                         ))}
                       </div>
