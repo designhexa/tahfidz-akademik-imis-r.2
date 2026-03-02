@@ -53,7 +53,7 @@ export const AddDrillModal = ({
   onSuccess,
   date,
   santriName,
-  drillHistory
+  drillHistory = []   // 🔥 TAMBAHKAN INI
 }: AddDrillModalProps) => {
 
   const [selectedSantri, setSelectedSantri] = useState("");
