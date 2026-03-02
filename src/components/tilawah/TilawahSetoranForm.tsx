@@ -186,29 +186,27 @@ export const TilawahSetoranForm = ({
             </div>
             {selectedJilid === "7" && (
               <div className="space-y-2">
-                <Label>Pilih Juz</Label>
+                <Label>Juz</Label>
 
-                <div className="grid grid-cols-6 gap-1">
-                  {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
-                    <Button
-                      key={juz}
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className={cn(
-                        "h-10 w-full font-medium border",
-                        selectedJuz === String(juz) &&
-                          "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
-                      )}
-                      onClick={() => setSelectedJuz(String(juz))}
-                    >
-                      {selectedJuz === String(juz) && (
-                        <Check className="h-3 w-3 mr-1" />
-                      )}
-                      {juz}
-                    </Button>
-                  ))}
-                </div>
+                <Select value={selectedJuz} onValueChange={setSelectedJuz}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih juz..." />
+                  </SelectTrigger>
+
+                  <SelectContent className="max-h-80 overflow-y-auto">
+                    <div className="grid grid-cols-6 gap-1 p-2">
+                      {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
+                        <SelectItem
+                          key={juz}
+                          value={String(juz)}
+                          className="justify-center"
+                        >
+                          {juz}
+                        </SelectItem>
+                      ))}
+                    </div>
+                  </SelectContent>
+                </Select>
               </div>
             )}
             <div className="space-y-2">
