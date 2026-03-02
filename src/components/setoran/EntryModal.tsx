@@ -22,6 +22,7 @@ import { id as localeId } from "date-fns/locale";
 import { toast } from "sonner";
 import { JuzSelector } from "@/components/JuzSelector";
 import { getSurahsByJuz, type Surah } from "@/lib/quran-data";
+import { getHalamanPerJuz } from "@/lib/quran-exam-generator";
 import { Plus } from "lucide-react";
 
 type TabType = "setoran_hafalan" | "murojaah" | "tilawah" | "murojaah_rumah";
@@ -61,6 +62,8 @@ export function EntryModal({
   const [catatan, setCatatan] = useState("");
   // Tilawah fields
   const [jilid, setJilid] = useState("");
+  // Mode: "halaman" atau "surah" untuk input per juz
+  const [inputMode, setInputMode] = useState<"halaman" | "surah">("surah");
 
   const surahByJuz: Surah[] = useMemo(() => {
     if (!juz) return [];
