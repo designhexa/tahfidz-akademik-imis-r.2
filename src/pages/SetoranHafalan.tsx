@@ -343,6 +343,25 @@ const SetoranHafalan = () => {
     [selectedSantri]
   );
 
+  const handleDeleteEntry = useCallback(
+    (entry: CalendarEntry) => {
+      setEntries((prev) =>
+        prev.filter(
+          (e) =>
+            !(
+              format(e.tanggal, "yyyy-MM-dd") === format(entry.tanggal, "yyyy-MM-dd") &&
+              e.santriId === entry.santriId &&
+              e.jenis === entry.jenis &&
+              e.juz === entry.juz &&
+              e.surah === entry.surah
+            )
+        )
+      );
+      setOpenHistory(false);
+    },
+    []
+  );
+
   const monthOptions = [
     "Januari", "Februari", "Maret", "April", "Mei", "Juni",
     "Juli", "Agustus", "September", "Oktober", "November", "Desember",
