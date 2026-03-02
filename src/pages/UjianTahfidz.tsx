@@ -37,7 +37,7 @@ import { Badge } from "@/components/ui/badge";
 import { GraduationCap, Plus, Info, RefreshCw, Shuffle } from "lucide-react";
 import { JuzSelector } from "@/components/JuzSelector";
 import { supabase } from "@/integrations/supabase/client";
-import { generateExamQuestions, formatQuestionDisplay, ExamQuestion } from "@/lib/quran-exam-generator";
+import { generateExamQuestions, formatQuestionDisplay, ExamQuestion, getHalamanPerJuz } from "@/lib/quran-exam-generator";
 import { toast } from "sonner";
 import { MOCK_KELAS } from "@/lib/mock-data";
 
@@ -342,7 +342,11 @@ const UjianTahfidz = () => {
                   {materiDari && materiSampai && (
                     <div className="flex items-center justify-between">
                       <p className="text-sm text-muted-foreground">
-                        Materi: Juz {materiDari} - Juz {materiSampai} ({(parseInt(materiSampai) - parseInt(materiDari) + 1) * 20} halaman)
+                        Materi: Juz {materiDari} - Juz {materiSampai} ({
+                          Array.from({ length: parseInt(materiSampai) - parseInt(materiDari) + 1 }, (_, i) => 
+                            getHalamanPerJuz(parseInt(materiDari) + i)
+                          ).reduce((a, b) => a + b, 0)
+                        } halaman)
                       </p>
                       <Button 
                         type="button" 
