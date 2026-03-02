@@ -196,6 +196,42 @@ export default function TilawahUjianSemester() {
               </DialogHeader>
 
               <div className="space-y-4 pt-4">
+                {/* Filter Halaqoh / Kelas */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Filter Halaqoh</Label>
+                    <Select value={filterHalaqoh} onValueChange={(v) => { setFilterHalaqoh(v); setSelectedSantri(""); setGeneratedSoal([]); }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Semua Halaqoh" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Semua Halaqoh</SelectItem>
+                        {MOCK_HALAQOH.map((h) => (
+                          <SelectItem key={h.id} value={h.nama}>
+                            {h.nama}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Filter Kelas</Label>
+                    <Select value={filterKelas} onValueChange={(v) => { setFilterKelas(v); setSelectedSantri(""); setGeneratedSoal([]); }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Semua Kelas" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Semua Kelas</SelectItem>
+                        {MOCK_KELAS.map((k) => (
+                          <SelectItem key={k.id} value={k.nama_kelas}>
+                            {k.nama_kelas}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
                 {/* Pilih Santri */}
                 <div className="space-y-2">
                   <Label>Pilih Santri</Label>
@@ -204,7 +240,7 @@ export default function TilawahUjianSemester() {
                       <SelectValue placeholder="Pilih santri..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {MOCK_SANTRI_TILAWAH.map(s => (
+                      {filteredSantriForForm.map(s => (
                         <SelectItem key={s.id} value={s.id}>
                           {s.nama} - {s.kelas} (Jilid {s.jilidSaatIni}, Hal {s.halamanSaatIni})
                         </SelectItem>
