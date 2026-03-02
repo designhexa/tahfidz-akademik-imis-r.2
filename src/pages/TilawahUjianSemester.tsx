@@ -81,6 +81,7 @@ const MOCK_UJIAN_SEMESTER: HasilUjianSemester[] = [
 export default function TilawahUjianSemester() {
   const [search, setSearch] = useState("");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
+  const [filterKelas, setFilterKelas] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [ujianList, setUjianList] = useState<HasilUjianSemester[]>(MOCK_UJIAN_SEMESTER);
 
@@ -93,6 +94,13 @@ export default function TilawahUjianSemester() {
   const [catatan, setCatatan] = useState("");
 
   const selectedSantriData = MOCK_SANTRI_TILAWAH.find(s => s.id === selectedSantri);
+
+  // Filter santri by halaqoh/kelas
+  const filteredSantriForForm = MOCK_SANTRI_TILAWAH.filter(s => {
+    const matchHalaqoh = filterHalaqoh === "all" || s.halaqoh === filterHalaqoh;
+    const matchKelas = filterKelas === "all" || s.kelas === filterKelas;
+    return matchHalaqoh && matchKelas;
+  });
 
   const handleSelectSantri = (santriId: string) => {
     setSelectedSantri(santriId);
