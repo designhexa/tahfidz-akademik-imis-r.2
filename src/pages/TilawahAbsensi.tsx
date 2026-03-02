@@ -23,18 +23,21 @@
  import { toast } from "sonner";
 
 type TilawahAbsensiProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   initialSantriId?: string;
   initialTanggal?: Date;
 };
 
 export default function TilawahAbsensi({
-  open,
-  onOpenChange,
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
   initialSantriId,
   initialTanggal,
-}: TilawahAbsensiProps) {
+}: TilawahAbsensiProps = {}) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen ?? internalOpen;
+  const onOpenChange = externalOnOpenChange ?? setInternalOpen;
   const [search, setSearch] = useState("");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
