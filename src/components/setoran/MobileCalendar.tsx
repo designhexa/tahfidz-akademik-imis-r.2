@@ -161,7 +161,7 @@ export function MobileCalendar({
                       }}
                       className={cn(
                         "relative min-w-[60px] flex-1 border-r border-border last:border-r-0 p-0.5 min-h-[52px]",
-                        isWeekend
+                        isWeekend && !allowWeekends
                           ? "bg-muted/40 cursor-default"
                           : "bg-card hover:bg-accent/40 cursor-pointer",
                         dayOfWeek === 5 && "bg-[hsl(160,40%,90%)]/30",
