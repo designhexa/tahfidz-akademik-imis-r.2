@@ -9,13 +9,18 @@ export interface ExamQuestion {
   halamanEstimate: number;
 }
 
-// Halaman per juz (estimasi)
-const HALAMAN_PER_JUZ = 20;
+// Halaman per juz (estimasi) - Juz 30 memiliki 23 halaman
+const HALAMAN_PER_JUZ: Record<number, number> = {};
+for (let i = 1; i <= 29; i++) HALAMAN_PER_JUZ[i] = 20;
+HALAMAN_PER_JUZ[30] = 23;
+
+export const getHalamanPerJuz = (juz: number): number => HALAMAN_PER_JUZ[juz] || 20;
 
 // Generate halaman acak dalam juz
 const getRandomHalaman = (juz: number): number => {
-  const baseHalaman = (juz - 1) * HALAMAN_PER_JUZ + 1;
-  return baseHalaman + Math.floor(Math.random() * HALAMAN_PER_JUZ);
+  const halamanJuz = getHalamanPerJuz(juz);
+  const baseHalaman = (juz - 1) * 20 + 1; // base tetap 20 untuk posisi umum
+  return baseHalaman + Math.floor(Math.random() * halamanJuz);
 };
 
 // Generate ayat acak dalam surah
