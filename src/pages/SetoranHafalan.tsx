@@ -25,9 +25,11 @@ import {
 import { MonthlyCalendar } from "@/components/setoran/MonthlyCalendar";
 import { MobileCalendar } from "@/components/setoran/MobileCalendar";
 import { EntryModal } from "@/components/setoran/EntryModal";
+import { EntryHistoryPopup } from "@/components/setoran/EntryHistoryPopup";
 import { type CalendarEntry } from "@/components/setoran/CalendarCell";
 import { MOCK_SANTRI, MOCK_HALAQOH, getSantriByHalaqoh } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 import { AddDrillModal } from "@/components/setoran/AddDrillModal";
 import { TasmiForm1Juz } from "@/components/tasmi/TasmiForm1Juz";
 import { TilawatiUjianForm } from "@/components/tilawah/TilawatiUjianForm";
@@ -202,6 +204,7 @@ const SetoranHafalan = () => {
   const [openTasmi, setOpenTasmi] = useState(false);
   const [openTilawah, setOpenTilawah] = useState(false);
   const [openUjianJilid, setOpenUjianJilid] = useState(false);
+  const [openHistory, setOpenHistory] = useState(false);
 
   // Tasmi' component state
   const dummySantri = [
