@@ -43,6 +43,7 @@ interface MobileCalendarProps {
   entries: CalendarEntry[];
   onDateClick: (date: Date) => void;
   headerTitle: string;
+  allowWeekends?: boolean;
 }
 
 export function MobileCalendar({
@@ -51,6 +52,7 @@ export function MobileCalendar({
   entries,
   onDateClick,
   headerTitle,
+  allowWeekends = false,
 }: MobileCalendarProps) {
   const days = useMemo(() => {
     const monthStart = startOfMonth(new Date(year, month));
@@ -155,7 +157,7 @@ export function MobileCalendar({
                     <div
                       key={weekIdx}
                       onClick={() => {
-                        if (!isWeekend) onDateClick(day);
+                        if (!isWeekend || allowWeekends) onDateClick(day);
                       }}
                       className={cn(
                         "relative min-w-[60px] flex-1 border-r border-border last:border-r-0 p-0.5 min-h-[52px]",

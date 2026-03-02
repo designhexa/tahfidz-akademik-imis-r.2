@@ -22,6 +22,7 @@ interface MonthlyCalendarProps {
   entries: CalendarEntry[];
   onDateClick: (date: Date) => void;
   headerTitle: string;
+  allowWeekends?: boolean;
 }
 
 export function MonthlyCalendar({
@@ -30,6 +31,7 @@ export function MonthlyCalendar({
   entries,
   onDateClick,
   headerTitle,
+  allowWeekends = false,
 }: MonthlyCalendarProps) {
   const calendarDays = useMemo(() => {
     const monthStart = startOfMonth(new Date(year, month));
@@ -101,7 +103,7 @@ export function MonthlyCalendar({
               isToday={isToday(day)}
               entries={dayEntries}
               onClick={() => {
-                if (inMonth && !isWeekend) {
+                if (inMonth && (!isWeekend || allowWeekends)) {
                   onDateClick(day);
                 }
               }}
