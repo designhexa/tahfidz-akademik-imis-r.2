@@ -90,7 +90,7 @@ export function CalendarCell({
         <div />
         <span
           className={cn(
-            "text-[9px] md:text-[11px] font-medium leading-none",
+            "text-[10px] md:text-xs font-medium leading-none",
             isWeekend ? "text-muted-foreground/60" : "text-muted-foreground",
             today && "text-primary font-bold"
           )}
@@ -111,9 +111,9 @@ export function CalendarCell({
       {hasEntries && !isWeekend && (
         <div className="mt-0.5 space-y-0.5 overflow-hidden">
           {entries.slice(0, 2).map((entry, i) => (
-            <div key={i} className="text-[7px] md:text-[9px] leading-tight">
+            <div key={i} className="text-[9px] md:text-xs leading-tight">
               {entry.jenis === "drill" && entry.juz && (
-                <span className="font-medium">Drill Juz {entry.juz}</span>
+                <span className="font-medium">Drill J{entry.juz}</span>
               )}
               {entry.jenis === "setoran_hafalan" && (
                 <span className="font-medium">
@@ -121,7 +121,7 @@ export function CalendarCell({
                 </span>
               )}
               {entry.jenis === "tasmi" && (
-                <span className="font-medium">Tasmi' Juz {entry.juz}</span>
+                <span className="font-medium">Tasmi' J{entry.juz}</span>
               )}
               {entry.jenis === "murojaah" && (
                 <span className="font-medium">Juz {entry.juz}</span>
@@ -137,16 +137,16 @@ export function CalendarCell({
               )}
 
               {entry.halaman && (
-                <div className="text-muted-foreground">Hal {entry.halaman}</div>
+                <div className="text-muted-foreground text-[8px] md:text-[10px]">Hal {entry.halaman}</div>
               )}
               {entry.ayat && (
-                <div className="text-muted-foreground">Ayat {entry.ayat}</div>
+                <div className="text-muted-foreground text-[8px] md:text-[10px]">Ay {entry.ayat}</div>
               )}
 
               {entry.status && (
                 <span
                   className={cn(
-                    "inline-block px-1 py-0 rounded text-[6px] md:text-[8px] font-semibold mt-0.5 border",
+                    "inline-block px-1 py-0 rounded text-[7px] md:text-[9px] font-semibold mt-0.5 border",
                     getStatusBadgeClass(entry.status)
                   )}
                 >
@@ -158,7 +158,7 @@ export function CalendarCell({
             </div>
           ))}
           {entries.length > 2 && (
-            <div className="text-[6px] md:text-[8px] text-muted-foreground">
+            <div className="text-[7px] md:text-[9px] text-muted-foreground">
               +{entries.length - 2} lagi
             </div>
           )}

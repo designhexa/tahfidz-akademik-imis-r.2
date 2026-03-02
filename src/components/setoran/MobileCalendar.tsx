@@ -178,7 +178,7 @@ export function MobileCalendar({
                         </div>
                         <span
                           className={cn(
-                            "text-[9px] font-medium leading-none",
+                            "text-[10px] font-medium leading-none",
                             isWeekend ? "text-muted-foreground/60" : "text-muted-foreground",
                             today && "text-primary font-bold"
                           )}
@@ -191,7 +191,7 @@ export function MobileCalendar({
                       {dayEntries.length > 0 && !isWeekend && (
                         <div className="mt-0.5 space-y-0.5">
                           {dayEntries.slice(0, 1).map((entry, i) => (
-                            <div key={i} className="text-[7px] leading-tight">
+                            <div key={i} className="text-[8px] leading-tight">
                               {entry.jenis === "drill" && entry.juz && (
                                 <span className="font-medium">D.J{entry.juz}</span>
                               )}
@@ -219,7 +219,7 @@ export function MobileCalendar({
                               {entry.status && (
                                 <span
                                   className={cn(
-                                    "inline-block ml-0.5 px-0.5 rounded text-[6px] font-semibold",
+                                    "inline-block ml-0.5 px-0.5 rounded text-[7px] font-semibold",
                                     getStatusBadge(entry.status)
                                   )}
                                 >
@@ -229,7 +229,7 @@ export function MobileCalendar({
                             </div>
                           ))}
                           {dayEntries.length > 1 && (
-                            <div className="text-[6px] text-muted-foreground">
+                            <div className="text-[7px] text-muted-foreground">
                               +{dayEntries.length - 1}
                             </div>
                           )}
