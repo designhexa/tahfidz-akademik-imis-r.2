@@ -569,6 +569,7 @@ const SetoranHafalan = () => {
                 entries={filteredEntries}
                 onDateClick={handleDateClick}
                 headerTitle={HEADER_TITLES[activeTab]}
+                allowWeekends={activeTab === "murojaah_rumah"}
               />
             ) : (
               <div className="overflow-x-auto">
@@ -579,6 +580,7 @@ const SetoranHafalan = () => {
                     entries={filteredEntries}
                     onDateClick={handleDateClick}
                     headerTitle={HEADER_TITLES[activeTab]}
+                    allowWeekends={activeTab === "murojaah_rumah"}
                   />
                 </div>
               </div>
