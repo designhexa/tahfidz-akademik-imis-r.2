@@ -22,6 +22,7 @@ import {
 import { JuzSelector } from "@/components/JuzSelector";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+import { useEffect } from "react";
 
 interface Props {
   open: boolean;
@@ -37,9 +38,21 @@ export const TasmiForm1Juz = ({ open, onOpenChange, santriList, getPredikat, dat
   const [selectedJuz, setSelectedJuz] = useState("");
   const [catatanUmum, setCatatanUmum] = useState("");
   const [diberhentikan, setDiberhentikan] = useState(false);
-  const [penilaianHalaman, setPenilaianHalaman] = useState(
-    Array.from({ length: 20 }, (_, i) => ({ halaman: i + 1, pancingan: 0, catatan: "" }))
-  );
+  const [penilaianHalaman, setPenilaianHalaman] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!selectedJuz) return;
+
+    const total = getTotalHalaman(selectedJuz);
+
+    setPenilaianHalaman(
+      Array.from({ length: total }, (_, i) => ({
+        halaman: i + 1,
+        pancingan: 0,
+        catatan: "",
+      }))
+    );
+  }, [selectedJuz]);
 
   const nilaiTotal = penilaianHalaman.reduce((t, h) => t + Math.max(0, 5 - h.pancingan), 0);
   const predikat = getPredikat(nilaiTotal);
@@ -49,10 +62,15 @@ export const TasmiForm1Juz = ({ open, onOpenChange, santriList, getPredikat, dat
     setSelectedJuz("");
     setCatatanUmum("");
     setDiberhentikan(false);
-    setPenilaianHalaman(Array.from({ length: 20 }, (_, i) => ({ halaman: i + 1, pancingan: 0, catatan: "" })));
+    setPenilaianHalaman([]);
   };
 
   if (!date) return null;
+
+  const getTotalHalaman = (juz: string) => {
+    if (juz === "30") return 23;
+    return 20;
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
