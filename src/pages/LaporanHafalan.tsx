@@ -323,20 +323,20 @@ const LaporanHafalan = () => {
 
         {/* Tabs Content */}
         <Tabs defaultValue="harian" className="space-y-4">
-          <TabsList className="flex-wrap">
-            <TabsTrigger value="harian" className="flex items-center gap-2">
+          <TabsList className="w-full overflow-x-auto flex-nowrap">
+            <TabsTrigger value="harian" className="flex items-center gap-2 whitespace-nowrap">
               <Calendar className="w-4 h-4" />
               Rekap Harian
             </TabsTrigger>
-            <TabsTrigger value="mingguan" className="flex items-center gap-2">
+            <TabsTrigger value="mingguan" className="flex items-center gap-2 whitespace-nowrap">
               <BarChart3 className="w-4 h-4" />
               Rekap Mingguan
             </TabsTrigger>
-            <TabsTrigger value="capaian" className="flex items-center gap-2">
+            <TabsTrigger value="capaian" className="flex items-center gap-2 whitespace-nowrap">
               <TrendingUp className="w-4 h-4" />
               Capaian per Juz
             </TabsTrigger>
-            <TabsTrigger value="drill" className="flex items-center gap-2">
+            <TabsTrigger value="drill" className="flex items-center gap-2 whitespace-nowrap">
               <Target className="w-4 h-4" />
               Rekap Drill Hafalan
             </TabsTrigger>
