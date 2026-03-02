@@ -30,6 +30,7 @@ interface CalendarCellProps {
   isToday: boolean;
   entries: CalendarEntry[];
   onClick: () => void;
+  allowWeekends?: boolean;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -63,6 +64,7 @@ export function CalendarCell({
   isToday: today,
   entries,
   onClick,
+  allowWeekends = false,
 }: CalendarCellProps) {
   const dayNum = format(date, "d");
   const hasEntries = entries.length > 0;
@@ -78,7 +80,7 @@ export function CalendarCell({
       onClick={onClick}
       className={cn(
         "relative min-h-[60px] md:min-h-[90px] border-b border-r border-border p-0.5 md:p-1 transition-colors",
-        isWeekend
+        isWeekend && !allowWeekends
           ? "bg-muted/50 cursor-default"
           : "bg-card hover:bg-accent/40 cursor-pointer",
         isJumat && "bg-[hsl(160,40%,90%)]/50",
@@ -108,7 +110,7 @@ export function CalendarCell({
       )}
 
       {/* Entry content */}
-      {hasEntries && !isWeekend && (
+      {hasEntries && (!isWeekend || allowWeekends) && (
         <div className="mt-0.5 space-y-0.5 overflow-hidden">
           {entries.slice(0, 2).map((entry, i) => (
             <div key={i} className="text-[9px] md:text-xs leading-tight">
