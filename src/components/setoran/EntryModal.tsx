@@ -97,7 +97,8 @@ export function EntryModal({
   };
 
   const isTilawahTab = activeTab === "tilawah";
-
+  const isTilawahQuran = isTilawahTab && jilid === "quran";
+  const maxHalaman = juz ? getHalamanPerJuz(Number(juz)) : 20;
   const handleSave = () => {
     if (!date) return;
     if (!isTilawahTab && !juz) {
