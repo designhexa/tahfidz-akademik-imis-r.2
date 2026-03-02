@@ -233,24 +233,35 @@ const SetoranHafalan = () => {
 
   const santriData = MOCK_SANTRI.find((s) => s.id === selectedSantri);
 
-  // Filter entries for current tab and santri
+  // Filter entries for current tab and santri - each tab has its own calendar
   const filteredEntries = useMemo(() => {
     if (!selectedSantri) return [];
 
-    // hanya jenis yang termasuk aktivitas harian
-    const allowedDailyJenis = [
-      "setoran_hafalan",
-      "murojaah",
-      "tilawah_harian",
-      "murojaah_rumah",
-    ];
+    // Map tab to allowed jenis
+    const tabJenisMap: Record<MainTab, string[]> = {
+      setoran_hafalan: ["setoran_hafalan", "drill", "tasmi"],
+      murojaah: ["murojaah"],
+      tilawah: ["tilawah", "ujian_jilid"],
+      murojaah_rumah: ["murojaah_rumah"],
+    };
+
+    const allowedJenis = tabJenisMap[activeTab] || [];
 
     return entries.filter(
       (e) =>
         e.santriId === selectedSantri &&
-        allowedDailyJenis.includes(e.jenis)
+        allowedJenis.includes(e.jenis)
     );
-  }, [entries, selectedSantri]);
+  }, [entries, selectedSantri, activeTab]);
+
+  // Get entries for a specific date (for history popup)
+  const getEntriesForDate = (date: Date) => {
+    if (!date) return [];
+    const dateStr = format(date, "yyyy-MM-dd");
+    return filteredEntries.filter(
+      (e) => format(e.tanggal, "yyyy-MM-dd") === dateStr
+    );
+  };
 
   const handlePrevMonth = () => {
     if (month === 0) {
