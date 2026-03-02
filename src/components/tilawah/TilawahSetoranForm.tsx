@@ -28,6 +28,8 @@ import {
 } from "@/lib/tilawah-data";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface TilawahSetoranFormProps {
   open: boolean;
@@ -184,19 +186,29 @@ export const TilawahSetoranForm = ({
             </div>
             {selectedJilid === "7" && (
               <div className="space-y-2">
-                <Label>Juz</Label>
-                <Select value={selectedJuz} onValueChange={setSelectedJuz}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pilih juz..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.from({ length: 30 }, (_, i) => (
-                      <SelectItem key={i + 1} value={(i + 1).toString()}>
-                        Juz {i + 1}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Pilih Juz</Label>
+
+                <div className="grid grid-cols-6 gap-1">
+                  {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
+                    <Button
+                      key={juz}
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "h-10 w-full font-medium border",
+                        selectedJuz === String(juz) &&
+                          "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                      )}
+                      onClick={() => setSelectedJuz(String(juz))}
+                    >
+                      {selectedJuz === String(juz) && (
+                        <Check className="h-3 w-3 mr-1" />
+                      )}
+                      {juz}
+                    </Button>
+                  ))}
+                </div>
               </div>
             )}
             <div className="space-y-2">
