@@ -50,6 +50,7 @@ export const TilawahSetoranForm = ({
   // --- Form States ---
   const [selectedSantri, setSelectedSantri] = useState("");
   const [selectedJilid, setSelectedJilid] = useState("");
+  const [selectedJuz, setSelectedJuz] = useState("");
   const [halamanDari, setHalamanDari] = useState("");
   const [halamanSampai, setHalamanSampai] = useState("");
   const [scores, setScores] = useState({
@@ -88,7 +89,13 @@ export const TilawahSetoranForm = ({
   const aspekPenilaian = selectedJilid ? getAspekPenilaianByJilid(parseInt(selectedJilid)) : [];
 
   const handleProcessSubmit = () => {
-    if (!selectedSantri || !selectedJilid || !halamanDari || !halamanSampai) {
+    if (
+      !selectedSantri ||
+      !selectedJilid ||
+      (selectedJilid === "7" && !selectedJuz) ||
+      !halamanDari ||
+      !halamanSampai
+    ) {
       toast.error("Mohon lengkapi data setoran utama (Santri, Jilid, & Halaman)");
       return;
     }
@@ -103,6 +110,7 @@ export const TilawahSetoranForm = ({
       id: `set-${Date.now()}`,
       idSantri: selectedSantri,
       jilid: parseInt(selectedJilid),
+      juz: selectedJilid === "7" ? parseInt(selectedJuz) : null,
       halamanDari: parseInt(halamanDari),
       halamanSampai: parseInt(halamanSampai),
       status,
@@ -151,10 +159,20 @@ export const TilawahSetoranForm = ({
           </div>
 
           {/* Baris 2: Jilid & Halaman */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className={`grid gap-4 ${
+            selectedJilid === "7"
+              ? "grid-cols-1 sm:grid-cols-4"
+              : "grid-cols-1 sm:grid-cols-3"
+          }`}>
             <div className="space-y-2">
               <Label>Jilid</Label>
-              <Select value={selectedJilid} onValueChange={setSelectedJilid}>
+              <Select
+                value={selectedJilid}
+                onValueChange={(value) => {
+                  setSelectedJilid(value);
+                  setSelectedJuz(""); // reset juz setiap ganti jilid
+                }}
+              >
                 <SelectTrigger><SelectValue placeholder="Jilid..." /></SelectTrigger>
                 <SelectContent>
                   {TILAWATI_JILID.map((j) => (
@@ -164,6 +182,23 @@ export const TilawahSetoranForm = ({
                 </SelectContent>
               </Select>
             </div>
+            {selectedJilid === "7" && (
+              <div className="space-y-2">
+                <Label>Juz</Label>
+                <Select value={selectedJuz} onValueChange={setSelectedJuz}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih juz..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 30 }, (_, i) => (
+                      <SelectItem key={i + 1} value={(i + 1).toString()}>
+                        Juz {i + 1}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-2">
               <Label>Halaman Dari</Label>
               <Input type="number" value={halamanDari} onChange={(e) => setHalamanDari(e.target.value)} placeholder="1" />
