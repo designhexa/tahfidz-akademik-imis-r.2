@@ -287,6 +287,18 @@ const SetoranHafalan = () => {
 
       setModalDate(date);
 
+      // Check if this date already has an entry for this tab
+      const dateStr = format(date, "yyyy-MM-dd");
+      const existingEntries = filteredEntries.filter(
+        (e) => format(e.tanggal, "yyyy-MM-dd") === dateStr
+      );
+
+      // If already has entry, show history popup
+      if (existingEntries.length > 0) {
+        setOpenHistory(true);
+        return;
+      }
+
       if (activeTab === "setoran_hafalan") {
         if (subType === "drill") {
           setOpenDrill(true);
@@ -310,7 +322,7 @@ const SetoranHafalan = () => {
       // Tab lainnya tetap pakai entry modal
       setOpenEntry(true);
     },
-    [selectedSantri, activeTab, subType]
+    [selectedSantri, activeTab, subType, filteredEntries]
   );
 
   const handleSaveEntry = useCallback(
