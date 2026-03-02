@@ -96,12 +96,12 @@ export const AddDrillModal = ({
     if (!santri) return false;
 
     // Cek apakah level sebelumnya LULUS
-    const previousLevelLulus = drillHistory.some(d =>
-      d.santri === santri.nama &&
-      d.juz === Number(juz) &&
-      d.level === drillNumber - 1 &&
-      d.status === "Lulus"
-    );
+    const previousLevelLulus = (drillHistory ?? []).some(d =>
+    d.santri === santri.nama &&
+    d.juz === Number(juz) &&
+    d.level === drillNumber - 1 &&
+    d.status === "Lulus"
+  );
 
     return previousLevelLulus;
   };
