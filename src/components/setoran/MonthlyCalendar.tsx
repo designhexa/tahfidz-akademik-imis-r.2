@@ -104,9 +104,36 @@ export function MonthlyCalendar({
               entries={dayEntries}
               allowWeekends={allowWeekends}
               onClick={() => {
-                if (inMonth && (!isWeekend || allowWeekends)) {
-                  onDateClick(day);
+                if (!inMonth) return;
+                if (isWeekend && !allowWeekends) return;
+
+                const monthStart = startOfMonth(new Date(year, month));
+
+                // Semua hari sebelum tanggal yang diklik
+                const previousDays = eachDayOfInterval({
+                  start: monthStart,
+                  end: new Date(day.getFullYear(), day.getMonth(), day.getDate() - 1),
+                });
+
+                // Filter hanya hari aktif
+                const activePreviousDays = previousDays.filter((d) => {
+                  const dow = getDay(d);
+                  const weekend = dow === 0 || dow === 6;
+                  return allowWeekends || !weekend;
+                });
+
+                // Cek apakah ada hari sebelumnya yang belum punya entry
+                const hasUnfilledDay = activePreviousDays.some((d) => {
+                  const key = format(d, "yyyy-MM-dd");
+                  return !entriesByDate.has(key);
+                });
+
+                if (hasUnfilledDay) {
+                  alert("Hari sebelumnya belum diisi.");
+                  return;
                 }
+
+                onDateClick(day);
               }}
             />
           );

@@ -157,7 +157,32 @@ export function MobileCalendar({
                     <div
                       key={weekIdx}
                       onClick={() => {
-                        if (!isWeekend || allowWeekends) onDateClick(day);
+                        if (isWeekend && !allowWeekends) return;
+
+                        const monthStart = startOfMonth(new Date(year, month));
+
+                        const previousDays = eachDayOfInterval({
+                          start: monthStart,
+                          end: new Date(day.getFullYear(), day.getMonth(), day.getDate() - 1),
+                        });
+
+                        const activePreviousDays = previousDays.filter((d) => {
+                          const dow = getDay(d);
+                          const weekend = dow === 0 || dow === 6;
+                          return allowWeekends || !weekend;
+                        });
+
+                        const hasUnfilledDay = activePreviousDays.some((d) => {
+                          const key = format(d, "yyyy-MM-dd");
+                          return !entriesByDate.has(key);
+                        });
+
+                        if (hasUnfilledDay) {
+                          alert("Hari sebelumnya belum diisi.");
+                          return;
+                        }
+
+                        onDateClick(day);
                       }}
                       className={cn(
                         "relative min-w-[60px] flex-1 border-r border-border last:border-r-0 p-0.5 min-h-[52px]",
