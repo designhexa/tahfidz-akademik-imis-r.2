@@ -285,15 +285,15 @@ export default function TilawahUjianSemester() {
                           Acak Ulang
                         </Button>
                       </div>
-                      <CardDescription>Santri diminta membaca halaman-halaman berikut:</CardDescription>
+                      <CardDescription>Santri diminta membaca 1 halaman acak berikut:</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-5 gap-2">
-                        {generatedSoal.map((soal, idx) => (
-                          <div key={soal.id} className="text-center p-3 bg-primary/5 rounded-lg border border-primary/20">
-                            <p className="text-xs text-muted-foreground">Soal {idx + 1}</p>
-                            <p className="font-bold text-lg text-primary">Hal {soal.halaman}</p>
-                            <p className="text-xs text-muted-foreground">Jilid {soal.jilid}</p>
+                      <div className="flex justify-center">
+                        {generatedSoal.map((soal) => (
+                          <div key={soal.id} className="text-center p-4 bg-primary/5 rounded-lg border border-primary/20 min-w-[120px]">
+                            <p className="text-xs text-muted-foreground">Soal Ujian</p>
+                            <p className="font-bold text-2xl text-primary">Hal {soal.halaman}</p>
+                            <p className="text-sm text-muted-foreground">Jilid {soal.jilid}</p>
                           </div>
                         ))}
                       </div>
