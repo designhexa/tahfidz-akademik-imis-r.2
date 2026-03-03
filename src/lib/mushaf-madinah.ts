@@ -467,31 +467,3 @@ export function getSurahListByJuz(juz: number) {
 
   return Array.from(surahMap.values());
 }
-
-export function getPagesByJuz(juz: number): number[] {
-  const { start, end } = getPagesForJuz(juz);
-
-  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-}
-
-export function getAyahRangeByPage(page: number) {
-  const content = getPageContent(page);
-
-  if (!content || content.length === 0) return null;
-
-  const start = content[0].ayatStart;
-  const end = content[content.length - 1].ayatEnd;
-
-  return { start, end };
-}
-
-export function getAyahRangeBySurah(surahNumber: number) {
-  const surah = surahList.find(s => s.number === surahNumber);
-
-  if (!surah) return null;
-
-  return {
-    start: 1,
-    end: surah.numberOfAyahs
-  };
-}
