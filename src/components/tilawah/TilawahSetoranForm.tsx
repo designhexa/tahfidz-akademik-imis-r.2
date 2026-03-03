@@ -30,6 +30,7 @@ import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface TilawahSetoranFormProps {
   open: boolean;
@@ -53,6 +54,10 @@ export const TilawahSetoranForm = ({
   const [selectedSantri, setSelectedSantri] = useState("");
   const [selectedJilid, setSelectedJilid] = useState("");
   const [selectedJuz, setSelectedJuz] = useState("");
+  const [alquranMode, setAlquranMode] = useState<"juz" | "surah">("juz");
+  const [selectedSurah, setSelectedSurah] = useState("");
+  const [ayatDari, setAyatDari] = useState("");
+  const [ayatSampai, setAyatSampai] = useState("");
   const [halamanDari, setHalamanDari] = useState("");
   const [halamanSampai, setHalamanSampai] = useState("");
   const [scores, setScores] = useState({
@@ -185,28 +190,87 @@ export const TilawahSetoranForm = ({
               </Select>
             </div>
             {selectedJilid === "7" && (
-              <div className="space-y-2">
-                <Label>Juz</Label>
+              <div className="space-y-4">
 
-                <Select value={selectedJuz} onValueChange={setSelectedJuz}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pilih juz..." />
-                  </SelectTrigger>
+                <Tabs
+                  value={alquranMode}
+                  onValueChange={(v: any) => setAlquranMode(v)}
+                >
+                  <TabsList className="grid grid-cols-2 w-full">
+                    <TabsTrigger value="juz">Per Juz</TabsTrigger>
+                    <TabsTrigger value="surah">Per Surah</TabsTrigger>
+                  </TabsList>
+                </Tabs>
 
-                  <SelectContent className="max-h-80 overflow-y-auto">
-                    <div className="grid grid-cols-6 gap-1 p-2">
-                      {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
-                        <SelectItem
-                          key={juz}
-                          value={String(juz)}
-                          className="justify-center"
-                        >
-                          {juz}
-                        </SelectItem>
-                      ))}
+                {alquranMode === "juz" && (
+                  <div className="space-y-2">
+                    <Label>Juz</Label>
+
+                    <Select value={selectedJuz} onValueChange={setSelectedJuz}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih juz..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-80 overflow-y-auto">
+                        <div className="grid grid-cols-6 gap-1 p-2">
+                          {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
+                            <SelectItem key={juz} value={String(juz)} className="justify-center">
+                              {juz}
+                            </SelectItem>
+                          ))}
+                        </div>
+                      </SelectContent>
+                    </Select>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <Input
+                        type="number"
+                        placeholder="Halaman dari..."
+                        value={halamanDari}
+                        onChange={(e) => setHalamanDari(e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Sampai..."
+                        value={halamanSampai}
+                        onChange={(e) => setHalamanSampai(e.target.value)}
+                      />
                     </div>
-                  </SelectContent>
-                </Select>
+                  </div>
+                )}
+
+                {alquranMode === "surah" && (
+                  <div className="space-y-2">
+                    <Label>Surah</Label>
+
+                    <Select value={selectedSurah} onValueChange={setSelectedSurah}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih surah..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-80 overflow-y-auto">
+                        {Array.from({ length: 114 }, (_, i) => (
+                          <SelectItem key={i + 1} value={String(i + 1)}>
+                            Surah {i + 1}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <Input
+                        type="number"
+                        placeholder="Ayat dari..."
+                        value={ayatDari}
+                        onChange={(e) => setAyatDari(e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Sampai..."
+                        value={ayatSampai}
+                        onChange={(e) => setAyatSampai(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             <div className="space-y-2">
