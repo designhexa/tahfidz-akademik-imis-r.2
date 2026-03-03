@@ -406,3 +406,23 @@ export function checkDuplicateSetoran(
   }
   return null;
 }
+
+export function getSurahListByJuz(juz: number) {
+  const { start, end } = getPagesForJuz(juz);
+  const surahMap = new Map();
+
+  for (let page = start; page <= end; page++) {
+    const content = getPageContent(page);
+
+    content.forEach((c) => {
+      if (!surahMap.has(c.surahNumber)) {
+        surahMap.set(c.surahNumber, {
+          number: c.surahNumber,
+          name: c.surahName,
+        });
+      }
+    });
+  }
+
+  return Array.from(surahMap.values());
+}

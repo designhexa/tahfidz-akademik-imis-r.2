@@ -28,9 +28,8 @@ import {
 } from "@/lib/tilawah-data";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
-import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getSurahListByJuz } from "@/lib/mushaf-madinah";
 
 interface TilawahSetoranFormProps {
   open: boolean;
@@ -60,7 +59,7 @@ export const TilawahSetoranForm = ({
 
   const [surah, setSurah] = useState("");
   const [selectedSurah, setSelectedSurah] = useState<any>(null);
-
+  const [surahByJuz, setSurahByJuz] = useState<any[]>([]);
   const [ayatDari, setAyatDari] = useState("");
   const [ayatSampai, setAyatSampai] = useState("");
 
@@ -139,6 +138,34 @@ export const TilawahSetoranForm = ({
   };
 
   if (!date) return null;
+
+  useEffect(() => {
+    if (!selectedJuz) return;
+
+    const list = getSurahListByJuz(Number(selectedJuz));
+    setSurahByJuz(list);
+
+    // reset pilihan lama
+    setSurah("");
+    setSelectedSurah(null);
+    setAyatDari("");
+    setAyatSampai("");
+
+  }, [selectedJuz]);
+
+  useEffect(() => {
+    if (!surah) {
+      setSelectedSurah(null);
+      return;
+    }
+
+    const found = surahByJuz.find(
+      (s) => String(s.number) === surah
+    );
+
+    setSelectedSurah(found || null);
+
+  }, [surah, surahByJuz]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -247,46 +274,45 @@ export const TilawahSetoranForm = ({
                   <div className="space-y-2">
                     <Label>Pilih Juz</Label>
 
-                    <div className="grid grid-cols-6 gap-2">
-                      {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
-                        <Button
-                          key={juz}
-                          type="button"
-                          variant={selectedJuz === String(juz) ? "default" : "outline"}
-                          className="h-10 text-sm"
-                          onClick={() => setSelectedJuz(String(juz))}
-                        >
-                          {juz}
-                        </Button>
-                      ))}
+                    <div className="space-y-2">
+                      <Label>Pilih Juz</Label>
+                      <Select value={selectedJuz} onValueChange={setSelectedJuz}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih Juz" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
+                            <SelectItem key={juz} value={String(juz)}>
+                              Juz {juz}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
-                  {selectedJuz && (
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div>
-                        <Label>Halaman Dari</Label>
-                        <Input
-                          type="number"
-                          value={halamanDari}
-                          onChange={(e) => setHalamanDari(e.target.value)}
-                          min={1}
-                          max={20}
-                        />
-                      </div>
+                 {selectedJuz && (
+                  <div className="space-y-2 mt-4">
+                    <Label>Pilih Surah (dalam Juz ini)</Label>
 
-                      <div>
-                        <Label>Sampai</Label>
-                        <Input
-                          type="number"
-                          value={halamanSampai}
-                          onChange={(e) => setHalamanSampai(e.target.value)}
-                          min={1}
-                          max={20}
-                        />
-                      </div>
-                    </div>
-                  )}
+                    <Select
+                      value={selectedSurah}
+                      onValueChange={setSelectedSurah}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih Surah" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        {getSurahsInJuz(Number(selectedJuz)).map((surah) => (
+                          <SelectItem key={surah} value={String(surah)}>
+                            Surah {surah}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 </>
               )}
 
