@@ -26,6 +26,7 @@ import { getHalamanPerJuz } from "@/lib/quran-exam-generator";
 import {
   getPageSummaryByJuz,
   getPageCountForJuz,
+  getPageMappingByJuz,
   checkDuplicateSetoran,
   type SetoranRecord,
 } from "@/lib/mushaf-madinah";
