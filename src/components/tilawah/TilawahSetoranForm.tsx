@@ -333,8 +333,6 @@ export const TilawahSetoranForm = ({
                   )}
                 </>
               )}
-
-<<<<<<< HEAD
                 {/* Info halaman otomatis */}
                 {pageInfo && (
                   <div className="flex items-start gap-2 p-2 mt-2 bg-primary/10 rounded text-xs">
