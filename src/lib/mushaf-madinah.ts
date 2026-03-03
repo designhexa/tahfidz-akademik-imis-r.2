@@ -80,19 +80,6 @@ export function getPageCountForJuz(juz: number): number {
   return getPagesForJuz(juz).count;
 }
 
-export function getPageContent(page: number) {
-  const entries = PAGE_MAPPINGS
-    .filter(([p]) => p === page)
-    .map(([_, surahNumber, ayatStart, ayatEnd]) => ({
-      surahNumber,
-      ayahNumber: ayatStart, // untuk first
-      ayatStart,
-      ayatEnd
-    }));
-
-  return entries;
-}
-
 // ============ Mushaf Madinah page-to-surah mapping ============
 // Mapping based on Mushaf Madinah (King Fahd Complex print)
 // Format: [pageNumber, surahNumber, ayatStart, ayatEnd]

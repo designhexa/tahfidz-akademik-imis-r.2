@@ -29,12 +29,7 @@ import {
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  getSurahListByJuz,
-  getPagesByJuz,
-  getAyahRangeBySurah,
-  getAyahRangeByPage,
-} from "@/lib/mushaf-madinah";
+import { getSurahListByJuz } from "@/lib/mushaf-madinah";
 
 interface TilawahSetoranFormProps {
   open: boolean;
@@ -60,10 +55,6 @@ export const TilawahSetoranForm = ({
 
   const [alquranMode, setAlquranMode] = useState<"juz" | "surah">("juz");
   const [selectedJuz, setSelectedJuz] = useState("");
-
-  const [selectedPage, setSelectedPage] = useState("");
-  const [pageList, setPageList] = useState<number[]>([]);
-  const [ayahRange, setAyahRange] = useState<{start: number, end: number} | null>(null);
 
   const [surah, setSurah] = useState("");
   const [surahByJuz, setSurahByJuz] = useState<any[]>([]);
@@ -176,39 +167,13 @@ export const TilawahSetoranForm = ({
   useEffect(() => {
     if (!selectedJuz) {
       setSurahByJuz([]);
-      setPageList([]);
       return;
     }
 
-    const surahList = getSurahListByJuz(Number(selectedJuz));
-    const pages = getPagesByJuz(Number(selectedJuz));
-
-    setSurahByJuz(surahList);
-    setPageList(pages);
+    const list = getSurahListByJuz(Number(selectedJuz));
+    setSurahByJuz(list);
 
   }, [selectedJuz]);
-
-  useEffect(() => {
-    if (!surah) {
-      setAyahRange(null);
-      return;
-    }
-
-    const range = getAyahRangeBySurah(Number(surah));
-    setAyahRange(range);
-
-  }, [surah]);
-
-  useEffect(() => {
-    if (!selectedPage) {
-      setAyahRange(null);
-      return;
-    }
-
-    const range = getAyahRangeByPage(Number(selectedPage));
-    setAyahRange(range);
-
-  }, [selectedPage]);
 
   if (!date) return null;
 
@@ -244,7 +209,7 @@ export const TilawahSetoranForm = ({
             </Select>
           </div>
         </div>
-        
+
           <div className="grid gap-4">
 
           {/* JILID */}
@@ -303,27 +268,31 @@ export const TilawahSetoranForm = ({
           {/* ===================== */}
           {/* AL-QUR'AN */}
           {/* ===================== */}
-          {selectedJilid === "7" && (
+          {alquranMode === "juz" && (
             <>
-              {/* PILIH JUZ */}
               <div className="space-y-2">
                 <Label>Pilih Juz</Label>
+
                 <Select
                   value={selectedJuz}
                   onValueChange={(value) => {
                     setSelectedJuz(value);
-                    setSurah("");
-                    setSelectedPage("");
-                    setAyahRange(null);
+                    setSurah(""); // reset surah saat ganti juz
                   }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Pilih Juz" />
                   </SelectTrigger>
+
+                  {/* 👇 ini yang dibuat grid */}
                   <SelectContent>
                     <div className="grid grid-cols-6 gap-2 p-2">
                       {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => (
-                        <SelectItem key={num} value={String(num)}>
+                        <SelectItem
+                          key={num}
+                          value={String(num)}
+                          className="justify-center text-center"
+                        >
                           {num}
                         </SelectItem>
                       ))}
@@ -332,81 +301,28 @@ export const TilawahSetoranForm = ({
                 </Select>
               </div>
 
-              {/* MUNCUL SETELAH PILIH JUZ */}
+              {/* Surah muncul setelah pilih juz */}
               {selectedJuz && (
-                <>
-                  {/* SURAH */}
-                  <div className="space-y-2">
-                    <Label>Pilih Surah</Label>
-                    <Select
-                      value={surah}
-                      onValueChange={(value) => {
-                        setSurah(value);
-                        setSelectedPage("");
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih Surah" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {surahByJuz.map((s) => (
-                          <SelectItem key={s.number} value={String(s.number)}>
-                            {s.number}. {s.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2 mt-4">
+                  <Label>Pilih Surah (dalam Juz ini)</Label>
 
-                  {/* HALAMAN */}
-                  <div className="space-y-2">
-                    <Label>Pilih Halaman</Label>
-                    <Select
-                      value={selectedPage}
-                      onValueChange={(value) => {
-                        setSelectedPage(value);
-                        setSurah("");
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih Halaman" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {pageList.map((p) => (
-                          <SelectItem key={p} value={String(p)}>
-                            Halaman {p}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <Select
+                    value={surah}
+                    onValueChange={setSurah}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih Surah" />
+                    </SelectTrigger>
 
-                  {/* AYAT RANGE */}
-                  {ayahRange && (
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div>
-                        <Label>Ayat Dari</Label>
-                        <Input
-                          type="number"
-                          min={ayahRange.start}
-                          max={ayahRange.end}
-                          value={ayatDari}
-                          onChange={(e) => setAyatDari(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Label>Sampai</Label>
-                        <Input
-                          type="number"
-                          min={ayahRange.start}
-                          max={ayahRange.end}
-                          value={ayatSampai}
-                          onChange={(e) => setAyatSampai(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </>
+                    <SelectContent>
+                      {surahByJuz.map((s) => (
+                        <SelectItem key={s.number} value={String(s.number)}>
+                          {s.number}. {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               )}
             </>
           )}
