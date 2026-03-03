@@ -226,93 +226,107 @@ export const TilawahSetoranForm = ({
           {selectedJilid === "7" && (
             <div className="space-y-4">
 
-              <Tabs
-                value={alquranMode}
-                onValueChange={(v: any) => setAlquranMode(v)}
-              >
+              {/* ================= TAB MODE ================= */}
+              <Tabs value={alquranMode} onValueChange={(v: any) => setAlquranMode(v)}>
                 <TabsList className="grid grid-cols-2 w-full">
                   <TabsTrigger value="juz">Per Juz</TabsTrigger>
                   <TabsTrigger value="surah">Per Surah</TabsTrigger>
                 </TabsList>
               </Tabs>
 
-              {/* MODE JUZ */}
+              {/* ================= MODE JUZ ================= */}
               {alquranMode === "juz" && (
                 <>
                   <div className="space-y-2">
-                    <Label>Juz</Label>
-                    <Select value={selectedJuz} onValueChange={setSelectedJuz}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih juz..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: 30 }, (_, i) => (
-                          <SelectItem key={i + 1} value={String(i + 1)}>
-                            Juz {i + 1}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label>Pilih Juz</Label>
+
+                    <div className="grid grid-cols-6 gap-2">
+                      {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
+                        <Button
+                          key={juz}
+                          type="button"
+                          variant={selectedJuz === String(juz) ? "default" : "outline"}
+                          className="h-10 text-sm"
+                          onClick={() => setSelectedJuz(String(juz))}
+                        >
+                          {juz}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Halaman Dari</Label>
-                      <Input
-                        type="number"
-                        value={halamanDari}
-                        onChange={(e) => setHalamanDari(e.target.value)}
-                      />
+                  {selectedJuz && (
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div>
+                        <Label>Halaman Dari</Label>
+                        <Input
+                          type="number"
+                          value={halamanDari}
+                          onChange={(e) => setHalamanDari(e.target.value)}
+                          min={1}
+                          max={20}
+                        />
+                      </div>
+
+                      <div>
+                        <Label>Sampai</Label>
+                        <Input
+                          type="number"
+                          value={halamanSampai}
+                          onChange={(e) => setHalamanSampai(e.target.value)}
+                          min={1}
+                          max={20}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <Label>Sampai</Label>
-                      <Input
-                        type="number"
-                        value={halamanSampai}
-                        onChange={(e) => setHalamanSampai(e.target.value)}
-                      />
-                    </div>
-                  </div>
+                  )}
                 </>
               )}
 
-              {/* MODE SURAH */}
+              {/* ================= MODE SURAH ================= */}
               {alquranMode === "surah" && (
                 <>
                   <div className="space-y-2">
-                    <Label>Surah</Label>
-                    <Select value={selectedSurah} onValueChange={setSelectedSurah}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih surah..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: 114 }, (_, i) => (
-                          <SelectItem key={i + 1} value={String(i + 1)}>
-                            Surah {i + 1}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label>Pilih Surah</Label>
+
+                    <div className="grid grid-cols-6 gap-2 max-h-64 overflow-y-auto">
+                      {Array.from({ length: 114 }, (_, i) => i + 1).map((surah) => (
+                        <Button
+                          key={surah}
+                          type="button"
+                          variant={selectedSurah === String(surah) ? "default" : "outline"}
+                          className="h-10 text-xs"
+                          onClick={() => setSelectedSurah(String(surah))}
+                        >
+                          {surah}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Ayat Dari</Label>
-                      <Input
-                        type="number"
-                        value={ayatDari}
-                        onChange={(e) => setAyatDari(e.target.value)}
-                      />
+                  {selectedSurah && (
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div>
+                        <Label>Ayat Dari</Label>
+                        <Input
+                          type="number"
+                          value={ayatDari}
+                          onChange={(e) => setAyatDari(e.target.value)}
+                          min={1}
+                        />
+                      </div>
+
+                      <div>
+                        <Label>Sampai</Label>
+                        <Input
+                          type="number"
+                          value={ayatSampai}
+                          onChange={(e) => setAyatSampai(e.target.value)}
+                          min={1}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <Label>Sampai</Label>
-                      <Input
-                        type="number"
-                        value={ayatSampai}
-                        onChange={(e) => setAyatSampai(e.target.value)}
-                      />
-                    </div>
-                  </div>
+                  )}
                 </>
               )}
 
