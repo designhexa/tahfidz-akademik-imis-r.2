@@ -28,9 +28,10 @@ import {
 } from "@/lib/tilawah-data";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
-import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { surahList } from "@/lib/quran-data";
+import { getPageSummaryByJuz, getPageCountForJuz } from "@/lib/mushaf-madinah";
+import { JuzSelector } from "@/components/JuzSelector";
+import { Info } from "lucide-react";
 
 interface TilawahSetoranFormProps {
   open: boolean;
@@ -53,13 +54,6 @@ export const TilawahSetoranForm = ({
   // --- Form States ---
   const [selectedSantri, setSelectedSantri] = useState("");
   const [selectedJilid, setSelectedJilid] = useState("");
-  const [selectedJuz, setSelectedJuz] = useState("");
-  const [alquranMode, setAlquranMode] = useState<"juz" | "surah">("juz");
-  const [selectedSurah, setSelectedSurah] = useState("");
-  const [ayatDari, setAyatDari] = useState("");
-  const [ayatSampai, setAyatSampai] = useState("");
-  const [halamanDari, setHalamanDari] = useState("");
-  const [halamanSampai, setHalamanSampai] = useState("");
   const [scores, setScores] = useState({
     tartil: "",
     fashohah: "",
@@ -117,7 +111,10 @@ export const TilawahSetoranForm = ({
       id: `set-${Date.now()}`,
       idSantri: selectedSantri,
       jilid: parseInt(selectedJilid),
-      juz: selectedJilid === "7" ? parseInt(selectedJuz) : null,
+      juz: selectedJilid === "7" ? parseInt(juz) : null,
+      surah: selectedJilid === "7" && inputMode === "surah" ? parseInt(surah) : null,
+      ayatDari: selectedJilid === "7" && inputMode === "surah" ? parseInt(ayatDari) : null,
+      ayatSampai: selectedJilid === "7" && inputMode === "surah" ? parseInt(ayatSampai) : null,
       halamanDari: parseInt(halamanDari),
       halamanSampai: parseInt(halamanSampai),
       status,
@@ -131,8 +128,49 @@ export const TilawahSetoranForm = ({
     onOpenChange(false);
   };
 
-  if (!date) return null;
+  const [juz, setJuz] = useState("");
+  const [surah, setSurah] = useState("");
+  const [inputMode, setInputMode] = useState<"surah" | "halaman">("surah");
 
+  const [halamanDari, setHalamanDari] = useState("");
+  const [halamanSampai, setHalamanSampai] = useState("");
+  const [ayatDari, setAyatDari] = useState("");
+  const [ayatSampai, setAyatSampai] = useState("");
+
+  const surahByJuz = surahList.filter(
+    (s) => s.juzStart <= Number(juz) && s.juzEnd >= Number(juz)
+  );
+
+  const selectedSurah = surahByJuz.find(
+    (s) => s.number === Number(surah)
+  );
+
+  const pageInfo =
+    inputMode === "halaman" &&
+    halamanDari
+      ? getPageSummaryByJuz(Number(juz), Number(halamanDari))
+      : null;
+
+  const surahByJuz = surahList.filter(
+    (s) => s.juzStart <= Number(juz) && s.juzEnd >= Number(juz)
+  );
+
+  const selectedSurahObj = surahByJuz.find(
+    (s) => s.number === Number(surah)
+  );
+
+  const maxHalaman = juz
+    ? getPageCountForJuz(Number(juz))
+    : 0;
+
+  const pageInfo =
+    inputMode === "halaman" &&
+    halamanDari
+      ? getPageSummaryByJuz(Number(juz), Number(halamanDari))
+      : null;
+
+  if (!date) return null;
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -224,114 +262,134 @@ export const TilawahSetoranForm = ({
           {/* AL-QUR'AN */}
           {/* ===================== */}
           {selectedJilid === "7" && (
-            <div className="space-y-4">
+          <>
+            {/* ================= JUZ SELECTOR ================= */}
+            <JuzSelector
+              value={juz}
+              onValueChange={(v) => {
+                setJuz(v);
+                setSurah("");
+                setHalamanDari("");
+                setHalamanSampai("");
+                setInputMode("surah");
+              }}
+              required
+            />
 
-              {/* ================= TAB MODE ================= */}
-              <Tabs value={alquranMode} onValueChange={(v: any) => setAlquranMode(v)}>
-                <TabsList className="grid grid-cols-2 w-full">
-                  <TabsTrigger value="juz">Per Juz</TabsTrigger>
-                  <TabsTrigger value="surah">Per Surah</TabsTrigger>
-                </TabsList>
-              </Tabs>
+            {/* ================= TOGGLE MODE ================= */}
+            {juz && (
+              <div className="flex gap-2 mt-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={inputMode === "surah" ? "default" : "outline"}
+                  className="h-7 text-xs flex-1"
+                  onClick={() => setInputMode("surah")}
+                >
+                  Pilih Surah & Ayat
+                </Button>
 
-              {/* ================= MODE JUZ ================= */}
-              {alquranMode === "juz" && (
-                <>
-                  <div className="space-y-2">
-                    <Label>Pilih Juz</Label>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={inputMode === "halaman" ? "default" : "outline"}
+                  className="h-7 text-xs flex-1"
+                  onClick={() => setInputMode("halaman")}
+                >
+                  Pilih Halaman
+                </Button>
+              </div>
+            )}
 
-                    <div className="grid grid-cols-6 gap-2">
-                      {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
-                        <Button
-                          key={juz}
-                          type="button"
-                          variant={selectedJuz === String(juz) ? "default" : "outline"}
-                          className="h-10 text-sm"
-                          onClick={() => setSelectedJuz(String(juz))}
-                        >
-                          {juz}
-                        </Button>
+            {/* ================= MODE SURAH ================= */}
+            {juz && inputMode === "surah" && (
+              <>
+                <div className="space-y-2 mt-3">
+                  <Label>Surah</Label>
+                  <Select value={surah} onValueChange={setSurah}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih surah" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {surahByJuz.map((s) => (
+                        <SelectItem key={s.number} value={String(s.number)}>
+                          {s.number}. {s.name}
+                        </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {selectedSurah && (
+                  <div className="grid grid-cols-2 gap-3 mt-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Ayat dari</Label>
+                      <Input
+                        type="number"
+                        value={ayatDari}
+                        min={1}
+                        max={selectedSurah.numberOfAyahs}
+                        onChange={(e) => setAyatDari(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label className="text-xs">Ayat sampai</Label>
+                      <Input
+                        type="number"
+                        value={ayatSampai}
+                        min={Number(ayatDari) || 1}
+                        max={selectedSurah.numberOfAyahs}
+                        onChange={(e) => setAyatSampai(e.target.value)}
+                      />
                     </div>
                   </div>
+                )}
+              </>
+            )}
 
-                  {selectedJuz && (
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div>
-                        <Label>Halaman Dari</Label>
-                        <Input
-                          type="number"
-                          value={halamanDari}
-                          onChange={(e) => setHalamanDari(e.target.value)}
-                          min={1}
-                          max={20}
-                        />
-                      </div>
-
-                      <div>
-                        <Label>Sampai</Label>
-                        <Input
-                          type="number"
-                          value={halamanSampai}
-                          onChange={(e) => setHalamanSampai(e.target.value)}
-                          min={1}
-                          max={20}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* ================= MODE SURAH ================= */}
-              {alquranMode === "surah" && (
-                <>
-                  <div className="space-y-2">
-                    <Label>Pilih Surah</Label>
-
-                    <div className="grid grid-cols-6 gap-2 max-h-64 overflow-y-auto">
-                      {Array.from({ length: 114 }, (_, i) => i + 1).map((surah) => (
-                        <Button
-                          key={surah}
-                          type="button"
-                          variant={selectedSurah === String(surah) ? "default" : "outline"}
-                          className="h-10 text-xs"
-                          onClick={() => setSelectedSurah(String(surah))}
-                        >
-                          {surah}
-                        </Button>
-                      ))}
-                    </div>
+            {/* ================= MODE HALAMAN ================= */}
+            {juz && inputMode === "halaman" && (
+              <>
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">
+                      Halaman dari (maks {maxHalaman})
+                    </Label>
+                    <Input
+                      type="number"
+                      value={halamanDari}
+                      min={1}
+                      max={maxHalaman}
+                      onChange={(e) => setHalamanDari(e.target.value)}
+                    />
                   </div>
 
-                  {selectedSurah && (
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div>
-                        <Label>Ayat Dari</Label>
-                        <Input
-                          type="number"
-                          value={ayatDari}
-                          onChange={(e) => setAyatDari(e.target.value)}
-                          min={1}
-                        />
-                      </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Halaman sampai</Label>
+                    <Input
+                      type="number"
+                      value={halamanSampai}
+                      min={Number(halamanDari) || 1}
+                      max={maxHalaman}
+                      onChange={(e) => setHalamanSampai(e.target.value)}
+                    />
+                  </div>
+                </div>
 
-                      <div>
-                        <Label>Sampai</Label>
-                        <Input
-                          type="number"
-                          value={ayatSampai}
-                          onChange={(e) => setAyatSampai(e.target.value)}
-                          min={1}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-
-            </div>
-          )}
+                {/* Info halaman otomatis */}
+                {pageInfo && (
+                  <div className="flex items-start gap-2 p-2 mt-2 bg-primary/10 rounded text-xs">
+                    <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-primary" />
+                    <span>
+                      Isi halaman: <strong>{pageInfo}</strong>
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        )}
 
         </div>
 
