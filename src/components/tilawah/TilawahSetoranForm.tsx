@@ -153,11 +153,8 @@ export const TilawahSetoranForm = ({
 
     const list = getSurahListByJuz(Number(selectedJuz));
     setSurahByJuz(list);
-    setSurah("");
-    setAyatDari("");
-    setAyatSampai("");
 
-  }, [selectedJuz]);
+  }, [selectedJuz]); // ✅
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
