@@ -107,15 +107,22 @@ export const TilawahSetoranForm = ({
   const aspekPenilaian = selectedJilid ? getAspekPenilaianByJilid(parseInt(selectedJilid)) : [];
 
   const handleProcessSubmit = () => {
-    if (
-      !selectedSantri ||
-      !selectedJilid ||
-      (selectedJilid === "7" && !selectedJuz) ||
-      !halamanDari ||
-      !halamanSampai
-    ) {
-      toast.error("Mohon lengkapi data setoran utama (Santri, Jilid, & Halaman)");
+    if (!selectedSantri || !selectedJilid) {
+      toast.error("Santri dan Jilid wajib dipilih");
       return;
+    }
+
+    if (selectedJilid === "7") {
+
+      if (alquranMode === "juz" && !selectedJuz) {
+        toast.error("Pilih Juz terlebih dahulu");
+        return;
+      }
+
+      if (alquranMode === "surah" && !surah) {
+        toast.error("Pilih Surah terlebih dahulu");
+        return;
+      }
     }
 
     // Hitung rata-rata nilai yang diisi
@@ -128,17 +135,29 @@ export const TilawahSetoranForm = ({
       id: `set-${Date.now()}`,
       idSantri: selectedSantri,
       jilid: parseInt(selectedJilid),
-      juz: selectedJilid === "7" ? parseInt(selectedJuz) : null,
-      halamanDari: parseInt(halamanDari),
-      halamanSampai: parseInt(halamanSampai),
+      juz: selectedJilid === "7" && alquranMode === "juz"
+        ? parseInt(selectedJuz)
+        : null,
+      surah: selectedJilid === "7" ? surah : null,
+      ayatDari: selectedJilid === "7" && alquranMode === "surah"
+        ? parseInt(ayatDari)
+        : null,
+      ayatSampai: selectedJilid === "7" && alquranMode === "surah"
+        ? parseInt(ayatSampai)
+        : null,
+      halamanDari: selectedJilid !== "7"
+        ? parseInt(halamanDari)
+        : null,
+      halamanSampai: selectedJilid !== "7"
+        ? parseInt(halamanSampai)
+        : null,
       status,
       nilaiRataRata: rataRata,
       catatan,
       tanggal: new Date().toISOString()
     };
-
     onSuccess(finalData);
-    toast.success("Setoran tilawah berhasil disimpan");
+    toast.success("Setoran berhasil disimpan");
     onOpenChange(false);
   };
 
@@ -262,9 +281,6 @@ export const TilawahSetoranForm = ({
                 <>
                   <div className="space-y-2">
                     <Label>Pilih Juz</Label>
-
-                    <div className="space-y-2">
-                      <Label>Pilih Juz</Label>
                       <Select value={selectedJuz} onValueChange={setSelectedJuz}>
                         <SelectTrigger>
                           <SelectValue placeholder="Pilih Juz" />
@@ -278,7 +294,6 @@ export const TilawahSetoranForm = ({
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
 
                  {selectedJuz && (
                   <div className="space-y-2 mt-4">
@@ -312,15 +327,15 @@ export const TilawahSetoranForm = ({
                     <Label>Pilih Surah</Label>
 
                     <div className="grid grid-cols-6 gap-2 max-h-64 overflow-y-auto">
-                      {Array.from({ length: 114 }, (_, i) => i + 1).map((surah) => (
+                      {Array.from({ length: 114 }, (_, i) => i + 1).map((num) => (
                         <Button
-                          key={surah}
+                          key={num}
                           type="button"
-                          variant={selectedSurah === String(surah) ? "default" : "outline"}
+                          variant={surah === String(num) ? "default" : "outline"}
                           className="h-10 text-xs"
-                          onClick={() => setSurah(String(surah))}
+                          onClick={() => setSurah(String(num))}
                         >
-                          {surah}
+                          {num}
                         </Button>
                       ))}
                     </div>
