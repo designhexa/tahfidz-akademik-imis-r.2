@@ -283,25 +283,21 @@ export const TilawahSetoranForm = ({
                 <>
                   <div className="space-y-2">
                     <Label>Pilih Juz</Label>
-                      <div className="space-y-2">
-                        <Label>Pilih Juz</Label>
-
-                        <div className="grid grid-cols-6 gap-2">
-                          {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => (
-                            <Button
-                              key={num}
-                              type="button"
-                              variant={selectedJuz === String(num) ? "default" : "outline"}
-                              className="h-10 text-xs"
-                              onClick={() => {
-                                setSelectedJuz(String(num));
-                                setSurah(""); // reset surah saat ganti juz
-                              }}
-                            >
-                              {num}
-                            </Button>
-                          ))}
-                        </div>
+                      <div className="grid grid-cols-6 gap-2">
+                        {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => (
+                          <Button
+                            key={num}
+                            type="button"
+                            variant={selectedJuz === String(num) ? "default" : "outline"}
+                            className="h-10 text-xs"
+                            onClick={() => {
+                              setSelectedJuz(String(num));
+                              setSurah(""); // reset surah saat ganti juz
+                            }}
+                          >
+                            {num}
+                          </Button>
+                        ))}
                       </div>
                     </div>
 
@@ -329,54 +325,6 @@ export const TilawahSetoranForm = ({
                 )}
                 </>
               )}
-
-              {/* ================= MODE SURAH ================= */}
-              {alquranMode === "surah" && (
-                <>
-                  <div className="space-y-2">
-                    <Label>Pilih Surah</Label>
-
-                    <div className="grid grid-cols-6 gap-2 max-h-64 overflow-y-auto">
-                      {Array.from({ length: 114 }, (_, i) => i + 1).map((num) => (
-                        <Button
-                          key={num}
-                          type="button"
-                          variant={surah === String(num) ? "default" : "outline"}
-                          className="h-10 text-xs"
-                          onClick={() => setSurah(String(num))}
-                        >
-                          {num}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {selectedSurah && (
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div>
-                        <Label>Ayat Dari</Label>
-                        <Input
-                          type="number"
-                          value={ayatDari}
-                          onChange={(e) => setAyatDari(e.target.value)}
-                          min={1}
-                        />
-                      </div>
-
-                      <div>
-                        <Label>Sampai</Label>
-                        <Input
-                          type="number"
-                          value={ayatSampai}
-                          onChange={(e) => setAyatSampai(e.target.value)}
-                          min={1}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-
             </div>
           )}
 
