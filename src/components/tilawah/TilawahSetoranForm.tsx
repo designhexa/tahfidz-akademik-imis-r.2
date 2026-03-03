@@ -132,7 +132,11 @@ export const TilawahSetoranForm = ({
   };
 
   if (!date) return null;
+<<<<<<< HEAD
+    
+=======
 
+>>>>>>> c11e06d13fb81acd1bc22d611ab60d46404da77a
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -330,9 +334,20 @@ export const TilawahSetoranForm = ({
                 </>
               )}
 
-            </div>
-          )}
-
+<<<<<<< HEAD
+                {/* Info halaman otomatis */}
+                {pageInfo && (
+                  <div className="flex items-start gap-2 p-2 mt-2 bg-primary/10 rounded text-xs">
+                    <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-primary" />
+                    <span>
+                      Isi halaman: <strong>{pageInfo}</strong>
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        )}
         </div>
 
           {/* Card Penilaian Adaptif */}
