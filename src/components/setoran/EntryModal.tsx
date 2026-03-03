@@ -125,26 +125,123 @@ export function EntryModal({
     }
 
     // Anti-duplication check
-    if (santriId && selectedSurah && inputMode === "surah") {
-      const jenisKey = activeTab === "murojaah" ? "murojaah"
-        : activeTab === "murojaah_rumah" ? "murojaah_rumah"
+    // ==============================
+    // 🔒 VALIDASI TOTAL (SURAH & HALAMAN)
+    // ==============================
+
+    if (!santriId) {
+      toast.error("Santri tidak valid");
+      return;
+    }
+
+    const jenisKey =
+      activeTab === "murojaah"
+        ? "murojaah"
+        : activeTab === "murojaah_rumah"
+        ? "murojaah_rumah"
         : subType || "setoran_hafalan";
 
-      const overlap = checkDuplicateSetoran(
-        {
-          surahNumber: Number(surah),
-          ayatDari: Number(ayatDari),
-          ayatSampai: Number(ayatSampai),
-        },
-        existingRecords,
-        santriId,
-        jenisKey
+    // 1️⃣ CONVERT INPUT → RANGE AYAT
+    let range;
+
+    if (inputMode === "surah") {
+
+      if (!surah) {
+        toast.error("Pilih surah terlebih dahulu");
+        return;
+      }
+
+      if (!ayatDari || !ayatSampai) {
+        toast.error("Isi ayat dari dan sampai");
+        return;
+      }
+
+      range = {
+        surahNumber: Number(surah),
+        ayatDari: Number(ayatDari),
+        ayatSampai: Number(ayatSampai),
+      };
+    }
+
+    if (inputMode === "halaman") {
+
+      if (!halamanDari || !halamanSampai) {
+        toast.error("Isi halaman dari dan sampai");
+        return;
+      }
+
+      const startMapping = getPageSummaryByJuz(
+        Number(juz),
+        Number(halamanDari)
       );
 
-      if (overlap) {
-        toast.error(
-          `Rentang ayat ini sudah pernah disetor (${overlap.ayatDari}–${overlap.ayatSampai}). Hapus dulu jika ingin input ulang.`
-        );
+      const endMapping = getPageSummaryByJuz(
+        Number(juz),
+        Number(halamanSampai)
+      );
+
+      if (!startMapping || !endMapping) {
+        toast.error("Mapping halaman tidak ditemukan");
+        return;
+      }
+
+      range = {
+        surahNumber: startMapping.surahNumber,
+        ayatDari: startMapping.startAyat,
+        ayatSampai: endMapping.endAyat,
+      };
+    }
+
+    if (!range) {
+      toast.error("Range tidak valid");
+      return;
+    }
+
+    // 2️⃣ CEK DUPLICATE
+    const overlap = checkDuplicateSetoran(
+      range,
+      existingRecords,
+      santriId,
+      jenisKey
+    );
+
+    if (overlap) {
+      toast.error("Sudah pernah disetor atau overlap.");
+      return;
+    }
+
+    // 3️⃣ VALIDASI URUTAN (ANTI LONCAT & ANTI MUNDUR)
+
+    const santriRecords = existingRecords
+      .filter(
+        (r) => r.santri_id === santriId && r.jenis === jenisKey
+      )
+      .sort((a, b) => {
+        if (a.surah_number !== b.surah_number) {
+          return a.surah_number - b.surah_number;
+        }
+        return a.ayat_sampai - b.ayat_sampai;
+      });
+
+    if (santriRecords.length > 0) {
+      const last = santriRecords[santriRecords.length - 1];
+
+      // ❌ Tidak boleh mundur
+      if (
+        range.surahNumber < last.surah_number ||
+        (range.surahNumber === last.surah_number &&
+          range.ayatDari <= last.ayat_sampai)
+      ) {
+        toast.error("Tidak boleh mengulang atau mundur dari hafalan terakhir.");
+        return;
+      }
+
+      // ❌ Tidak boleh loncat terlalu jauh (max 10 ayat)
+      if (
+        range.surahNumber === last.surah_number &&
+        range.ayatDari > last.ayat_sampai + 10
+      ) {
+        toast.error("Loncat terlalu jauh dari hafalan terakhir.");
         return;
       }
     }
