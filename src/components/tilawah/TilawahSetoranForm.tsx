@@ -76,17 +76,23 @@ export const TilawahSetoranForm = ({
 
   // Auto-fill jika dibuka dari halaman profil santri tertentu
   useEffect(() => {
-    if (open) {
-      if (initialSantriId) {
-        setSelectedSantri(initialSantriId);
-        // Cari jilid terakhir santri tersebut secara otomatis jika perlu
-        const santri = MOCK_SANTRI_TILAWAH.find(s => s.id === initialSantriId);
-        if (santri) setSelectedJilid(santri.jilidSaatIni.toString());
-      } else {
-        resetForm();
+    if (!open) return;
+
+    if (initialSantriId) {
+      setSelectedSantri(initialSantriId);
+
+      const santri = MOCK_SANTRI_TILAWAH.find(
+        s => s.id === initialSantriId
+      );
+
+      if (santri) {
+        setSelectedJilid(String(santri.jilidSaatIni));
       }
+    } else {
+      setSelectedSantri("");
+      setSelectedJilid("");
     }
-  }, [open, initialSantriId]);
+  }, [open]); // ❗ hanya tergantung open
 
   const resetForm = () => {
     setSelectedSantri("");
