@@ -42,6 +42,34 @@ export function getPagesForJuz(juz: number): { start: number; end: number; count
   return { start: 582, end: 604, count: 23 };
 }
 
+export function getPageMappingByJuz(
+  juz: number,
+  relativePage: number
+) {
+  const { start, end } = getPagesForJuz(juz);
+
+  const actualPage = start + (relativePage - 1);
+
+  if (actualPage < start || actualPage > end) {
+    return null;
+  }
+
+  const content = getPageContent(actualPage);
+
+  if (!content || content.length === 0) {
+    return null;
+  }
+
+  const firstAyat = content[0];
+  const lastAyat = content[content.length - 1];
+
+  return {
+    surahNumber: firstAyat.surahNumber,
+    startAyat: firstAyat.ayahNumber,
+    endAyat: lastAyat.ayahNumber,
+  };
+}
+
 export function getJuzForPage(page: number): number {
   if (page < 1) return 1;
   if (page >= 582) return 30;
