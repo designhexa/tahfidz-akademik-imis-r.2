@@ -23,24 +23,22 @@ import { toast } from "sonner";
 import { JuzSelector } from "@/components/JuzSelector";
 import { getSurahsByJuz, type Surah } from "@/lib/quran-data";
 import {
-  getPageSummaryByJuz,
   getPageCountForJuz,
   checkDuplicateSetoran,
-  getHalamanByAyat, // Pastikan fungsi ini ada di lib Anda
+  getHalamanByAyat,
+  getPageDataByJuz,
+  getAbsolutePage,
   type SetoranRecord,
 } from "@/lib/mushaf-madinah";
-import { Plus, Info, RefreshCw } from "lucide-react";
-
-type TabType = "setoran_hafalan" | "murojaah" | "tilawah" | "murojaah_rumah";
-type SubType = "setoran_hafalan" | "drill" | "tasmi" | "tilawah_harian" | "ujian_jilid";
+import { Info } from "lucide-react";
 
 interface EntryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   date: Date | null;
   santriName: string;
-  activeTab: TabType;
-  subType?: SubType;
+  activeTab: any;
+  subType?: any;
   onSave: (data: any) => void;
   existingRecords?: SetoranRecord[];
   santriId?: string;
@@ -63,9 +61,8 @@ export function EntryModal({
   const [halamanSampai, setHalamanSampai] = useState("");
   const [ayatDari, setAyatDari] = useState("1");
   const [ayatSampai, setAyatSampai] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("Lancar");
   const [catatan, setCatatan] = useState("");
-  const [jilid, setJilid] = useState("");
   const [inputMode, setInputMode] = useState<"halaman" | "surah">("surah");
 
   const surahByJuz: Surah[] = useMemo(() => {
@@ -78,204 +75,181 @@ export function EntryModal({
   }, [surah, surahByJuz]);
 
   // ==========================================
-  // 🔒 LOGIKA PENGUNCI (AUTO-SYNC)
+  // 🔒 LOGIKA OTOMATIS (SINKRONISASI)
   // ==========================================
 
-  // Efek 1: Jika Halaman berubah -> Update Surah & Ayat
+  // A. Jika Halaman berubah -> Update Surah & Ayat
   useEffect(() => {
     if (inputMode === "halaman" && juz && halamanDari) {
-      const startInfo = getPageSummaryByJuz(Number(juz), Number(halamanDari));
-      const endInfo = halamanSampai 
-        ? getPageSummaryByJuz(Number(juz), Number(halamanSampai))
-        : startInfo;
-
-      if (startInfo) {
-        setSurah(String(startInfo.surahNumber));
-        setAyatDari(String(startInfo.startAyat));
-        if (endInfo) setAyatSampai(String(endInfo.endAyat));
+      const pageData = getPageDataByJuz(Number(juz), Number(halamanDari));
+      if (pageData) {
+        setSurah(String(pageData.surahNumber));
+        setAyatDari(String(pageData.ayatStart));
+        // Jika halaman sampai kosong, samakan ayatnya
+        if (!halamanSampai) setAyatSampai(String(pageData.ayatEnd));
+      }
+      
+      if (halamanSampai) {
+        const pageEndData = getPageDataByJuz(Number(juz), Number(halamanSampai));
+        if (pageEndData) setAyatSampai(String(pageEndData.ayatEnd));
       }
     }
   }, [halamanDari, halamanSampai, juz, inputMode]);
 
-  // Efek 2: Jika Surah/Ayat berubah -> Update Halaman
+  // B. Jika Surah/Ayat berubah -> Update Halaman
   useEffect(() => {
     if (inputMode === "surah" && juz && surah && ayatDari) {
-      const hDari = getHalamanByAyat(Number(juz), Number(surah), Number(ayatDari));
-      const hSampai = ayatSampai 
-        ? getHalamanByAyat(Number(juz), Number(surah), Number(ayatSampai))
-        : hDari;
+      const absStart = getHalamanByAyat(Number(surah), Number(ayatDari));
+      if (absStart) {
+        const { start: juzStartPage } = require("@/lib/mushaf-madinah").getPagesForJuz(Number(juz));
+        setHalamanDari(String(absStart - juzStartPage + 1));
+      }
 
-      if (hDari) setHalamanDari(String(hDari));
-      if (hSampai) setHalamanSampai(String(hSampai));
+      if (ayatSampai) {
+        const absEnd = getHalamanByAyat(Number(surah), Number(ayatSampai));
+        if (absEnd) {
+          const { start: juzStartPage } = require("@/lib/mushaf-madinah").getPagesForJuz(Number(juz));
+          setHalamanSampai(String(absEnd - juzStartPage + 1));
+        }
+      }
     }
   }, [surah, ayatDari, ayatSampai, juz, inputMode]);
 
-  const pageInfoText = useMemo(() => {
-    if (!juz || !halamanDari) return "";
-    return getPageSummaryByJuz(Number(juz), Number(halamanDari))?.surahName || "";
-  }, [juz, halamanDari]);
-
-  // ==========================================
-  // LOGIK SIMPAN & VALIDASI
-  // ==========================================
-
   const handleSave = () => {
-    if (!date || !santriId) return;
-    if (!juz && !isTilawahTab) { toast.error("Pilih Juz"); return; }
-    if (!status) { toast.error("Pilih status"); return; }
-
-    const finalSurah = Number(surah);
-    const finalAyatDari = Number(ayatDari);
-    const finalAyatSampai = Number(ayatSampai);
-
-    // Validasi range dasar
-    if (finalAyatSampai < finalAyatDari) {
-      toast.error("Ayat sampai tidak boleh lebih kecil dari ayat dari");
+    if (!date || !juz || !surah || !status) {
+      toast.error("Mohon lengkapi data");
       return;
     }
 
-    const range = {
-      surahNumber: finalSurah,
-      ayatDari: finalAyatDari,
-      ayatSampai: finalAyatSampai,
-    };
-
-    const jenisKey = activeTab === "murojaah" ? "murojaah" : activeTab === "murojaah_rumah" ? "murojaah_rumah" : subType || "setoran_hafalan";
-
-    // Cek Duplikat
-    if (checkDuplicateSetoran(range, existingRecords, santriId, jenisKey)) {
-      toast.error("Hafalan ini sudah pernah disetor/overlap");
-      return;
-    }
-
-    onSave({
+    const payload = {
       tanggal: date,
-      jenis: jenisKey,
+      jenis: activeTab === "murojaah" ? "murojaah" : subType || activeTab,
       juz: Number(juz),
       surah: selectedSurah?.name || "",
-      surahNumber: finalSurah,
-      halaman: `${halamanDari}${halamanSampai ? '–'+halamanSampai : ''}`,
-      ayat: `${finalAyatDari}-${finalAyatSampai}`,
-      ayatDari: finalAyatDari,
-      ayatSampai: finalAyatSampai,
+      surahNumber: Number(surah),
+      halaman: `${halamanDari}${halamanSampai ? '-' + halamanSampai : ''}`,
+      ayatDari: Number(ayatDari),
+      ayatSampai: Number(ayatSampai),
       status,
-      catatan,
-      jilid: jilid || undefined,
-    });
+      catatan
+    };
 
+    // Cek Duplikat menggunakan library
+    const overlap = checkDuplicateSetoran(payload, existingRecords, santriId, payload.jenis);
+    if (overlap) {
+      toast.error(`Data tumpang tindih dengan setoran: ${overlap.surahNumber} ayat ${overlap.ayatDari}-${overlap.ayatSampai}`);
+      return;
+    }
+
+    onSave(payload);
     onOpenChange(false);
-    toast.success("Data berhasil disimpan!");
   };
-
-  const isTilawahTab = activeTab === "tilawah";
-  const isTilawahQuran = isTilawahTab && jilid === "quran";
-  const maxHalaman = juz ? getPageCountForJuz(Number(juz)) : 20;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{activeTab.replace('_', ' ').toUpperCase()}</DialogTitle>
-          <DialogDescription>{santriName} • {format(date, "d MMMM yyyy", { locale: localeId })}</DialogDescription>
+          <DialogTitle>Tambah Catatan</DialogTitle>
+          <DialogDescription>{santriName} • {date && format(date, "dd MMMM yyyy", { locale: localeId })}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 pt-4">
+        <div className="space-y-4 pt-2">
           <JuzSelector value={juz} onValueChange={(v) => { setJuz(v); setSurah(""); }} />
 
           {juz && (
-            <div className="flex bg-muted p-1 rounded-lg">
+            <div className="flex bg-muted p-1 rounded-md">
               <Button 
                 variant={inputMode === "surah" ? "secondary" : "ghost"} 
-                className="flex-1 text-xs h-8" 
+                className="flex-1 h-8 text-xs" 
                 onClick={() => setInputMode("surah")}
-              >Input Surah</Button>
+              >Input Surah & Ayat</Button>
               <Button 
                 variant={inputMode === "halaman" ? "secondary" : "ghost"} 
-                className="flex-1 text-xs h-8" 
+                className="flex-1 h-8 text-xs" 
                 onClick={() => setInputMode("halaman")}
               >Input Halaman</Button>
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
               <Label>Halaman Dari</Label>
               <Input 
                 type="number" 
                 value={halamanDari} 
                 onChange={(e) => setHalamanDari(e.target.value)}
                 disabled={inputMode === "surah"} 
-                placeholder="Hal"
+                placeholder="1-20"
               />
             </div>
-            <div className="space-y-2">
-              <Label>Halaman Sampai</Label>
+            <div className="space-y-1.5">
+              <Label>Sampai (Opsional)</Label>
               <Input 
                 type="number" 
                 value={halamanSampai} 
                 onChange={(e) => setHalamanSampai(e.target.value)}
-                disabled={inputMode === "surah"}
-                placeholder="Hal"
+                disabled={inputMode === "surah"} 
+                placeholder="20"
               />
             </div>
           </div>
 
-          <div className="space-y-4 border-t pt-4">
-            <div className="space-y-2">
+          <div className="p-3 border rounded-lg bg-slate-50/50 space-y-3">
+            <div className="space-y-1.5">
               <Label>Surah</Label>
               <Select value={surah} onValueChange={setSurah} disabled={inputMode === "halaman"}>
-                <SelectTrigger><SelectValue placeholder="Pilih Surah" /></SelectTrigger>
+                <SelectTrigger className="bg-white"><SelectValue placeholder="Pilih Surah" /></SelectTrigger>
                 <SelectContent>
                   {surahByJuz.map(s => <SelectItem key={s.number} value={String(s.number)}>{s.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
                 <Label>Ayat Dari</Label>
                 <Input 
                   type="number" 
                   value={ayatDari} 
                   onChange={(e) => setAyatDari(e.target.value)}
                   disabled={inputMode === "halaman"}
+                  className="bg-white"
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label>Ayat Sampai</Label>
                 <Input 
                   type="number" 
                   value={ayatSampai} 
                   onChange={(e) => setAyatSampai(e.target.value)}
                   disabled={inputMode === "halaman"}
+                  className="bg-white"
                 />
               </div>
             </div>
           </div>
 
-          {inputMode === "halaman" && pageInfoText && (
-            <div className="flex items-center gap-2 text-xs bg-blue-50 text-blue-700 p-2 rounded">
-              <Info className="w-4 h-4" />
-              Auto-detect: Surah {pageInfoText}
-            </div>
-          )}
-
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label>Status</Label>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger><SelectValue placeholder="Pilih Status" /></SelectTrigger>
+              <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {["Lancar", "Ulangi", "Sakit", "Izin"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label>Catatan</Label>
-            <Textarea value={catatan} onChange={(e) => setCatatan(e.target.value)} placeholder="Catatan perkembangan..." />
+            <Textarea 
+              value={catatan} 
+              onChange={(e) => setCatatan(e.target.value)} 
+              placeholder="Tambahkan catatan jika perlu..." 
+              className="h-20"
+            />
           </div>
 
-          <Button onClick={handleSave} className="w-full">Simpan Setoran</Button>
+          <Button onClick={handleSave} className="w-full">Simpan Data</Button>
         </div>
       </DialogContent>
     </Dialog>
