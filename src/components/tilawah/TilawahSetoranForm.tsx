@@ -208,6 +208,7 @@ export const TilawahSetoranForm = ({
               </SelectContent>
             </Select>
           </div>
+        </div>
 
           <div className="grid gap-4">
 
@@ -267,68 +268,64 @@ export const TilawahSetoranForm = ({
           {/* ===================== */}
           {/* AL-QUR'AN */}
           {/* ===================== */}
-          {selectedJilid === "7" && (
-            <div className="space-y-4">
+          {alquranMode === "juz" && (
+            <>
+              <div className="space-y-2">
+                <Label>Pilih Juz</Label>
 
-              {/* ================= TAB MODE ================= */}
-              <Tabs value={alquranMode} onValueChange={(v: any) => setAlquranMode(v)}>
-                <TabsList className="grid grid-cols-2 w-full">
-                  <TabsTrigger value="juz">Per Juz</TabsTrigger>
-                  <TabsTrigger value="surah">Per Surah</TabsTrigger>
-                </TabsList>
-              </Tabs>
+                <Select
+                  value={selectedJuz}
+                  onValueChange={(value) => {
+                    setSelectedJuz(value);
+                    setSurah(""); // reset surah saat ganti juz
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih Juz" />
+                  </SelectTrigger>
 
-              {/* ================= MODE JUZ ================= */}
-              {alquranMode === "juz" && (
-                <>
-                  <div className="space-y-2">
-                    <Label>Pilih Juz</Label>
-                      <div className="grid grid-cols-6 gap-2">
-                        {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => (
-                          <Button
-                            key={num}
-                            type="button"
-                            variant={selectedJuz === String(num) ? "default" : "outline"}
-                            className="h-10 text-xs"
-                            onClick={() => {
-                              setSelectedJuz(String(num));
-                              setSurah(""); // reset surah saat ganti juz
-                            }}
-                          >
-                            {num}
-                          </Button>
-                        ))}
-                      </div>
+                  {/* 👇 ini yang dibuat grid */}
+                  <SelectContent>
+                    <div className="grid grid-cols-6 gap-2 p-2">
+                      {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => (
+                        <SelectItem
+                          key={num}
+                          value={String(num)}
+                          className="justify-center text-center"
+                        >
+                          {num}
+                        </SelectItem>
+                      ))}
                     </div>
+                  </SelectContent>
+                </Select>
+              </div>
 
-                 {selectedJuz && (
-                  <div className="space-y-2 mt-4">
-                    <Label>Pilih Surah (dalam Juz ini)</Label>
+              {/* Surah muncul setelah pilih juz */}
+              {selectedJuz && (
+                <div className="space-y-2 mt-4">
+                  <Label>Pilih Surah (dalam Juz ini)</Label>
 
-                    <Select
-                      value={surah}
-                      onValueChange={setSurah}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih Surah" />
-                      </SelectTrigger>
+                  <Select
+                    value={surah}
+                    onValueChange={setSurah}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih Surah" />
+                    </SelectTrigger>
 
-                      <SelectContent>
-                        {surahByJuz.map((s) => (
-                          <SelectItem key={s.number} value={String(s.number)}>
-                            {s.number}. {s.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-                </>
+                    <SelectContent>
+                      {surahByJuz.map((s) => (
+                        <SelectItem key={s.number} value={String(s.number)}>
+                          {s.number}. {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               )}
-            </div>
+            </>
           )}
-
-        </div>
 
           {/* Card Penilaian Adaptif */}
           <Card className="bg-muted/30">
