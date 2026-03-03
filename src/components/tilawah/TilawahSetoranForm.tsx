@@ -58,7 +58,6 @@ export const TilawahSetoranForm = ({
   const [inputMode, setInputMode] = useState<"surah" | "halaman">("surah");
 
   const [surah, setSurah] = useState("");
-  const [selectedSurah, setSelectedSurah] = useState<any>(null);
   const [surahByJuz, setSurahByJuz] = useState<any[]>([]);
   const [ayatDari, setAyatDari] = useState("");
   const [ayatSampai, setAyatSampai] = useState("");
@@ -139,33 +138,20 @@ export const TilawahSetoranForm = ({
 
   if (!date) return null;
 
+  const selectedSurah = surahByJuz.find(
+    (s) => String(s.number) === surah
+  );
+
   useEffect(() => {
     if (!selectedJuz) return;
 
     const list = getSurahListByJuz(Number(selectedJuz));
     setSurahByJuz(list);
-
-    // reset pilihan lama
     setSurah("");
-    setSelectedSurah(null);
     setAyatDari("");
     setAyatSampai("");
 
   }, [selectedJuz]);
-
-  useEffect(() => {
-    if (!surah) {
-      setSelectedSurah(null);
-      return;
-    }
-
-    const found = surahByJuz.find(
-      (s) => String(s.number) === surah
-    );
-
-    setSelectedSurah(found || null);
-
-  }, [surah, surahByJuz]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -209,7 +195,7 @@ export const TilawahSetoranForm = ({
               onValueChange={(value) => {
                 setSelectedJilid(value);
                 setSelectedJuz("");
-                setSelectedSurah("");
+                setSurah("");
                 setHalamanDari("");
                 setHalamanSampai("");
                 setAyatDari("");
@@ -296,17 +282,17 @@ export const TilawahSetoranForm = ({
                     <Label>Pilih Surah (dalam Juz ini)</Label>
 
                     <Select
-                      value={selectedSurah}
-                      onValueChange={setSelectedSurah}
+                      value={surah}
+                      onValueChange={setSurah}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih Surah" />
                       </SelectTrigger>
 
                       <SelectContent>
-                        {getSurahsInJuz(Number(selectedJuz)).map((surah) => (
-                          <SelectItem key={surah} value={String(surah)}>
-                            Surah {surah}
+                        {surahByJuz.map((s) => (
+                          <SelectItem key={s.number} value={String(s.number)}>
+                            {s.number}. {s.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -329,7 +315,7 @@ export const TilawahSetoranForm = ({
                           type="button"
                           variant={selectedSurah === String(surah) ? "default" : "outline"}
                           className="h-10 text-xs"
-                          onClick={() => setSelectedSurah(String(surah))}
+                          onClick={() => setSurah(String(surah))}
                         >
                           {surah}
                         </Button>
