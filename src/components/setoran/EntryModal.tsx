@@ -72,6 +72,7 @@ export function EntryModal({
   const [catatan, setCatatan] = useState("");
   const [jilid, setJilid] = useState("");
   const [inputMode, setInputMode] = useState<"halaman" | "surah">("surah");
+  
 
   const surahByJuz: Surah[] = useMemo(() => {
     if (!juz) return [];
