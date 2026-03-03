@@ -334,36 +334,6 @@ function _generateApproxContent(page: number): MushafPageContent[] {
 
 // ============ Public API ============
 
-export interface PageMapping {
-  surahNumber: number;
-  surahName: string;
-  startAyat: number;
-  endAyat: number;
-}
-
-/**
- * Get structured page mapping (for logic usage).
- */
-export function getPageMappingByJuz(
-  juz: number,
-  relativePageInJuz: number
-): PageMapping | null {
-
-  const absPage = getAbsolutePage(juz, relativePageInJuz);
-  const content = getPageContent(absPage);
-
-  if (!content.length) return null;
-
-  const first = content[0];
-  const last = content[content.length - 1];
-
-  return {
-    surahNumber: first.surahNumber,
-    surahName: first.surahName,
-    startAyat: first.ayatStart,
-    endAyat: last.ayatEnd,
-  };
-}
 
 /**
  * Get content (surah & ayat info) for a specific Mushaf page.
