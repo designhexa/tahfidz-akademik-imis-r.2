@@ -165,12 +165,15 @@ export const TilawahSetoranForm = ({
   );
 
   useEffect(() => {
-    if (!selectedJuz) return;
+    if (!selectedJuz) {
+      setSurahByJuz([]);
+      return;
+    }
 
     const list = getSurahListByJuz(Number(selectedJuz));
     setSurahByJuz(list);
 
-  }, [selectedJuz]); // ✅
+  }, [selectedJuz]);
 
   if (!date) return null;
 
@@ -280,18 +283,26 @@ export const TilawahSetoranForm = ({
                 <>
                   <div className="space-y-2">
                     <Label>Pilih Juz</Label>
-                      <Select value={selectedJuz} onValueChange={setSelectedJuz}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Pilih Juz" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
-                            <SelectItem key={juz} value={String(juz)}>
-                              Juz {juz}
-                            </SelectItem>
+                      <div className="space-y-2">
+                        <Label>Pilih Juz</Label>
+
+                        <div className="grid grid-cols-6 gap-2">
+                          {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => (
+                            <Button
+                              key={num}
+                              type="button"
+                              variant={selectedJuz === String(num) ? "default" : "outline"}
+                              className="h-10 text-xs"
+                              onClick={() => {
+                                setSelectedJuz(String(num));
+                                setSurah(""); // reset surah saat ganti juz
+                              }}
+                            >
+                              {num}
+                            </Button>
                           ))}
-                        </SelectContent>
-                      </Select>
+                        </div>
+                      </div>
                     </div>
 
                  {selectedJuz && (
