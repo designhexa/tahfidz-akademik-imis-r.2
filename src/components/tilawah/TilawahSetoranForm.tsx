@@ -55,7 +55,6 @@ export const TilawahSetoranForm = ({
 
   const [alquranMode, setAlquranMode] = useState<"juz" | "surah">("juz");
   const [selectedJuz, setSelectedJuz] = useState("");
-  const [inputMode, setInputMode] = useState<"surah" | "halaman">("surah");
 
   const [surah, setSurah] = useState("");
   const [surahByJuz, setSurahByJuz] = useState<any[]>([]);
@@ -161,8 +160,6 @@ export const TilawahSetoranForm = ({
     onOpenChange(false);
   };
 
-  if (!date) return null;
-
   const selectedSurah = surahByJuz.find(
     (s) => String(s.number) === surah
   );
@@ -174,6 +171,8 @@ export const TilawahSetoranForm = ({
     setSurahByJuz(list);
 
   }, [selectedJuz]); // ✅
+
+  if (!date) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
