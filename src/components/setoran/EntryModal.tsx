@@ -23,7 +23,13 @@ import { toast } from "sonner";
 import { JuzSelector } from "@/components/JuzSelector";
 import { getSurahsByJuz, type Surah } from "@/lib/quran-data";
 import { getHalamanPerJuz } from "@/lib/quran-exam-generator";
-import { Plus } from "lucide-react";
+import {
+  getPageSummaryByJuz,
+  getPageCountForJuz,
+  checkDuplicateSetoran,
+  type SetoranRecord,
+} from "@/lib/mushaf-madinah";
+import { Plus, Info } from "lucide-react";
 
 type TabType = "setoran_hafalan" | "murojaah" | "tilawah" | "murojaah_rumah";
 type SubType =
@@ -41,6 +47,8 @@ interface EntryModalProps {
   activeTab: TabType;
   subType?: SubType;
   onSave: (data: any) => void;
+  existingRecords?: SetoranRecord[];
+  santriId?: string;
 }
 
 export function EntryModal({
@@ -51,6 +59,8 @@ export function EntryModal({
   activeTab,
   subType,
   onSave,
+  existingRecords = [],
+  santriId = "",
 }: EntryModalProps) {
   const [juz, setJuz] = useState("");
   const [surah, setSurah] = useState("");
@@ -60,9 +70,7 @@ export function EntryModal({
   const [ayatSampai, setAyatSampai] = useState("7");
   const [status, setStatus] = useState("");
   const [catatan, setCatatan] = useState("");
-  // Tilawah fields
   const [jilid, setJilid] = useState("");
-  // Mode: "halaman" atau "surah" untuk input per juz
   const [inputMode, setInputMode] = useState<"halaman" | "surah">("surah");
 
   const surahByJuz: Surah[] = useMemo(() => {
@@ -74,13 +82,18 @@ export function EntryModal({
     return surahByJuz.find((s) => s.number === Number(surah));
   }, [surah, surahByJuz]);
 
+  // Page info from Mushaf mapping
+  const pageInfo = useMemo(() => {
+    if (!juz || !halamanDari || inputMode !== "halaman") return "";
+    return getPageSummaryByJuz(Number(juz), Number(halamanDari));
+  }, [juz, halamanDari, inputMode]);
+
   const getTitle = () => {
     if (activeTab === "murojaah") return "Murojaah Hafalan";
     if (activeTab === "murojaah_rumah") return "Murojaah di Rumah";
     if (activeTab === "tilawah") {
       return subType === "ujian_jilid" ? "Ujian Kenaikan Jilid" : "Setoran Tilawah";
     }
-    // setoran_hafalan
     if (subType === "drill") return "Drill Hafalan";
     if (subType === "tasmi") return "Ujian Tasmi'";
     return "Setoran Hafalan";
@@ -98,7 +111,8 @@ export function EntryModal({
 
   const isTilawahTab = activeTab === "tilawah";
   const isTilawahQuran = isTilawahTab && jilid === "quran";
-  const maxHalaman = juz ? getHalamanPerJuz(Number(juz)) : 20;
+  const maxHalaman = juz ? getPageCountForJuz(Number(juz)) : 20;
+
   const handleSave = () => {
     if (!date) return;
     if (!isTilawahTab && !juz) {
@@ -108,6 +122,31 @@ export function EntryModal({
     if (!status) {
       toast.error("Pilih status terlebih dahulu");
       return;
+    }
+
+    // Anti-duplication check
+    if (santriId && selectedSurah && inputMode === "surah") {
+      const jenisKey = activeTab === "murojaah" ? "murojaah"
+        : activeTab === "murojaah_rumah" ? "murojaah_rumah"
+        : subType || "setoran_hafalan";
+
+      const overlap = checkDuplicateSetoran(
+        {
+          surahNumber: Number(surah),
+          ayatDari: Number(ayatDari),
+          ayatSampai: Number(ayatSampai),
+        },
+        existingRecords,
+        santriId,
+        jenisKey
+      );
+
+      if (overlap) {
+        toast.error(
+          `Rentang ayat ini sudah pernah disetor (${overlap.ayatDari}–${overlap.ayatSampai}). Hapus dulu jika ingin input ulang.`
+        );
+        return;
+      }
     }
 
     const jenisMap: Record<string, string> = {
@@ -128,11 +167,15 @@ export function EntryModal({
           : jenisMap[subType || "setoran_hafalan"] || activeTab,
       juz: juz ? Number(juz) : undefined,
       surah: selectedSurah?.name || surah,
+      surahNumber: surah ? Number(surah) : undefined,
       halaman: halamanDari && halamanSampai ? `${halamanDari}–${halamanSampai}` : halamanDari || undefined,
       ayat: ayatDari && ayatSampai ? `${ayatDari}-${ayatSampai}` : undefined,
+      ayatDari: Number(ayatDari),
+      ayatSampai: Number(ayatSampai),
       status,
       catatan,
       jilid: jilid || undefined,
+      pageInfo: pageInfo || undefined,
     });
 
     // Reset
@@ -164,7 +207,6 @@ export function EntryModal({
         </DialogHeader>
 
         <div className="space-y-4 pt-2">
-          {/* Juz (for non-tilawah, or tilawah with Al-Qur'an) */}
           {(!isTilawahTab || isTilawahQuran) && (
             <>
               {isTilawahTab && (
@@ -260,28 +302,38 @@ export function EntryModal({
 
               {/* Mode Halaman */}
               {juz && inputMode === "halaman" && (
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <Label className="text-xs">Halaman dari (maks {maxHalaman})</Label>
-                    <Input
-                      type="number"
-                      value={halamanDari}
-                      min={1}
-                      max={maxHalaman}
-                      onChange={(e) => setHalamanDari(e.target.value)}
-                    />
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Halaman dari (maks {maxHalaman})</Label>
+                      <Input
+                        type="number"
+                        value={halamanDari}
+                        min={1}
+                        max={maxHalaman}
+                        onChange={(e) => setHalamanDari(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Halaman sampai</Label>
+                      <Input
+                        type="number"
+                        value={halamanSampai}
+                        min={Number(halamanDari) || 1}
+                        max={maxHalaman}
+                        onChange={(e) => setHalamanSampai(e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Halaman sampai</Label>
-                    <Input
-                      type="number"
-                      value={halamanSampai}
-                      min={Number(halamanDari) || 1}
-                      max={maxHalaman}
-                      onChange={(e) => setHalamanSampai(e.target.value)}
-                    />
-                  </div>
-                </div>
+
+                  {/* Auto-detect surah/ayat info from page */}
+                  {pageInfo && (
+                    <div className="flex items-start gap-2 p-2 bg-primary/10 rounded text-xs text-foreground">
+                      <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-primary" />
+                      <span>Isi halaman: <strong>{pageInfo}</strong></span>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}

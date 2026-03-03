@@ -631,6 +631,7 @@ const SetoranHafalan = () => {
           date={modalDate}
           santriName={santriData?.nama || ""}
           onSuccess={() => {}}
+          drillHistory={[]}
         />
 
         <TasmiForm1Juz 
