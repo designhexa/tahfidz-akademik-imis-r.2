@@ -53,13 +53,20 @@ export const TilawahSetoranForm = ({
   // --- Form States ---
   const [selectedSantri, setSelectedSantri] = useState("");
   const [selectedJilid, setSelectedJilid] = useState("");
-  const [selectedJuz, setSelectedJuz] = useState("");
+
   const [alquranMode, setAlquranMode] = useState<"juz" | "surah">("juz");
-  const [selectedSurah, setSelectedSurah] = useState("");
+  const [selectedJuz, setSelectedJuz] = useState("");
+  const [inputMode, setInputMode] = useState<"surah" | "halaman">("surah");
+
+  const [surah, setSurah] = useState("");
+  const [selectedSurah, setSelectedSurah] = useState<any>(null);
+
   const [ayatDari, setAyatDari] = useState("");
   const [ayatSampai, setAyatSampai] = useState("");
+
   const [halamanDari, setHalamanDari] = useState("");
   const [halamanSampai, setHalamanSampai] = useState("");
+
   const [scores, setScores] = useState({
     tartil: "",
     fashohah: "",

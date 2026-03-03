@@ -163,6 +163,13 @@ export function EntryModal({
       };
     }
 
+    if (inputMode === "surah") {
+      if (Number(ayatSampai) < Number(ayatDari)) {
+        toast.error("Ayat sampai tidak boleh lebih kecil dari ayat dari");
+        return;
+      }
+    }
+
     if (inputMode === "halaman") {
 
       if (!halamanDari || !halamanSampai) {
@@ -170,12 +177,12 @@ export function EntryModal({
         return;
       }
 
-      const startMapping = getPageSummaryByJuz(
+      const startMapping = getPageMappingByJuz(
         Number(juz),
         Number(halamanDari)
       );
 
-      const endMapping = getPageSummaryByJuz(
+      const endMapping = getPageMappingByJuz(
         Number(juz),
         Number(halamanSampai)
       );
@@ -190,6 +197,23 @@ export function EntryModal({
         ayatDari: startMapping.startAyat,
         ayatSampai: endMapping.endAyat,
       };
+      
+      // 🔒 sinkronkan ke state supaya tidak mismatch
+        setSurah(String(startMapping.surahNumber));
+        setAyatDari(String(startMapping.startAyat));
+        setAyatSampai(String(endMapping.endAyat));
+    }
+
+    if (inputMode === "halaman") {
+      if (Number(halamanSampai) < Number(halamanDari)) {
+        toast.error("Halaman sampai tidak boleh lebih kecil dari halaman dari");
+        return;
+      }
+
+      if (Number(halamanSampai) > maxHalaman) {
+        toast.error("Halaman melebihi batas juz");
+        return;
+      }
     }
 
     if (!range) {
@@ -208,42 +232,6 @@ export function EntryModal({
     if (overlap) {
       toast.error("Sudah pernah disetor atau overlap.");
       return;
-    }
-
-    // 3️⃣ VALIDASI URUTAN (ANTI LONCAT & ANTI MUNDUR)
-
-    const santriRecords = existingRecords
-      .filter(
-        (r) => r.santri_id === santriId && r.jenis === jenisKey
-      )
-      .sort((a, b) => {
-        if (a.surah_number !== b.surah_number) {
-          return a.surah_number - b.surah_number;
-        }
-        return a.ayat_sampai - b.ayat_sampai;
-      });
-
-    if (santriRecords.length > 0) {
-      const last = santriRecords[santriRecords.length - 1];
-
-      // ❌ Tidak boleh mundur
-      if (
-        range.surahNumber < last.surah_number ||
-        (range.surahNumber === last.surah_number &&
-          range.ayatDari <= last.ayat_sampai)
-      ) {
-        toast.error("Tidak boleh mengulang atau mundur dari hafalan terakhir.");
-        return;
-      }
-
-      // ❌ Tidak boleh loncat terlalu jauh (max 10 ayat)
-      if (
-        range.surahNumber === last.surah_number &&
-        range.ayatDari > last.ayat_sampai + 10
-      ) {
-        toast.error("Loncat terlalu jauh dari hafalan terakhir.");
-        return;
-      }
     }
 
     const jenisMap: Record<string, string> = {
@@ -325,7 +313,21 @@ export function EntryModal({
                 </div>
               )}
 
-              <JuzSelector value={juz} onValueChange={(v) => { setJuz(v); setSurah(""); setHalamanDari(""); setHalamanSampai(""); }} required />
+              <JuzSelector
+                value={juz}
+                onValueChange={(v) => {
+                  setJuz(v);
+
+                  // 🔒 reset total
+                  setSurah("");
+                  setAyatDari("1");
+                  setAyatSampai("7");
+                  setHalamanDari("");
+                  setHalamanSampai("");
+                  setInputMode("surah");
+                }}
+                required
+              />
 
               {/* Toggle halaman/surah mode */}
               {juz && (
@@ -335,7 +337,11 @@ export function EntryModal({
                     size="sm"
                     variant={inputMode === "surah" ? "default" : "outline"}
                     className="h-7 text-xs flex-1"
-                    onClick={() => setInputMode("surah")}
+                    onClick={() => {
+                      setInputMode("surah");
+                      setHalamanDari("");
+                      setHalamanSampai("");
+                    }}
                   >
                     Pilih Surah & Ayat
                   </Button>
@@ -344,7 +350,12 @@ export function EntryModal({
                     size="sm"
                     variant={inputMode === "halaman" ? "default" : "outline"}
                     className="h-7 text-xs flex-1"
-                    onClick={() => setInputMode("halaman")}
+                    onClick={() => {
+                      setInputMode("halaman");
+                      setSurah("");
+                      setAyatDari("1");
+                      setAyatSampai("7");
+                    }}
                   >
                     Pilih Halaman
                   </Button>
@@ -356,7 +367,11 @@ export function EntryModal({
                 <>
                   <div className="space-y-2">
                     <Label>Surah</Label>
-                    <Select value={surah} onValueChange={setSurah}>
+                    <Select
+                      value={surah}
+                      onValueChange={setSurah}
+                      disabled={inputMode === "halaman"}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih surah" />
                       </SelectTrigger>
@@ -389,7 +404,12 @@ export function EntryModal({
                           value={ayatSampai}
                           min={Number(ayatDari)}
                           max={selectedSurah.numberOfAyahs}
-                          onChange={(e) => setAyatSampai(e.target.value)}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            if (val >= Number(ayatDari)) {
+                              setAyatSampai(e.target.value);
+                            }
+                          }}
                         />
                       </div>
                     </div>
