@@ -372,6 +372,29 @@ export function getPageSummaryByJuz(juz: number, relativePageInJuz: number): str
   return getPageSummary(absPage);
 }
 
+/**
+ * Mencari nomor halaman (absolut) berdasarkan Surah dan Nomor Ayat.
+ */
+export function getHalamanByAyat(surahNum: number, ayatNum: number): number | null {
+  // Cari di data pemetaan yang sudah ada
+  const mapping = PAGE_MAPPINGS.find(m => 
+    m[1] === surahNum && 
+    ayatNum >= m[2] && 
+    ayatNum <= m[3]
+  );
+  
+  return mapping ? mapping[0] : null;
+}
+
+/**
+ * Mendapatkan info objek content (surahName, dll) dari Juz & Halaman Relatif
+ */
+export function getPageDataByJuz(juz: number, relativePage: number): MushafPageContent | null {
+  const absPage = getAbsolutePage(juz, relativePage);
+  const contents = getPageContent(absPage);
+  return contents.length > 0 ? contents[0] : null; // Ambil surah pertama di halaman tersebut
+}
+
 // ============ Anti-duplication ============
 
 export interface SetoranRecord {

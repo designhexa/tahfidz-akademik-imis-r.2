@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,22 +22,17 @@ import { id as localeId } from "date-fns/locale";
 import { toast } from "sonner";
 import { JuzSelector } from "@/components/JuzSelector";
 import { getSurahsByJuz, type Surah } from "@/lib/quran-data";
-import { getHalamanPerJuz } from "@/lib/quran-exam-generator";
 import {
   getPageSummaryByJuz,
   getPageCountForJuz,
   checkDuplicateSetoran,
+  getHalamanByAyat, // Pastikan fungsi ini ada di lib Anda
   type SetoranRecord,
 } from "@/lib/mushaf-madinah";
-import { Plus, Info } from "lucide-react";
+import { Plus, Info, RefreshCw } from "lucide-react";
 
 type TabType = "setoran_hafalan" | "murojaah" | "tilawah" | "murojaah_rumah";
-type SubType =
-  | "setoran_hafalan"
-  | "drill"
-  | "tasmi"
-  | "tilawah_harian"
-  | "ujian_jilid";
+type SubType = "setoran_hafalan" | "drill" | "tasmi" | "tilawah_harian" | "ujian_jilid";
 
 interface EntryModalProps {
   open: boolean;
@@ -67,7 +62,7 @@ export function EntryModal({
   const [halamanDari, setHalamanDari] = useState("");
   const [halamanSampai, setHalamanSampai] = useState("");
   const [ayatDari, setAyatDari] = useState("1");
-  const [ayatSampai, setAyatSampai] = useState("7");
+  const [ayatSampai, setAyatSampai] = useState("");
   const [status, setStatus] = useState("");
   const [catatan, setCatatan] = useState("");
   const [jilid, setJilid] = useState("");
@@ -82,433 +77,205 @@ export function EntryModal({
     return surahByJuz.find((s) => s.number === Number(surah));
   }, [surah, surahByJuz]);
 
-  // Page info from Mushaf mapping
-  const pageInfo = useMemo(() => {
-    if (!juz || !halamanDari || inputMode !== "halaman") return "";
-    return getPageSummaryByJuz(Number(juz), Number(halamanDari));
-  }, [juz, halamanDari, inputMode]);
+  // ==========================================
+  // 🔒 LOGIKA PENGUNCI (AUTO-SYNC)
+  // ==========================================
 
-  const getTitle = () => {
-    if (activeTab === "murojaah") return "Murojaah Hafalan";
-    if (activeTab === "murojaah_rumah") return "Murojaah di Rumah";
-    if (activeTab === "tilawah") {
-      return subType === "ujian_jilid" ? "Ujian Kenaikan Jilid" : "Setoran Tilawah";
-    }
-    if (subType === "drill") return "Drill Hafalan";
-    if (subType === "tasmi") return "Ujian Tasmi'";
-    return "Setoran Hafalan";
-  };
+  // Efek 1: Jika Halaman berubah -> Update Surah & Ayat
+  useEffect(() => {
+    if (inputMode === "halaman" && juz && halamanDari) {
+      const startInfo = getPageSummaryByJuz(Number(juz), Number(halamanDari));
+      const endInfo = halamanSampai 
+        ? getPageSummaryByJuz(Number(juz), Number(halamanSampai))
+        : startInfo;
 
-  const getStatusOptions = () => {
-    if (activeTab === "murojaah" || activeTab === "murojaah_rumah") {
-      return ["Lancar", "Kurang Lancar"];
+      if (startInfo) {
+        setSurah(String(startInfo.surahNumber));
+        setAyatDari(String(startInfo.startAyat));
+        if (endInfo) setAyatSampai(String(endInfo.endAyat));
+      }
     }
-    if (subType === "drill") {
-      return ["Lulus", "Mengulang"];
+  }, [halamanDari, halamanSampai, juz, inputMode]);
+
+  // Efek 2: Jika Surah/Ayat berubah -> Update Halaman
+  useEffect(() => {
+    if (inputMode === "surah" && juz && surah && ayatDari) {
+      const hDari = getHalamanByAyat(Number(juz), Number(surah), Number(ayatDari));
+      const hSampai = ayatSampai 
+        ? getHalamanByAyat(Number(juz), Number(surah), Number(ayatSampai))
+        : hDari;
+
+      if (hDari) setHalamanDari(String(hDari));
+      if (hSampai) setHalamanSampai(String(hSampai));
     }
-    return ["Lancar", "Ulangi", "Sakit", "Izin"];
+  }, [surah, ayatDari, ayatSampai, juz, inputMode]);
+
+  const pageInfoText = useMemo(() => {
+    if (!juz || !halamanDari) return "";
+    return getPageSummaryByJuz(Number(juz), Number(halamanDari))?.surahName || "";
+  }, [juz, halamanDari]);
+
+  // ==========================================
+  // LOGIK SIMPAN & VALIDASI
+  // ==========================================
+
+  const handleSave = () => {
+    if (!date || !santriId) return;
+    if (!juz && !isTilawahTab) { toast.error("Pilih Juz"); return; }
+    if (!status) { toast.error("Pilih status"); return; }
+
+    const finalSurah = Number(surah);
+    const finalAyatDari = Number(ayatDari);
+    const finalAyatSampai = Number(ayatSampai);
+
+    // Validasi range dasar
+    if (finalAyatSampai < finalAyatDari) {
+      toast.error("Ayat sampai tidak boleh lebih kecil dari ayat dari");
+      return;
+    }
+
+    const range = {
+      surahNumber: finalSurah,
+      ayatDari: finalAyatDari,
+      ayatSampai: finalAyatSampai,
+    };
+
+    const jenisKey = activeTab === "murojaah" ? "murojaah" : activeTab === "murojaah_rumah" ? "murojaah_rumah" : subType || "setoran_hafalan";
+
+    // Cek Duplikat
+    if (checkDuplicateSetoran(range, existingRecords, santriId, jenisKey)) {
+      toast.error("Hafalan ini sudah pernah disetor/overlap");
+      return;
+    }
+
+    onSave({
+      tanggal: date,
+      jenis: jenisKey,
+      juz: Number(juz),
+      surah: selectedSurah?.name || "",
+      surahNumber: finalSurah,
+      halaman: `${halamanDari}${halamanSampai ? '–'+halamanSampai : ''}`,
+      ayat: `${finalAyatDari}-${finalAyatSampai}`,
+      ayatDari: finalAyatDari,
+      ayatSampai: finalAyatSampai,
+      status,
+      catatan,
+      jilid: jilid || undefined,
+    });
+
+    onOpenChange(false);
+    toast.success("Data berhasil disimpan!");
   };
 
   const isTilawahTab = activeTab === "tilawah";
   const isTilawahQuran = isTilawahTab && jilid === "quran";
   const maxHalaman = juz ? getPageCountForJuz(Number(juz)) : 20;
 
-  const handleSave = () => {
-    if (!date) return;
-    if (!isTilawahTab && !juz) {
-      toast.error("Pilih Juz terlebih dahulu");
-      return;
-    }
-    if (!status) {
-      toast.error("Pilih status terlebih dahulu");
-      return;
-    }
-
-    // Anti-duplication check
-    // ==============================
-    // 🔒 VALIDASI TOTAL (SURAH & HALAMAN)
-    // ==============================
-
-    if (!santriId) {
-      toast.error("Santri tidak valid");
-      return;
-    }
-
-    const jenisKey =
-      activeTab === "murojaah"
-        ? "murojaah"
-        : activeTab === "murojaah_rumah"
-        ? "murojaah_rumah"
-        : subType || "setoran_hafalan";
-
-    // 1️⃣ CONVERT INPUT → RANGE AYAT
-    let range;
-
-    if (inputMode === "surah") {
-
-      if (!surah) {
-        toast.error("Pilih surah terlebih dahulu");
-        return;
-      }
-
-      if (!ayatDari || !ayatSampai) {
-        toast.error("Isi ayat dari dan sampai");
-        return;
-      }
-
-      range = {
-        surahNumber: Number(surah),
-        ayatDari: Number(ayatDari),
-        ayatSampai: Number(ayatSampai),
-      };
-    }
-
-    if (inputMode === "halaman") {
-
-      if (!halamanDari || !halamanSampai) {
-        toast.error("Isi halaman dari dan sampai");
-        return;
-      }
-
-      const startMapping = getPageSummaryByJuz(
-        Number(juz),
-        Number(halamanDari)
-      );
-
-      const endMapping = getPageSummaryByJuz(
-        Number(juz),
-        Number(halamanSampai)
-      );
-
-      if (!startMapping || !endMapping) {
-        toast.error("Mapping halaman tidak ditemukan");
-        return;
-      }
-
-      range = {
-        surahNumber: startMapping.surahNumber,
-        ayatDari: startMapping.startAyat,
-        ayatSampai: endMapping.endAyat,
-      };
-    }
-
-    if (!range) {
-      toast.error("Range tidak valid");
-      return;
-    }
-
-    // 2️⃣ CEK DUPLICATE
-    const overlap = checkDuplicateSetoran(
-      range,
-      existingRecords,
-      santriId,
-      jenisKey
-    );
-
-    if (overlap) {
-      toast.error("Sudah pernah disetor atau overlap.");
-      return;
-    }
-
-    // 3️⃣ VALIDASI URUTAN (ANTI LONCAT & ANTI MUNDUR)
-
-    const santriRecords = existingRecords
-      .filter(
-        (r) => r.santri_id === santriId && r.jenis === jenisKey
-      )
-      .sort((a, b) => {
-        if (a.surah_number !== b.surah_number) {
-          return a.surah_number - b.surah_number;
-        }
-        return a.ayat_sampai - b.ayat_sampai;
-      });
-
-    if (santriRecords.length > 0) {
-      const last = santriRecords[santriRecords.length - 1];
-
-      // ❌ Tidak boleh mundur
-      if (
-        range.surahNumber < last.surah_number ||
-        (range.surahNumber === last.surah_number &&
-          range.ayatDari <= last.ayat_sampai)
-      ) {
-        toast.error("Tidak boleh mengulang atau mundur dari hafalan terakhir.");
-        return;
-      }
-
-      // ❌ Tidak boleh loncat terlalu jauh (max 10 ayat)
-      if (
-        range.surahNumber === last.surah_number &&
-        range.ayatDari > last.ayat_sampai + 10
-      ) {
-        toast.error("Loncat terlalu jauh dari hafalan terakhir.");
-        return;
-      }
-    }
-
-    const jenisMap: Record<string, string> = {
-      setoran_hafalan: "setoran_hafalan",
-      drill: "drill",
-      tasmi: "tasmi",
-      tilawah_harian: "tilawah",
-      ujian_jilid: "ujian_jilid",
-    };
-
-    onSave({
-      tanggal: date,
-      jenis:
-        activeTab === "murojaah"
-          ? "murojaah"
-          : activeTab === "murojaah_rumah"
-          ? "murojaah_rumah"
-          : jenisMap[subType || "setoran_hafalan"] || activeTab,
-      juz: juz ? Number(juz) : undefined,
-      surah: selectedSurah?.name || surah,
-      surahNumber: surah ? Number(surah) : undefined,
-      halaman: halamanDari && halamanSampai ? `${halamanDari}–${halamanSampai}` : halamanDari || undefined,
-      ayat: ayatDari && ayatSampai ? `${ayatDari}-${ayatSampai}` : undefined,
-      ayatDari: Number(ayatDari),
-      ayatSampai: Number(ayatSampai),
-      status,
-      catatan,
-      jilid: jilid || undefined,
-      pageInfo: pageInfo || undefined,
-    });
-
-    // Reset
-    setJuz("");
-    setSurah("");
-    setHalamanDari("");
-    setHalamanSampai("");
-    setAyatDari("1");
-    setAyatSampai("7");
-    setStatus("");
-    setCatatan("");
-    setJilid("");
-    setInputMode("surah");
-    onOpenChange(false);
-    toast.success("Data berhasil disimpan!");
-  };
-
-  if (!date) return null;
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-base">{getTitle()}</DialogTitle>
-          <DialogDescription>
-            {santriName} •{" "}
-            {format(date, "EEEE, d MMMM yyyy", { locale: localeId })}
-          </DialogDescription>
+          <DialogTitle>{activeTab.replace('_', ' ').toUpperCase()}</DialogTitle>
+          <DialogDescription>{santriName} • {format(date, "d MMMM yyyy", { locale: localeId })}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 pt-2">
-          {(!isTilawahTab || isTilawahQuran) && (
-            <>
-              {isTilawahTab && (
-                <div className="space-y-2">
-                  <Label>Jilid / Al-Qur'an</Label>
-                  <Select value={jilid} onValueChange={setJilid}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih jilid" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 6 }, (_, i) => (
-                        <SelectItem key={i + 1} value={String(i + 1)}>
-                          Jilid {i + 1}
-                        </SelectItem>
-                      ))}
-                      <SelectItem value="quran">Al-Qur'an</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+        <div className="space-y-4 pt-4">
+          <JuzSelector value={juz} onValueChange={(v) => { setJuz(v); setSurah(""); }} />
 
-              <JuzSelector value={juz} onValueChange={(v) => { setJuz(v); setSurah(""); setHalamanDari(""); setHalamanSampai(""); }} required />
-
-              {/* Toggle halaman/surah mode */}
-              {juz && (
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={inputMode === "surah" ? "default" : "outline"}
-                    className="h-7 text-xs flex-1"
-                    onClick={() => setInputMode("surah")}
-                  >
-                    Pilih Surah & Ayat
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={inputMode === "halaman" ? "default" : "outline"}
-                    className="h-7 text-xs flex-1"
-                    onClick={() => setInputMode("halaman")}
-                  >
-                    Pilih Halaman
-                  </Button>
-                </div>
-              )}
-
-              {/* Mode Surah */}
-              {juz && inputMode === "surah" && (
-                <>
-                  <div className="space-y-2">
-                    <Label>Surah</Label>
-                    <Select value={surah} onValueChange={setSurah}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih surah" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {surahByJuz.map((s) => (
-                          <SelectItem key={s.number} value={String(s.number)}>
-                            {s.number}. {s.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {selectedSurah && (
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <Label className="text-xs">Ayat dari</Label>
-                        <Input
-                          type="number"
-                          value={ayatDari}
-                          min={1}
-                          max={selectedSurah.numberOfAyahs}
-                          onChange={(e) => setAyatDari(e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs">Ayat sampai</Label>
-                        <Input
-                          type="number"
-                          value={ayatSampai}
-                          min={Number(ayatDari)}
-                          max={selectedSurah.numberOfAyahs}
-                          onChange={(e) => setAyatSampai(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* Mode Halaman */}
-              {juz && inputMode === "halaman" && (
-                <>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <Label className="text-xs">Halaman dari (maks {maxHalaman})</Label>
-                      <Input
-                        type="number"
-                        value={halamanDari}
-                        min={1}
-                        max={maxHalaman}
-                        onChange={(e) => setHalamanDari(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs">Halaman sampai</Label>
-                      <Input
-                        type="number"
-                        value={halamanSampai}
-                        min={Number(halamanDari) || 1}
-                        max={maxHalaman}
-                        onChange={(e) => setHalamanSampai(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Auto-detect surah/ayat info from page */}
-                  {pageInfo && (
-                    <div className="flex items-start gap-2 p-2 bg-primary/10 rounded text-xs text-foreground">
-                      <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-primary" />
-                      <span>Isi halaman: <strong>{pageInfo}</strong></span>
-                    </div>
-                  )}
-                </>
-              )}
-            </>
+          {juz && (
+            <div className="flex bg-muted p-1 rounded-lg">
+              <Button 
+                variant={inputMode === "surah" ? "secondary" : "ghost"} 
+                className="flex-1 text-xs h-8" 
+                onClick={() => setInputMode("surah")}
+              >Input Surah</Button>
+              <Button 
+                variant={inputMode === "halaman" ? "secondary" : "ghost"} 
+                className="flex-1 text-xs h-8" 
+                onClick={() => setInputMode("halaman")}
+              >Input Halaman</Button>
+            </div>
           )}
 
-          {/* Tilawah fields (non-quran jilid) */}
-          {isTilawahTab && !isTilawahQuran && (
-            <>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Halaman Dari</Label>
+              <Input 
+                type="number" 
+                value={halamanDari} 
+                onChange={(e) => setHalamanDari(e.target.value)}
+                disabled={inputMode === "surah"} 
+                placeholder="Hal"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Halaman Sampai</Label>
+              <Input 
+                type="number" 
+                value={halamanSampai} 
+                onChange={(e) => setHalamanSampai(e.target.value)}
+                disabled={inputMode === "surah"}
+                placeholder="Hal"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4 border-t pt-4">
+            <div className="space-y-2">
+              <Label>Surah</Label>
+              <Select value={surah} onValueChange={setSurah} disabled={inputMode === "halaman"}>
+                <SelectTrigger><SelectValue placeholder="Pilih Surah" /></SelectTrigger>
+                <SelectContent>
+                  {surahByJuz.map(s => <SelectItem key={s.number} value={String(s.number)}>{s.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Jilid / Al-Qur'an</Label>
-                <Select value={jilid} onValueChange={setJilid}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pilih jilid" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.from({ length: 6 }, (_, i) => (
-                      <SelectItem key={i + 1} value={String(i + 1)}>
-                        Jilid {i + 1}
-                      </SelectItem>
-                    ))}
-                    <SelectItem value="quran">Al-Qur'an</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Ayat Dari</Label>
+                <Input 
+                  type="number" 
+                  value={ayatDari} 
+                  onChange={(e) => setAyatDari(e.target.value)}
+                  disabled={inputMode === "halaman"}
+                />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label className="text-xs">Halaman dari</Label>
-                  <Input
-                    type="number"
-                    value={halamanDari}
-                    min={1}
-                    onChange={(e) => setHalamanDari(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Halaman sampai</Label>
-                  <Input
-                    type="number"
-                    value={halamanSampai}
-                    min={Number(halamanDari) || 1}
-                    onChange={(e) => setHalamanSampai(e.target.value)}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label>Ayat Sampai</Label>
+                <Input 
+                  type="number" 
+                  value={ayatSampai} 
+                  onChange={(e) => setAyatSampai(e.target.value)}
+                  disabled={inputMode === "halaman"}
+                />
               </div>
-            </>
+            </div>
+          </div>
+
+          {inputMode === "halaman" && pageInfoText && (
+            <div className="flex items-center gap-2 text-xs bg-blue-50 text-blue-700 p-2 rounded">
+              <Info className="w-4 h-4" />
+              Auto-detect: Surah {pageInfoText}
+            </div>
           )}
 
-          {/* Status */}
           <div className="space-y-2">
-            <Label>Status *</Label>
+            <Label>Status</Label>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih status" />
-              </SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Pilih Status" /></SelectTrigger>
               <SelectContent>
-                {getStatusOptions().map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
+                {["Lancar", "Ulangi", "Sakit", "Izin"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
 
-          {/* Catatan */}
           <div className="space-y-2">
             <Label>Catatan</Label>
-            <Textarea
-              value={catatan}
-              onChange={(e) => setCatatan(e.target.value)}
-              placeholder="Catatan ustadz..."
-              rows={2}
-            />
+            <Textarea value={catatan} onChange={(e) => setCatatan(e.target.value)} placeholder="Catatan perkembangan..." />
           </div>
 
-          <Button onClick={handleSave} className="w-full">
-            <Plus className="w-4 h-4 mr-2" />
-            Simpan
-          </Button>
+          <Button onClick={handleSave} className="w-full">Simpan Setoran</Button>
         </div>
       </DialogContent>
     </Dialog>
