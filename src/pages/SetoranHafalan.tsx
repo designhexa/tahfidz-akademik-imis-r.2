@@ -635,6 +635,7 @@ const SetoranHafalan = () => {
           onOpenChange={setOpenDrill}
           date={modalDate}
           santriName={santriData?.nama || ""}
+          initialSantriId={selectedSantri || undefined}
           onSuccess={() => {}}
           drillHistory={[]}
         />
