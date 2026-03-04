@@ -28,6 +28,8 @@ import {
   getPageCountForJuz,
   getPageMappingByJuz,
   checkDuplicateSetoran,
+  getPageRangeFromAyatRange,
+  getPageFromSurahAyat,
   type SetoranRecord,
 } from "@/lib/mushaf-madinah";
 import { Plus, Info } from "lucide-react";
@@ -371,8 +373,14 @@ export function EntryModal({
                     <Label>Surah</Label>
                     <Select
                       value={surah}
-                      onValueChange={setSurah}
-                      disabled={false}
+                      onValueChange={(val) => {
+                        setSurah(val);
+                        // Reset ayat when surah changes
+                        setAyatDari("1");
+                        setAyatSampai("1");
+                        setHalamanDari("");
+                        setHalamanSampai("");
+                      }}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih surah" />
@@ -396,7 +404,14 @@ export function EntryModal({
                           value={ayatDari}
                           min={1}
                           max={selectedSurah.numberOfAyahs}
-                          onChange={(e) => setAyatDari(e.target.value)}
+                          onChange={(e) => {
+                            setAyatDari(e.target.value);
+                            // Sync to page
+                            if (e.target.value && ayatSampai) {
+                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(e.target.value), Number(ayatSampai));
+                              if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
+                            }
+                          }}
                         />
                       </div>
                       <div className="space-y-1">
@@ -410,10 +425,21 @@ export function EntryModal({
                             const val = Number(e.target.value);
                             if (val >= Number(ayatDari)) {
                               setAyatSampai(e.target.value);
+                              // Sync to page
+                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(ayatDari), val);
+                              if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
                             }
                           }}
                         />
                       </div>
+                    </div>
+                  )}
+
+                  {/* Show synced page info */}
+                  {halamanDari && (
+                    <div className="flex items-start gap-2 p-2 bg-muted/50 rounded text-xs text-muted-foreground">
+                      <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                      <span>📖 Halaman {halamanDari}{halamanSampai && halamanSampai !== halamanDari ? `–${halamanSampai}` : ""} (dalam juz)</span>
                     </div>
                   )}
                 </>
@@ -430,7 +456,17 @@ export function EntryModal({
                         value={halamanDari}
                         min={1}
                         max={maxHalaman}
-                        onChange={(e) => setHalamanDari(e.target.value)}
+                        onChange={(e) => {
+                          setHalamanDari(e.target.value);
+                          // Sync to surah/ayat
+                          if (e.target.value) {
+                            const mapping = getPageMappingByJuz(Number(juz), Number(e.target.value));
+                            if (mapping) {
+                              setSurah(String(mapping.surahNumber));
+                              setAyatDari(String(mapping.startAyat));
+                            }
+                          }
+                        }}
                       />
                     </div>
                     <div className="space-y-1">
@@ -440,7 +476,16 @@ export function EntryModal({
                         value={halamanSampai}
                         min={Number(halamanDari) || 1}
                         max={maxHalaman}
-                        onChange={(e) => setHalamanSampai(e.target.value)}
+                        onChange={(e) => {
+                          setHalamanSampai(e.target.value);
+                          // Sync end ayat
+                          if (e.target.value) {
+                            const mapping = getPageMappingByJuz(Number(juz), Number(e.target.value));
+                            if (mapping) {
+                              setAyatSampai(String(mapping.endAyat));
+                            }
+                          }
+                        }}
                       />
                     </div>
                   </div>

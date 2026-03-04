@@ -437,20 +437,66 @@ export function checkDuplicateSetoran(
 
 export function getSurahListByJuz(juz: number) {
   const { start, end } = getPagesForJuz(juz);
-  const surahMap = new Map();
+  const surahMap = new Map<number, { number: number; name: string; numberOfAyahs: number }>();
 
   for (let page = start; page <= end; page++) {
     const content = getPageContent(page);
 
     content.forEach((c) => {
       if (!surahMap.has(c.surahNumber)) {
+        const fullSurah = surahList.find(s => s.number === c.surahNumber);
         surahMap.set(c.surahNumber, {
           number: c.surahNumber,
           name: c.surahName,
+          numberOfAyahs: fullSurah?.numberOfAyahs || 0,
         });
       }
     });
   }
 
   return Array.from(surahMap.values());
+}
+
+/**
+ * Find the page (relative to juz) that contains a specific surah + ayat.
+ * Returns { relativePage, absolutePage } or null if not found.
+ */
+export function getPageFromSurahAyat(
+  juz: number,
+  surahNumber: number,
+  ayat: number
+): { relativePage: number; absolutePage: number } | null {
+  const { start, end } = getPagesForJuz(juz);
+
+  for (let page = start; page <= end; page++) {
+    const content = getPageContent(page);
+    for (const c of content) {
+      if (
+        c.surahNumber === surahNumber &&
+        ayat >= c.ayatStart &&
+        ayat <= c.ayatEnd
+      ) {
+        return {
+          relativePage: page - start + 1,
+          absolutePage: page,
+        };
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Get page range (relative to juz) for a surah+ayat range within a juz.
+ */
+export function getPageRangeFromAyatRange(
+  juz: number,
+  surahNumber: number,
+  ayatDari: number,
+  ayatSampai: number
+): { dari: number; sampai: number } | null {
+  const startPage = getPageFromSurahAyat(juz, surahNumber, ayatDari);
+  const endPage = getPageFromSurahAyat(juz, surahNumber, ayatSampai);
+  if (!startPage || !endPage) return null;
+  return { dari: startPage.relativePage, sampai: endPage.relativePage };
 }
