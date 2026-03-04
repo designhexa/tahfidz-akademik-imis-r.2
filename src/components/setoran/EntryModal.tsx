@@ -372,7 +372,7 @@ export function EntryModal({
                     <Select
                       value={surah}
                       onValueChange={setSurah}
-                      disabled={inputMode === "halaman"}
+                      disabled={false}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih surah" />
