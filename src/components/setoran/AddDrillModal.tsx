@@ -34,6 +34,7 @@ interface AddDrillModalProps {
   onSuccess: (data: any) => void;
   date: Date | null;
   santriName: string;
+  initialSantriId?: string;
 
   // 🔥 Kirim riwayat drill dari parent
   drillHistory: {
@@ -53,7 +54,8 @@ export const AddDrillModal = ({
   onSuccess,
   date,
   santriName,
-  drillHistory = []   // 🔥 TAMBAHKAN INI
+  initialSantriId,
+  drillHistory = []
 }: AddDrillModalProps) => {
 
   const [selectedSantri, setSelectedSantri] = useState("");
@@ -72,13 +74,13 @@ export const AddDrillModal = ({
   // 🔥 Reset saat modal dibuka
   useEffect(() => {
     if (open) {
-      setSelectedSantri("");
+      setSelectedSantri(initialSantriId || "");
       setJuz("");
       setLevel("");
       setKesalahan("0");
       setCatatan("");
     }
-  }, [open]);
+  }, [open, initialSantriId]);
 
   // 🔥 Reset level kalau ganti juz
   useEffect(() => {
@@ -144,22 +146,24 @@ export const AddDrillModal = ({
 
         <div className="space-y-4 py-4">
 
-          {/* Santri */}
-          <div className="space-y-2">
-            <Label>Pilih Santri *</Label>
-            <Select value={selectedSantri} onValueChange={setSelectedSantri}>
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih santri" />
-              </SelectTrigger>
-              <SelectContent>
-                {mockSantri.map(s => (
-                  <SelectItem key={s.id} value={s.id}>
-                    {s.nama} ({s.nis})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Santri - hidden when opened from calendar */}
+          {!initialSantriId && (
+            <div className="space-y-2">
+              <Label>Pilih Santri *</Label>
+              <Select value={selectedSantri} onValueChange={setSelectedSantri}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih santri" />
+                </SelectTrigger>
+                <SelectContent>
+                  {mockSantri.map(s => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.nama} ({s.nis})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <JuzSelector value={juz} onValueChange={setJuz} required />
 
