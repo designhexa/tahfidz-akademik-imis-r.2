@@ -648,6 +648,16 @@ const SetoranHafalan = () => {
           getPredikat={getPredikat} 
         />
 
+        <TasmiForm5Juz
+          open={openTasmi5Juz}
+          onOpenChange={setOpenTasmi5Juz}
+          santriList={dummySantri}
+          date={modalDate}
+          santriName={santriData?.nama || ""}
+          getPredikat={getPredikat}
+          onSuccess={() => {}}
+        />
+
         <TilawatiUjianForm 
           open={openUjianJilid} 
           onSubmit={()=> {}}
