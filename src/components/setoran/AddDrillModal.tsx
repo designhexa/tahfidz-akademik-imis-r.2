@@ -34,6 +34,7 @@ interface AddDrillModalProps {
   onSuccess: (data: any) => void;
   date: Date | null;
   santriName: string;
+  initialSantriId?: string;
 
   // 🔥 Kirim riwayat drill dari parent
   drillHistory: {
@@ -53,7 +54,8 @@ export const AddDrillModal = ({
   onSuccess,
   date,
   santriName,
-  drillHistory = []   // 🔥 TAMBAHKAN INI
+  initialSantriId,
+  drillHistory = []
 }: AddDrillModalProps) => {
 
   const [selectedSantri, setSelectedSantri] = useState("");

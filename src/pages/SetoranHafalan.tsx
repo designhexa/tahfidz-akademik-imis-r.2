@@ -685,10 +685,10 @@ const SetoranHafalan = () => {
           onDelete={handleDeleteEntry}
           onAddNew={() => {
             setOpenHistory(false);
-            // Open the appropriate form
             if (activeTab === "setoran_hafalan") {
               if (subType === "drill") setOpenDrill(true);
               else if (subType === "tasmi") setOpenTasmi(true);
+              else if (subType === "tasmi5juz") setOpenTasmi5Juz(true);
               else setOpenEntry(true);
             } else if (activeTab === "tilawah") {
               if (subType === "tilawah_harian") setOpenTilawah(true);
