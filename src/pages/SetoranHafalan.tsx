@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { AddDrillModal } from "@/components/setoran/AddDrillModal";
 import { TasmiForm1Juz } from "@/components/tasmi/TasmiForm1Juz";
+import { TasmiForm5Juz } from "@/components/tasmi/TasmiForm5Juz";
 import { TilawatiUjianForm } from "@/components/tilawah/TilawatiUjianForm";
 import { TilawahSetoranForm } from "@/components/tilawah/TilawahSetoranForm";
 
@@ -51,6 +52,7 @@ const SUB_OPTIONS: Record<MainTab, { value: string; label: string }[]> = {
     { value: "setoran_hafalan", label: "Setoran Hafalan" },
     { value: "drill", label: "Drill Hafalan" },
     { value: "tasmi", label: "Ujian Tasmi'" },
+    { value: "tasmi5juz", label: "Tasmi' 5 Juz" },
   ],
   murojaah: [],
   tilawah: [
@@ -202,6 +204,7 @@ const SetoranHafalan = () => {
   const [openEntry, setOpenEntry] = useState(false);
   const [openDrill, setOpenDrill] = useState(false);
   const [openTasmi, setOpenTasmi] = useState(false);
+  const [openTasmi5Juz, setOpenTasmi5Juz] = useState(false);
   const [openTilawah, setOpenTilawah] = useState(false);
   const [openUjianJilid, setOpenUjianJilid] = useState(false);
   const [openHistory, setOpenHistory] = useState(false);
@@ -239,7 +242,7 @@ const SetoranHafalan = () => {
 
     // Map tab to allowed jenis
     const tabJenisMap: Record<MainTab, string[]> = {
-      setoran_hafalan: ["setoran_hafalan", "drill", "tasmi"],
+      setoran_hafalan: ["setoran_hafalan", "drill", "tasmi", "tasmi5juz"],
       murojaah: ["murojaah"],
       tilawah: ["tilawah", "ujian_jilid"],
       murojaah_rumah: ["murojaah_rumah"],
@@ -304,6 +307,8 @@ const SetoranHafalan = () => {
           setOpenDrill(true);
         } else if (subType === "tasmi") {
           setOpenTasmi(true);
+        } else if (subType === "tasmi5juz") {
+          setOpenTasmi5Juz(true);
         } else {
           setOpenEntry(true);
         }
