@@ -55,6 +55,7 @@ export const TilawahSetoranForm = ({
 
   const [alquranMode, setAlquranMode] = useState<"juz" | "surah">("juz");
   const [selectedJuz, setSelectedJuz] = useState("");
+  const juz = selectedJuz;
 
   const [surah, setSurah] = useState("");
   const [surahByJuz, setSurahByJuz] = useState<any[]>([]);
