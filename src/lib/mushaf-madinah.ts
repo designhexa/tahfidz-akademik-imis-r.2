@@ -65,8 +65,8 @@ export function getPageMappingByJuz(
 
   return {
     surahNumber: firstAyat.surahNumber,
-    startAyat: firstAyat.ayahNumber,
-    endAyat: lastAyat.ayahNumber,
+    startAyat: firstAyat.ayatStart,
+    endAyat: lastAyat.ayatEnd,
   };
 }
 
