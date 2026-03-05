@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,22 +36,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { GraduationCap, Plus, Info, RefreshCw, Shuffle } from "lucide-react";
 import { JuzSelector } from "@/components/JuzSelector";
-import { supabase } from "@/integrations/supabase/client";
-import { generateExamQuestions, formatQuestionDisplay, ExamQuestion, getHalamanPerJuz } from "@/lib/quran-exam-generator";
+import { generateExamQuestions, ExamQuestion, getHalamanPerJuz } from "@/lib/quran-exam-generator";
 import { toast } from "sonner";
-import { MOCK_KELAS } from "@/lib/mock-data";
-
-interface Halaqoh {
-  id: string;
-  nama_halaqoh: string;
-}
-
-interface Kelas {
-  id: string;
-  nama_kelas: string;
-}
+import { MOCK_KELAS, MOCK_HALAQOH, MOCK_SANTRI, MOCK_USTADZ, getHalaqohNama } from "@/lib/mock-data";
+import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
 
 const UjianTahfidz = () => {
+  const { entries, addEntries } = useSetoranPersistence();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedSantri, setSelectedSantri] = useState("");
   const [selectedAsatidz, setSelectedAsatidz] = useState("");
@@ -61,8 +52,6 @@ const UjianTahfidz = () => {
   const [catatan, setCatatan] = useState("");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
-  const [halaqohList, setHalaqohList] = useState<Halaqoh[]>([]);
-  const [kelasList, setKelasList] = useState<Kelas[]>([]);
   
   // Generated questions
   const [generatedQuestions, setGeneratedQuestions] = useState<ExamQuestion[]>([]);
@@ -73,39 +62,29 @@ const UjianTahfidz = () => {
     pengurangan: number;
   }>>(Array.from({ length: 10 }, () => ({ pengurangan: 0 })));
 
-  useEffect(() => {
-    const fetchFilters = async () => {
-      const [halaqohRes, kelasRes] = await Promise.all([
-        supabase.from("halaqoh").select("id, nama_halaqoh").order("nama_halaqoh"),
-        supabase.from("kelas").select("id, nama_kelas").order("nama_kelas"),
-      ]);
-      if (halaqohRes.data) setHalaqohList(halaqohRes.data);
-      if (kelasRes.data) setKelasList(kelasRes.data);
-    };
-    fetchFilters();
-  }, []);
+  const ujianHistory = useMemo(() => {
+    const persisted = entries
+      .filter(e => e.jenis === "tasmi" && e.catatan?.includes("Ujian Semester"))
+      .map((e, idx) => ({
+        id: `p-${idx}`,
+        santri: MOCK_SANTRI.find(s => s.id === e.santriId)?.nama || "Santri",
+        tanggal: e.tanggal.toISOString().split('T')[0],
+        materi: `Juz ${e.juz}`,
+        nilaiTotal: e.nilai || 0,
+        status: e.status || "Lulus"
+      }));
 
-  // Dummy data
-  const santriList = [
-    { id: "1", nama: "Ahmad Fauzi", nis: "2024001", halaqoh: "Halaqoh A", kelas: "Paket A Kelas 6" },
-    { id: "2", nama: "Muhammad Rizki", nis: "2024002", halaqoh: "Halaqoh A", kelas: "Paket A Kelas 6" },
-    { id: "3", nama: "Abdullah Rahman", nis: "2024003", halaqoh: "Halaqoh B", kelas: "KBTK A" },
-  ];
+    const staticHistory = [
+      { id: "1", santri: "Qurrata 'Ayun", tanggal: "2024-01-15", materi: "Juz 30", nilaiTotal: 85, status: "Lulus" },
+      { id: "2", santri: "Azzahra Zainab", tanggal: "2024-01-14", materi: "Juz 30", nilaiTotal: 65, status: "Mengulang" },
+    ];
 
-  const asatidzList = [
-    { id: "1", nama: "Ustadz Ahmad" },
-    { id: "2", nama: "Ustadz Mahmud" },
-    { id: "3", nama: "Ustadzah Fatimah" },
-  ];
+    return [...persisted, ...staticHistory];
+  }, [entries]);
 
-  const ujianHistory = [
-    { id: "1", santri: "Ahmad Fauzi", tanggal: "2024-01-15", materi: "Juz 1-2", nilaiTotal: 85, status: "Lulus" },
-    { id: "2", santri: "Muhammad Rizki", tanggal: "2024-01-14", materi: "Juz 1-2", nilaiTotal: 65, status: "Mengulang" },
-  ];
-
-  const filteredSantriList = santriList.filter((s) => {
-    const matchHalaqoh = filterHalaqoh === "all" || s.halaqoh === filterHalaqoh;
-    const matchKelas = filterKelas === "all" || s.kelas === filterKelas;
+  const filteredSantriList = MOCK_SANTRI.filter((s) => {
+    const matchHalaqoh = filterHalaqoh === "all" || s.idHalaqoh === filterHalaqoh;
+    const matchKelas = filterKelas === "all" || s.idKelas === filterKelas;
     return matchHalaqoh && matchKelas;
   });
 
@@ -155,17 +134,17 @@ const UjianTahfidz = () => {
   };
 
   const handleSubmit = () => {
-    console.log({
-      santri: selectedSantri,
-      asatidz: selectedAsatidz,
-      tanggal: tanggalUjian,
-      materiDari,
-      materiSampai,
-      generatedQuestions,
-      soalData,
-      totalNilai: getTotalNilai(),
-      status: isLulus() ? "Lulus" : "Mengulang",
-      catatan,
+    const totalNilai = getTotalNilai();
+    const status = isLulus() ? "Lulus" : "Mengulang";
+
+    addEntries({
+      tanggal: tanggalUjian ? new Date(tanggalUjian) : new Date(),
+      santriId: selectedSantri,
+      jenis: "tasmi", // Ujian tahfidz maps to tasmi category in calendar
+      juz: Number(materiDari),
+      nilai: totalNilai,
+      status: status,
+      catatan: `Ujian Semester Juz ${materiDari}-${materiSampai}. ${catatan}`,
     });
     
     toast.success(isLulus() ? "Selamat! Santri lulus ujian tahfidz 🎉" : "Santri belum lulus. Perlu belajar lagi.");
@@ -185,7 +164,7 @@ const UjianTahfidz = () => {
     setSoalData(Array.from({ length: 10 }, () => ({ pengurangan: 0 })));
   };
 
-  const selectedSantriData = santriList.find((s) => s.id === selectedSantri);
+  const selectedSantriData = MOCK_SANTRI.find((s) => s.id === selectedSantri);
 
   return (
     <Layout>
@@ -247,9 +226,9 @@ const UjianTahfidz = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Semua Halaqoh</SelectItem>
-                        {halaqohList.map((h) => (
-                          <SelectItem key={h.id} value={h.nama_halaqoh}>
-                            {h.nama_halaqoh}
+                        {MOCK_HALAQOH.map((h) => (
+                          <SelectItem key={h.id} value={h.id}>
+                            {h.nama}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -298,7 +277,7 @@ const UjianTahfidz = () => {
                         <SelectValue placeholder="Pilih penguji" />
                       </SelectTrigger>
                       <SelectContent>
-                        {asatidzList.map((asatidz) => (
+                        {MOCK_USTADZ.map((asatidz) => (
                           <SelectItem key={asatidz.id} value={asatidz.id}>
                             {asatidz.nama}
                           </SelectItem>
@@ -319,7 +298,7 @@ const UjianTahfidz = () => {
                   {selectedSantriData && (
                     <div className="space-y-2">
                       <Label>Halaqoh</Label>
-                      <Input value={selectedSantriData.halaqoh} disabled />
+                      <Input value={getHalaqohNama(selectedSantriData.idHalaqoh)} disabled />
                     </div>
                   )}
                 </div>

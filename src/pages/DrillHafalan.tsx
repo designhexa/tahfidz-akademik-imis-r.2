@@ -201,7 +201,7 @@ const DrillHafalan = () => {
   };
 
   const handleSaveDrill = (status: "Lulus" | "Mengulang") => {
-    if (!tanggalDrill || !drillSelectedSantri || !drillJuz) {
+    if (!tanggalDrill || !drillSelectedSantri || !drillJuz || !drillLevelSelected) {
       toast.error("Silakan lengkapi data drill terlebih dahulu");
       return;
     }
@@ -211,6 +211,8 @@ const DrillHafalan = () => {
       santriId: drillSelectedSantri,
       jenis: "drill",
       juz: Number(drillJuz),
+      level: Number(drillLevelSelected),
+      nilai: drillNilaiKelancaran,
       halaman: drillHalamanDari && drillHalamanSampai ? `${drillHalamanDari}–${drillHalamanSampai}` : drillHalamanDari || undefined,
       surah: drillSurahByJuz.find(s => String(s.number) === drillSurah)?.name || drillSurah || undefined,
       surahNumber: drillSurah ? Number(drillSurah) : undefined,

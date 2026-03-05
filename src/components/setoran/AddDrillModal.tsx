@@ -29,12 +29,7 @@ import {
   getSurahListByJuz,
 } from "@/lib/mushaf-madinah";
 import { SurahAyatLimitInfo, PageRangeDetailInfo } from "@/components/setoran/AyatRangeInfo";
-
-const mockSantri = [
-  { id: "1", nama: "Muhammad Faiz", nis: "S001", halaqoh: "Halaqoh Al-Azhary" },
-  { id: "2", nama: "Fatimah Zahra", nis: "S003", halaqoh: "Halaqoh Al-Furqon" },
-  { id: "3", nama: "Aisyah Nur", nis: "S002", halaqoh: "Halaqoh Al-Azhary" },
-];
+import { MOCK_SANTRI } from "@/lib/mock-data";
 
 interface AddDrillModalProps {
   open: boolean;
@@ -175,7 +170,7 @@ export const AddDrillModal = ({
   const isDrillUnlocked = (drillNumber: number) => {
     if (!selectedSantri || !juz) return false;
     if (drillNumber === 1) return true;
-    const santri = mockSantri.find(s => s.id === selectedSantri);
+    const santri = MOCK_SANTRI.find(s => s.id === selectedSantri);
     if (!santri) return false;
     const previousLevelLulus = (drillHistory ?? []).some(d =>
       d.santri === santri.nama &&
@@ -239,7 +234,7 @@ export const AddDrillModal = ({
                   <SelectValue placeholder="Pilih santri" />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockSantri.map(s => (
+                  {MOCK_SANTRI.map(s => (
                     <SelectItem key={s.id} value={s.id}>
                       {s.nama} ({s.nis})
                     </SelectItem>

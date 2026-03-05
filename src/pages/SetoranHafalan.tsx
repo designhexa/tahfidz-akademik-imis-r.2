@@ -92,7 +92,7 @@ const SetoranHafalan = () => {
     nama: s.nama,
     halaqoh: MOCK_HALAQOH.find(h => h.id === s.idHalaqoh)?.nama || "-",
     kelas: "-",
-    juzSelesai: []
+    juzSelesai: s.juzSelesai || []
   })), []);
   const getPredikat = (nilai: number): { label: string; color: string; passed: boolean } => {
     if (nilai >= 96) return { label: "Mumtaz Murtafi'", color: "bg-emerald-500", passed: true };
@@ -214,7 +214,7 @@ const SetoranHafalan = () => {
       const dataArray = Array.isArray(data) ? data : [data];
       const newEntries = dataArray.map((item) => ({
         tanggal: item.tanggal,
-        santriId: selectedSantri,
+        santriId: item.santriId || selectedSantri,
         jenis: item.jenis,
         juz: item.juz,
         surah: item.surah,
@@ -224,8 +224,11 @@ const SetoranHafalan = () => {
         ayatDari: item.ayatDari,
         ayatSampai: item.ayatSampai,
         jilid: item.jilid,
+        level: item.level,
+        nilai: item.nilai,
         status: item.status,
         catatan: item.catatan,
+        rolePengisi: item.rolePengisi,
       }));
       addEntries(newEntries);
     },

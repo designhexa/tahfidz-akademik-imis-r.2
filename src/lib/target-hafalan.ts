@@ -8,6 +8,8 @@ export interface ClassTarget {
   description: string;
 }
 
+import { MOCK_SANTRI, getKelasNama, getHalaqohNama } from "./mock-data";
+
 // Target default - bisa dikonfigurasi admin nanti
 export const CLASS_TARGETS: Record<string, ClassTarget> = {
   "1": {
@@ -145,129 +147,23 @@ export const getNextTasmiJuz = (juzSelesai: number[]): number | null => {
   return null; // Semua juz sudah selesai
 };
 
-// Data mock untuk santri dengan progres
-export const mockSantriProgress: StudentProgress[] = [
-  {
-    id: "1",
-    nama: "Khadijah Alesha Wijanarko",
-    nis: "S001",
-    kelas: "Kelas 1",
-    kelasNumber: "1",
-    halaqoh: "Halaqoh Al-Fatih",
-    jumlahJuzHafal: 1,
-    juzSelesai: [30],
-    drillSelesai: true,
-    eligibleForTasmi: true
-  },
-  {
-    id: "2",
-    nama: "Ahmad Fauzi",
-    nis: "S008",
-    kelas: "Kelas 1",
-    kelasNumber: "1",
-    halaqoh: "Halaqoh Al-Fatih",
-    jumlahJuzHafal: 0,
-    juzSelesai: [],
-    drillSelesai: false,
-    eligibleForTasmi: false
-  },
-  {
-    id: "3",
-    nama: "Fatimah Zahra",
-    nis: "S009",
-    kelas: "Kelas 2",
-    kelasNumber: "2",
-    halaqoh: "Halaqoh An-Nur",
-    jumlahJuzHafal: 1,
-    juzSelesai: [30],
-    drillSelesai: true,
-    eligibleForTasmi: true
-  },
-  {
-    id: "4",
-    nama: "Muhammad Rizki",
-    nis: "S010",
-    kelas: "Kelas 3",
-    kelasNumber: "3",
-    halaqoh: "Halaqoh Al-Fatih",
-    jumlahJuzHafal: 2,
-    juzSelesai: [30, 29],
-    drillSelesai: true,
-    eligibleForTasmi: true
-  },
-  {
-    id: "5",
-    nama: "Muhammad Zidan Ar Rasyid",
-    nis: "S002",
-    kelas: "Kelas 5",
-    kelasNumber: "5",
-    halaqoh: "Halaqoh An-Nur",
-    jumlahJuzHafal: 4,
-    juzSelesai: [30, 29, 28, 27],
-    drillSelesai: true,
-    eligibleForTasmi: true
-  },
-  {
-    id: "6",
-    nama: "Hamzah Abdurrohman",
-    nis: "S003",
-    kelas: "Kelas 5",
-    kelasNumber: "5",
-    halaqoh: "Halaqoh Al-Fatih",
-    jumlahJuzHafal: 9,
-    juzSelesai: [30, 29, 28, 27, 26, 1, 2, 3, 4],
-    drillSelesai: true,
-    eligibleForTasmi: true
-  },
-  {
-    id: "7",
-    nama: "Fahimah Nadeen Darmawan",
-    nis: "S004",
-    kelas: "Kelas 6",
-    kelasNumber: "6",
-    halaqoh: "Halaqoh An-Nur",
-    jumlahJuzHafal: 9,
-    juzSelesai: [30, 29, 28, 27, 26, 1, 2, 3, 4],
-    drillSelesai: true,
-    eligibleForTasmi: true
-  },
-  {
-    id: "8",
-    nama: "Mazzayanun Nisa Zakirah Ali Maulana",
-    nis: "S005",
-    kelas: "Kelas 6",
-    kelasNumber: "6",
-    halaqoh: "Halaqoh Al-Fatih",
-    jumlahJuzHafal: 8,
-    juzSelesai: [30, 29, 28, 27, 26, 1, 2, 3],
-    drillSelesai: true,
-    eligibleForTasmi: true
-  },
-  {
-    id: "9",
-    nama: "Umar Abdurrohman",
-    nis: "S006",
-    kelas: "Kelas 6",
-    kelasNumber: "6",
-    halaqoh: "Halaqoh An-Nur",
-    jumlahJuzHafal: 13,
-    juzSelesai: [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8],
-    drillSelesai: true,
-    eligibleForTasmi: true
-  },
-  {
-    id: "10",
-    nama: "Aisyah Mentari Azzahra",
-    nis: "S007",
-    kelas: "Kelas 8",
-    kelasNumber: "8",
-    halaqoh: "Halaqoh Al-Fatih",
-    jumlahJuzHafal: 5,
-    juzSelesai: [30, 29, 28, 27, 26],
-    drillSelesai: true,
-    eligibleForTasmi: true
-  }
-];
+// Data mock untuk santri dengan progres - derived from centralized MOCK_SANTRI
+export const mockSantriProgress: StudentProgress[] = MOCK_SANTRI.map(s => {
+  const kelasNama = getKelasNama(s.idKelas);
+  const kNum = extractKelasNumber(kelasNama) || "1";
+  return {
+    id: s.id,
+    nama: s.nama,
+    nis: s.nis,
+    kelas: kelasNama,
+    kelasNumber: kNum,
+    halaqoh: getHalaqohNama(s.idHalaqoh),
+    jumlahJuzHafal: s.juzSelesai.length,
+    juzSelesai: s.juzSelesai,
+    drillSelesai: s.drillSelesai,
+    eligibleForTasmi: checkTasmiEligibility(s.juzSelesai, s.drillSelesai)
+  };
+});
 
 // Fungsi untuk menghitung statistik target
 export const calculateTargetStats = (students: StudentProgress[]) => {

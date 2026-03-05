@@ -10,7 +10,7 @@ import { Download, FileText, TrendingUp, BookOpen, Calendar, BarChart3, Target, 
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { LaporanCharts, CapaianKelasChart, CapaianHalaqohChart, CapaianSiswaChart } from "@/components/laporan/LaporanCharts";
-import { MOCK_KELAS } from "@/lib/mock-data";
+import { MOCK_KELAS, MOCK_SANTRI, MOCK_HALAQOH, getHalaqohNama } from "@/lib/mock-data";
 import { 
   MOCK_SANTRI_TILAWAH, 
   MOCK_SETORAN_TILAWAH,
@@ -75,12 +75,6 @@ const mockCapaianSiswa = [
   { nama: "Umar Faruq", juzSelesai: 6, totalJuz: 30, persentase: 20 },
 ];
 
-const mockSantri = [
-  { id: "1", nama: "Muhammad Faiz", halaqoh: "azhary" },
-  { id: "2", nama: "Fatimah Zahra", halaqoh: "azhary" },
-  { id: "3", nama: "Aisyah Nur", halaqoh: "furqon" },
-  { id: "4", nama: "Ahmad Rasyid", halaqoh: "furqon" },
-];
 
 const LaporanHafalan = () => {
   const [activeTab, setActiveTab] = useState("hafalan");
@@ -112,9 +106,9 @@ const LaporanHafalan = () => {
     return matchHalaqoh && matchKelas && matchJilid;
   });
 
-  const filteredSantri = filterHalaqoh === "all" 
-    ? mockSantri 
-    : mockSantri.filter(s => s.halaqoh === filterHalaqoh);
+  const filteredSantriForSelect = filterHalaqoh === "all"
+    ? MOCK_SANTRI
+    : MOCK_SANTRI.filter(s => s.idHalaqoh === filterHalaqoh);
 
   const filteredDrill = mockDrillHafalan.filter((d) => {
     const matchHalaqoh = filterHalaqoh === "all" || d.halaqoh.toLowerCase().includes(filterHalaqoh);
@@ -268,9 +262,9 @@ const LaporanHafalan = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Semua Halaqoh</SelectItem>
-                    <SelectItem value="azhary">Halaqoh Al-Azhary</SelectItem>
-                    <SelectItem value="furqon">Halaqoh Al-Furqon</SelectItem>
-                    <SelectItem value="hidayah">Halaqoh Al-Hidayah</SelectItem>
+                    {MOCK_HALAQOH.map(h => (
+                      <SelectItem key={h.id} value={h.id}>{h.nama}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -298,7 +292,7 @@ const LaporanHafalan = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Semua Santri</SelectItem>
-                    {filteredSantri.map((santri) => (
+                    {filteredSantriForSelect.map((santri) => (
                       <SelectItem key={santri.id} value={santri.id}>{santri.nama}</SelectItem>
                     ))}
                   </SelectContent>

@@ -98,12 +98,12 @@ const dummySantri = MOCK_SANTRI.map(s => ({
   nama: s.nama,
   halaqoh: getHalaqohNama(s.idHalaqoh),
   kelas: getKelasNama(s.idKelas),
-  juzSelesai: [] // Mock or derive from somewhere if possible
+  juzSelesai: s.juzSelesai
 }));
 
 const dummyHasilUjian = [
-  { id: "1", santriId: "1", santriNama: "Ahmad Fauzi", juz: 30, tanggal: "2025-01-05", nilaiTotal: 92, predikat: "Mumtaz", status: "Lulus", penguji: "Ustadz Ahmad", catatanPerHalaman: [], catatanUmum: "Bagus" },
-  { id: "2", santriId: "1", santriNama: "Ahmad Fauzi", juz: 29, tanggal: "2025-01-06", nilaiTotal: 88, predikat: "Jayyid Jiddan", status: "Lulus", penguji: "Ustadz Ahmad", catatanPerHalaman: [], catatanUmum: "Perlu lebih lancar" },
+  { id: "1", santriId: "s1", santriNama: "Qurrata 'Ayun", juz: 30, tanggal: "2025-01-05", nilaiTotal: 92, predikat: "Mumtaz", status: "Lulus", penguji: "Ustadz Ahmad", catatanPerHalaman: [], catatanUmum: "Bagus" },
+  { id: "2", santriId: "s1", santriNama: "Qurrata 'Ayun", juz: 29, tanggal: "2025-01-06", nilaiTotal: 88, predikat: "Jayyid Jiddan", status: "Lulus", penguji: "Ustadz Ahmad", catatanPerHalaman: [], catatanUmum: "Perlu lebih lancar" },
 ];
 
 interface PenilaianHalaman { halaman: number; pancingan: number; catatan: string; }
@@ -193,13 +193,16 @@ const UjianTasmi = () => {
   const predikat5Juz = getPredikat(nilaiTotal5Juz);
 
   const resetForm1Juz = () => {
+    const score = hitungNilaiTotal();
+    const pred = getPredikat(score);
     // Sync with calendar
     addEntries({
       tanggal: selectedDate,
       santriId: selectedSantri,
       jenis: "tasmi",
       juz: Number(selectedJuz),
-      status: getPredikat(hitungNilaiTotal()).label,
+      nilai: score,
+      status: pred.label,
       catatan: catatanUmum + (diberhentikan ? " (Diberhentikan)" : ""),
     });
     toast.success("Hasil Tasmi' 1 Juz disimpan ke kalender");
@@ -207,13 +210,16 @@ const UjianTasmi = () => {
     setSelectedSantri(""); setSelectedJuz(""); setPenilaianHalaman([]); setDiberhentikan(false); setSelectedDate(new Date());
   };
   const resetForm5Juz = () => {
+    const score = hitungPersentase5Juz();
+    const pred = getPredikat(score);
     // Sync with calendar
     const newEntries = selectedJuzList.filter(j => j).map(juz => ({
       tanggal: selectedDate5Juz,
       santriId: selectedSantri5Juz,
       jenis: "tasmi",
       juz: juz,
-      status: getPredikat(hitungPersentase5Juz()).label,
+      nilai: score,
+      status: pred.label,
       catatan: catatanUmum5Juz + (diberhentikan5Juz ? " (Diberhentikan)" : ""),
     }));
     addEntries(newEntries);

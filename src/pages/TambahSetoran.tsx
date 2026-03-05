@@ -19,19 +19,9 @@ import {
   checkDuplicateSetoran,
   type SetoranRecord,
 } from "@/lib/mushaf-madinah";
+import { MOCK_SANTRI, MOCK_HALAQOH, getHalaqohNama } from "@/lib/mock-data";
 
 /* ================= MOCK DATA ================= */
-
-const mockSantri = [
-  { id: "1", nama: "Muhammad Faiz", nis: "S001", halaqoh: "Halaqoh Al-Azhary", halaqohId: "h1" },
-  { id: "2", nama: "Fatimah Zahra", nis: "S003", halaqoh: "Halaqoh Al-Furqon", halaqohId: "h2" },
-  { id: "3", nama: "Aisyah Nur", nis: "S002", halaqoh: "Halaqoh Al-Azhary", halaqohId: "h1" },
-];
-
-const mockHalaqoh = [
-  { id: "h1", nama_halaqoh: "Halaqoh Al-Azhary" },
-  { id: "h2", nama_halaqoh: "Halaqoh Al-Furqon" },
-];
 
 const getTanggalHMinus2 = () => {
   const d = new Date();
@@ -42,7 +32,7 @@ const getTanggalHMinus2 = () => {
 const mockSetoranRecords = [
   {
     tanggal: getTanggalHMinus2(),
-    santriId: "1",
+    santriId: "s1",
     jenis: "setoran_baru" as const,
     status: "selesai" as const,
   },
@@ -84,11 +74,11 @@ const TambahSetoran = () => {
   const [halamanSampai, setHalamanSampai] = useState("");
 
   const filteredSantri = useMemo(() => {
-    if (!halaqohFilter) return mockSantri;
-    return mockSantri.filter(s => s.halaqohId === halaqohFilter);
+    if (!halaqohFilter) return MOCK_SANTRI;
+    return MOCK_SANTRI.filter(s => s.idHalaqoh === halaqohFilter);
   }, [halaqohFilter]);
 
-  const selectedSantriData = mockSantri.find(s => s.id === selectedSantri);
+  const selectedSantriData = MOCK_SANTRI.find(s => s.id === selectedSantri);
 
   const surahByJuz: Surah[] = useMemo(() => {
     if (!juz) return [];
@@ -226,9 +216,9 @@ const TambahSetoran = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Halaqoh</SelectItem>
-                {mockHalaqoh.map((h) => (
+                {MOCK_HALAQOH.map((h) => (
                   <SelectItem key={h.id} value={h.id}>
-                    {h.nama_halaqoh}
+                    {h.nama}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -260,7 +250,7 @@ const TambahSetoran = () => {
 
         {selectedSantriData && (
           <div className="p-3 bg-primary/10 rounded border text-sm">
-            <span className="font-medium">{selectedSantriData.nama}</span> • {selectedSantriData.halaqoh}
+            <span className="font-medium">{selectedSantriData.nama}</span> • {getHalaqohNama(selectedSantriData.idHalaqoh)}
           </div>
         )}
       </div>
