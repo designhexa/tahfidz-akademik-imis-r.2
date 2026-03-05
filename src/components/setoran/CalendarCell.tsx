@@ -15,8 +15,11 @@ export interface CalendarEntry {
     | "murojaah_rumah";
   juz?: number;
   surah?: string;
+  surahNumber?: number;
   halaman?: string;
   ayat?: string;
+  ayatDari?: number;
+  ayatSampai?: number;
   status?: string;
   catatan?: string;
   rolePengisi?: string;
