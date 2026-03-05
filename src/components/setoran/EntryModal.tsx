@@ -30,6 +30,8 @@ import {
   checkDuplicateSetoran,
   getPageRangeFromAyatRange,
   getPageFromSurahAyat,
+  getAyatRangeForSurahInJuz,
+  getDetailedContentForPageRange,
   type SetoranRecord,
 } from "@/lib/mushaf-madinah";
 import { Plus, Info } from "lucide-react";
@@ -86,6 +88,11 @@ export function EntryModal({
   const selectedSurah = useMemo(() => {
     return surahByJuz.find((s) => s.number === Number(surah));
   }, [surah, surahByJuz]);
+
+  const validBoundaries = useMemo(() => {
+    if (!juz || !surah) return null;
+    return getAyatRangeForSurahInJuz(Number(juz), Number(surah));
+  }, [juz, surah]);
 
   // Page info from Mushaf mapping
   const pageInfo = useMemo(() => {
@@ -258,23 +265,23 @@ export function EntryModal({
     if (overlapFound) return;
 
     // 3️⃣ SAVE ALL SEGMENTS
-    rangesToSave.forEach((range) => {
-      onSave({
-        tanggal: date,
-        jenis: finalJenis,
-        juz: juz ? Number(juz) : undefined,
-        surah: range.surahName,
-        surahNumber: range.surahNumber,
-        halaman: range.halaman,
-        ayat: `${range.ayatDari}-${range.ayatSampai}`,
-        ayatDari: range.ayatDari,
-        ayatSampai: range.ayatSampai,
-        status,
-        catatan,
-        jilid: jilid || undefined,
-        pageInfo: pageInfo || undefined,
-      });
-    });
+    const segmentsToSave = rangesToSave.map((range) => ({
+      tanggal: date,
+      jenis: finalJenis,
+      juz: juz ? Number(juz) : undefined,
+      surah: range.surahName,
+      surahNumber: range.surahNumber,
+      halaman: range.halaman,
+      ayat: `${range.ayatDari}-${range.ayatSampai}`,
+      ayatDari: range.ayatDari,
+      ayatSampai: range.ayatSampai,
+      status,
+      catatan,
+      jilid: jilid || undefined,
+      pageInfo: pageInfo || undefined,
+    }));
+
+    onSave(segmentsToSave);
 
     // Reset
     setJuz("");
@@ -384,9 +391,15 @@ export function EntryModal({
                       value={surah}
                       onValueChange={(val) => {
                         setSurah(val);
-                        // Reset ayat when surah changes
-                        setAyatDari("1");
-                        setAyatSampai("1");
+                        // Reset ayat to valid boundaries for the selected juz
+                        const bounds = getAyatRangeForSurahInJuz(Number(juz), Number(val));
+                        if (bounds) {
+                          setAyatDari(String(bounds.ayatMin));
+                          setAyatSampai(String(bounds.ayatMin));
+                        } else {
+                          setAyatDari("1");
+                          setAyatSampai("1");
+                        }
                         setHalamanDari("");
                         setHalamanSampai("");
                       }}
@@ -420,13 +433,17 @@ export function EntryModal({
                         <Input
                           type="number"
                           value={ayatDari}
-                          min={1}
-                          max={selectedSurah.numberOfAyahs}
+                      min={validBoundaries?.ayatMin || 1}
+                      max={validBoundaries?.ayatMax || selectedSurah.numberOfAyahs}
                           onChange={(e) => {
-                            setAyatDari(e.target.value);
+                            const val = Number(e.target.value);
+                            const min = validBoundaries?.ayatMin || 1;
+                            const max = validBoundaries?.ayatMax || selectedSurah.numberOfAyahs;
+                            const clamped = Math.max(min, Math.min(max, val));
+                            setAyatDari(String(clamped));
                             // Sync to page
-                            if (e.target.value && ayatSampai) {
-                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(e.target.value), Number(ayatSampai));
+                            if (clamped && ayatSampai) {
+                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), clamped, Number(ayatSampai));
                               if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
                             }
                           }}
@@ -438,15 +455,16 @@ export function EntryModal({
                           type="number"
                           value={ayatSampai}
                           min={Number(ayatDari)}
-                          max={selectedSurah.numberOfAyahs}
+                      max={validBoundaries?.ayatMax || selectedSurah.numberOfAyahs}
                           onChange={(e) => {
                             const val = Number(e.target.value);
-                            if (val >= Number(ayatDari)) {
-                              setAyatSampai(e.target.value);
-                              // Sync to page
-                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(ayatDari), val);
-                              if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
-                            }
+                            const min = Number(ayatDari);
+                            const max = validBoundaries?.ayatMax || selectedSurah.numberOfAyahs;
+                            const clamped = Math.max(min, Math.min(max, val));
+                            setAyatSampai(String(clamped));
+                            // Sync to page
+                            const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(ayatDari), clamped);
+                            if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
                           }}
                         />
                       </div>
@@ -475,10 +493,12 @@ export function EntryModal({
                         min={1}
                         max={maxHalaman}
                         onChange={(e) => {
-                          setHalamanDari(e.target.value);
+                          const val = Number(e.target.value);
+                          const clamped = Math.max(1, Math.min(maxHalaman, val));
+                          setHalamanDari(String(clamped));
                           // Sync to surah/ayat
-                          if (e.target.value) {
-                            const mapping = getPageMappingByJuz(Number(juz), Number(e.target.value));
+                          if (clamped) {
+                            const mapping = getPageMappingByJuz(Number(juz), clamped);
                             if (mapping) {
                               setSurah(String(mapping.surahNumber));
                               setAyatDari(String(mapping.startAyat));
@@ -495,10 +515,13 @@ export function EntryModal({
                         min={Number(halamanDari) || 1}
                         max={maxHalaman}
                         onChange={(e) => {
-                          setHalamanSampai(e.target.value);
+                          const val = Number(e.target.value);
+                          const min = Number(halamanDari) || 1;
+                          const clamped = Math.max(min, Math.min(maxHalaman, val));
+                          setHalamanSampai(String(clamped));
                           // Sync end ayat
-                          if (e.target.value) {
-                            const mapping = getPageMappingByJuz(Number(juz), Number(e.target.value));
+                          if (clamped) {
+                            const mapping = getPageMappingByJuz(Number(juz), clamped);
                             if (mapping) {
                               setAyatSampai(String(mapping.endAyat));
                             }
