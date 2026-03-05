@@ -33,6 +33,7 @@ import {
   type SetoranRecord,
 } from "@/lib/mushaf-madinah";
 import { Plus, Info } from "lucide-react";
+import { SurahAyatLimitInfo, PageRangeDetailInfo } from "@/components/setoran/AyatRangeInfo";
 
 type TabType = "setoran_hafalan" | "murojaah" | "tilawah" | "murojaah_rumah";
 type SubType =
@@ -395,6 +396,15 @@ export function EntryModal({
                     </Select>
                   </div>
 
+                  {/* Show ayat limit for selected surah */}
+                  {surah && juz && (
+                    <SurahAyatLimitInfo
+                      juz={juz}
+                      surahNumber={surah}
+                      surahName={selectedSurah?.name}
+                    />
+                  )}
+
                   {selectedSurah && (
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
@@ -491,6 +501,14 @@ export function EntryModal({
                   </div>
 
                   {/* Auto-detect surah/ayat info from page */}
+                  {/* Detailed page range content */}
+                  {halamanDari && (
+                    <PageRangeDetailInfo
+                      juz={juz}
+                      halamanDari={halamanDari}
+                      halamanSampai={halamanSampai || halamanDari}
+                    />
+                  )}
                   {pageInfo && (
                     <div className="flex items-start gap-2 p-2 bg-primary/10 rounded text-xs text-foreground">
                       <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-primary" />
