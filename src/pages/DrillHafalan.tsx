@@ -162,6 +162,12 @@ const DrillHafalan = () => {
     setUseManualInput(false);
     setManualPages([]);
     setManualSurahs([]);
+    setDrillInputMode("halaman");
+    setDrillHalamanDari("");
+    setDrillHalamanSampai("");
+    setDrillSurah("");
+    setDrillAyatDari("");
+    setDrillAyatSampai("");
   };
 
   const handleAddManualPage = () => {
