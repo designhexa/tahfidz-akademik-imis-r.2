@@ -500,3 +500,68 @@ export function getPageRangeFromAyatRange(
   if (!startPage || !endPage) return null;
   return { dari: startPage.relativePage, sampai: endPage.relativePage };
 }
+
+/**
+ * Get the valid ayat range for a surah within a specific juz.
+ * A surah may span multiple juz, so this returns only the portion in the given juz.
+ */
+export function getAyatRangeForSurahInJuz(
+  juz: number,
+  surahNumber: number
+): { ayatMin: number; ayatMax: number } | null {
+  const { start, end } = getPagesForJuz(juz);
+  let ayatMin = Infinity;
+  let ayatMax = -Infinity;
+
+  for (let page = start; page <= end; page++) {
+    const content = getPageContent(page);
+    for (const c of content) {
+      if (c.surahNumber === surahNumber) {
+        ayatMin = Math.min(ayatMin, c.ayatStart);
+        ayatMax = Math.max(ayatMax, c.ayatEnd);
+      }
+    }
+  }
+
+  if (ayatMin === Infinity) return null;
+  return { ayatMin, ayatMax };
+}
+
+/**
+ * Get detailed content for a range of pages (relative to juz).
+ * Returns all surah/ayat entries across all pages in the range.
+ */
+export function getDetailedContentForPageRange(
+  juz: number,
+  relativePageFrom: number,
+  relativePageTo: number
+): MushafPageContent[] {
+  const { start } = getPagesForJuz(juz);
+  const result: MushafPageContent[] = [];
+  const seen = new Set<string>();
+
+  for (let rel = relativePageFrom; rel <= relativePageTo; rel++) {
+    const absPage = start + rel - 1;
+    const content = getPageContent(absPage);
+    for (const c of content) {
+      const key = `${c.surahNumber}-${c.ayatStart}-${c.ayatEnd}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push(c);
+      }
+    }
+  }
+
+  // Merge consecutive entries of same surah
+  const merged: MushafPageContent[] = [];
+  for (const c of result) {
+    const last = merged[merged.length - 1];
+    if (last && last.surahNumber === c.surahNumber && c.ayatStart <= last.ayatEnd + 1) {
+      last.ayatEnd = Math.max(last.ayatEnd, c.ayatEnd);
+    } else {
+      merged.push({ ...c });
+    }
+  }
+
+  return merged;
+}
