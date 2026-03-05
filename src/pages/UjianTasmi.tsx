@@ -54,6 +54,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { TasmiCandidateCard } from "@/components/tasmi/TasmiCandidateCard";
 import { TasmiForm1Juz } from "@/components/tasmi/TasmiForm1Juz";
 import { mockSantriProgress, getNextTasmiJuz } from "@/lib/target-hafalan";
+import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
+import { toast } from "sonner";
 
 const JUZ_ORDER = [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
 
@@ -136,6 +138,8 @@ const UjianTasmi = () => {
   const [catatanUmum5Juz, setCatatanUmum5Juz] = useState("");
   const [diberhentikan5Juz, setDiberhentikan5Juz] = useState(false);
 
+  const { addEntries } = useSetoranPersistence();
+
   const handleSelectJuz5Juz = (juzIndex: number, juzValue: string) => {
     const juzNumber = parseInt(juzValue);
 
@@ -173,8 +177,35 @@ const UjianTasmi = () => {
   const nilaiTotal5Juz = hitungPersentase5Juz();
   const predikat5Juz = getPredikat(nilaiTotal5Juz);
 
-  const resetForm1Juz = () => { setSelectedSantri(""); setSelectedJuz(""); setPenilaianHalaman([]); setDiberhentikan(false); };
-  const resetForm5Juz = () => { setSelectedSantri5Juz(""); setSelectedJuzList([]); setPenilaian5Juz([]); setCatatanUmum5Juz(""); setDiberhentikan5Juz(false); };
+  const resetForm1Juz = () => {
+    // Sync with calendar
+    addEntries({
+      tanggal: new Date(),
+      santriId: selectedSantri,
+      jenis: "tasmi",
+      juz: Number(selectedJuz),
+      status: getPredikat(hitungNilaiTotal()).label,
+      catatan: catatanUmum + (diberhentikan ? " (Diberhentikan)" : ""),
+    });
+    toast.success("Hasil Tasmi' 1 Juz disimpan ke kalender");
+
+    setSelectedSantri(""); setSelectedJuz(""); setPenilaianHalaman([]); setDiberhentikan(false);
+  };
+  const resetForm5Juz = () => {
+    // Sync with calendar
+    const entries = selectedJuzList.filter(j => j).map(juz => ({
+      tanggal: new Date(),
+      santriId: selectedSantri5Juz,
+      jenis: "tasmi",
+      juz: juz,
+      status: getPredikat(hitungPersentase5Juz()).label,
+      catatan: catatanUmum5Juz + (diberhentikan5Juz ? " (Diberhentikan)" : ""),
+    }));
+    addEntries(entries);
+    toast.success("Hasil Tasmi' 5 Juz disimpan ke kalender");
+
+    setSelectedSantri5Juz(""); setSelectedJuzList([]); setPenilaian5Juz([]); setCatatanUmum5Juz(""); setDiberhentikan5Juz(false);
+  };
 
   const handleUjian = (santri: any) => {
     console.log("Mulai ujian:", santri.nama);

@@ -35,6 +35,13 @@ interface Props {
 
 export const TasmiForm1Juz = ({ open, onOpenChange, santriList, getPredikat, date, santriName }: Props) => {
   const [selectedSantri, setSelectedSantri] = useState("");
+  useEffect(() => {
+    if (open && santriName) {
+      const santri = santriList.find(s => s.nama === santriName);
+      if (santri) setSelectedSantri(santri.id);
+    }
+  }, [open, santriName, santriList]);
+
   const [selectedJuz, setSelectedJuz] = useState("");
   const [catatanUmum, setCatatanUmum] = useState("");
   const [diberhentikan, setDiberhentikan] = useState(false);

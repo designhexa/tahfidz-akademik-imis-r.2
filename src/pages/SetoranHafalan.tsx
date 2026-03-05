@@ -35,6 +35,7 @@ import { TasmiForm1Juz } from "@/components/tasmi/TasmiForm1Juz";
 import { TasmiForm5Juz } from "@/components/tasmi/TasmiForm5Juz";
 import { TilawatiUjianForm } from "@/components/tilawah/TilawatiUjianForm";
 import { TilawahSetoranForm } from "@/components/tilawah/TilawahSetoranForm";
+import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
 
 
 type MainTab = "setoran_hafalan" | "murojaah" | "tilawah" | "murojaah_rumah";
@@ -61,130 +62,6 @@ const SUB_OPTIONS: Record<MainTab, { value: string; label: string }[]> = {
   ],
   murojaah_rumah: [],
 };
-
-// Mock entries for demo
-const MOCK_ENTRIES: CalendarEntry[] = [
-  {
-    tanggal: new Date(2025, 7, 4), // Aug 4
-    santriId: "s1",
-    jenis: "setoran_hafalan",
-    juz: 26,
-    surah: "Al-Kahfi",
-    ayat: "1-19",
-    status: "Lancar",
-  },
-  {
-    tanggal: new Date(2025, 7, 5),
-    santriId: "s1",
-    jenis: "setoran_hafalan",
-    juz: 26,
-    halaman: "1-5",
-    status: "Lancar",
-  },
-  {
-    tanggal: new Date(2025, 7, 6),
-    santriId: "s1",
-    jenis: "setoran_hafalan",
-    surah: "Al-Kahfi",
-    ayat: "17-21",
-    status: "Lancar",
-  },
-  {
-    tanggal: new Date(2025, 7, 7),
-    santriId: "s1",
-    jenis: "setoran_hafalan",
-    juz: 26,
-    halaman: "6-10",
-    status: "Lancar",
-  },
-  {
-    tanggal: new Date(2025, 7, 11),
-    santriId: "s1",
-    jenis: "setoran_hafalan",
-    surah: "Al-Kahfi",
-    ayat: "21-22",
-    status: "Lancar",
-  },
-  {
-    tanggal: new Date(2025, 7, 13),
-    santriId: "s1",
-    jenis: "drill",
-    juz: 26,
-    halaman: "4-15",
-    status: "Lancar",
-  },
-  {
-    tanggal: new Date(2025, 7, 14),
-    santriId: "s1",
-    jenis: "setoran_hafalan",
-    juz: 26,
-    halaman: "21-24",
-    status: "Ulangi",
-  },
-  {
-    tanggal: new Date(2025, 7, 18),
-    santriId: "s1",
-    jenis: "drill",
-    juz: 27,
-    halaman: "1-5",
-    status: "Lulus",
-  },
-  {
-    tanggal: new Date(2025, 7, 25),
-    santriId: "s1",
-    jenis: "setoran_hafalan",
-    juz: 27,
-    surah: "Al-Kahfi",
-    ayat: "28-20",
-    status: "Ulangi",
-  },
-  // Murojaah
-  {
-    tanggal: new Date(2025, 7, 4),
-    santriId: "s1",
-    jenis: "murojaah",
-    juz: 30,
-    halaman: "6-10",
-    status: "Lancar",
-  },
-  {
-    tanggal: new Date(2025, 7, 5),
-    santriId: "s1",
-    jenis: "murojaah",
-    juz: 30,
-    halaman: "7-15",
-    status: "Lancar",
-  },
-  {
-    tanggal: new Date(2025, 7, 12),
-    santriId: "s1",
-    jenis: "murojaah",
-    juz: 29,
-    halaman: "11-15",
-    status: "Lancar",
-  },
-  {
-    tanggal: new Date(2025, 7, 13),
-    santriId: "s1",
-    jenis: "murojaah",
-    status: "Sakit",
-  },
-  // Murojaah rumah
-  {
-    tanggal: new Date(2025, 7, 4),
-    santriId: "s1",
-    jenis: "murojaah_rumah",
-    juz: 30,
-    halaman: "11-20",
-  },
-  {
-    tanggal: new Date(2025, 7, 5),
-    santriId: "s1",
-    jenis: "murojaah_rumah",
-    juz: 29,
-    halaman: "1-10",
-  },
-];
 
 const SetoranHafalan = () => {
   const now = new Date();
@@ -226,8 +103,8 @@ const SetoranHafalan = () => {
   // Ujian kenaikan jilid state
   const [remedialTarget, setRemedialTarget] = useState<any>(null);
 
-  // Local entries storage
-  const [entries, setEntries] = useState<CalendarEntry[]>(MOCK_ENTRIES);
+  // Global entries storage
+  const { entries, addEntries, deleteEntry } = useSetoranPersistence();
 
   const santriList = useMemo(() => {
     if (!selectedHalaqoh) return MOCK_SANTRI;
@@ -348,28 +225,17 @@ const SetoranHafalan = () => {
         status: item.status,
         catatan: item.catatan,
       }));
-      setEntries((prev) => [...prev, ...newEntries]);
+      addEntries(newEntries);
     },
-    [selectedSantri]
+    [selectedSantri, addEntries]
   );
 
   const handleDeleteEntry = useCallback(
     (entry: CalendarEntry) => {
-      setEntries((prev) =>
-        prev.filter(
-          (e) =>
-            !(
-              format(e.tanggal, "yyyy-MM-dd") === format(entry.tanggal, "yyyy-MM-dd") &&
-              e.santriId === entry.santriId &&
-              e.jenis === entry.jenis &&
-              e.juz === entry.juz &&
-              e.surah === entry.surah
-            )
-        )
-      );
+      deleteEntry(entry);
       setOpenHistory(false);
     },
-    []
+    [deleteEntry]
   );
 
   const monthOptions = [

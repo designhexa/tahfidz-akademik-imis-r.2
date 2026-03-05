@@ -22,6 +22,7 @@ import {
   getAspekPenilaianByJilid
 } from "@/lib/tilawah-data";
 import { MOCK_KELAS } from "@/lib/mock-data";
+import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
 import { toast } from "sonner";
 
 export default function TilawahUjian() {
@@ -64,6 +65,8 @@ export default function TilawahUjian() {
    const [ghoribBaca, setGhoribBaca] = useState("");
    const [ghoribKomentar, setGhoribKomentar] = useState("");
  
+   const { addEntries } = useSetoranPersistence();
+
    // Mock ujian data with state
    const [ujianData, setUjianData] = useState([
      { id: "1", santriId: "s1", nama: "Qurrata 'Ayun", kelas: "Paket B Kelas 8", jilidDari: 3, jilidTujuan: 4, nilaiTotal: 17, skorMaksimal: 20, status: "Lulus", isRemedial: false, remedialKe: 0 },
@@ -152,6 +155,17 @@ export default function TilawahUjian() {
      };
 
      setUjianData(prev => [newUjian, ...prev]);
+
+     // Sync with calendar
+     addEntries({
+       tanggal: new Date(),
+       santriId: selectedSantri,
+       jenis: "ujian_jilid",
+       jilid: jilidDari,
+       status: lulus ? "Lulus" : "Mengulang",
+       catatan: `Ujian Jilid ${jilidDari} ke ${jilidTujuan}. Skor: ${totalNilai}/${getSkorMaksimal()}`,
+     });
+
      toast.success(`Ujian berhasil disimpan. Nilai: ${totalNilai}/${getSkorMaksimal()} - ${lulus ? "LULUS" : "MENGULANG"}`);
      setDialogOpen(false);
      resetForm();
@@ -188,6 +202,16 @@ export default function TilawahUjian() {
      setUjianData(prev => {
        const updated = prev.map(u => u.id === remedialTarget.id ? { ...u, status: lulus ? "Lulus (Remedial)" : "Mengulang" } : u);
        return [remedialResult, ...updated.filter(u => u.id !== remedialTarget.id)];
+     });
+
+     // Sync with calendar
+     addEntries({
+       tanggal: new Date(),
+       santriId: remedialTarget.santriId,
+       jenis: "ujian_jilid",
+       jilid: remedialTarget.jilidDari,
+       status: lulus ? "Lulus" : "Mengulang",
+       catatan: `Remedial ${remedialResult.remedialKe} Jilid ${remedialTarget.jilidDari}. Skor: ${totalNilai}/${getSkorMaksimal()}`,
      });
 
      toast.success(`Remedial ke-${remedialResult.remedialKe}: Nilai ${totalNilai}/${getSkorMaksimal()} - ${lulus ? "LULUS" : "MASIH MENGULANG"}`);
