@@ -343,6 +343,7 @@ const SetoranHafalan = () => {
         ayat: data.ayat,
         ayatDari: data.ayatDari,
         ayatSampai: data.ayatSampai,
+        jilid: data.jilid,
         status: data.status,
         catatan: data.catatan,
       };

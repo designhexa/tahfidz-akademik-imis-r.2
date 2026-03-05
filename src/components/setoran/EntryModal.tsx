@@ -146,11 +146,10 @@ export function EntryModal({
         ? "murojaah_rumah"
         : subType || "setoran_hafalan";
 
-    // 1️⃣ CONVERT INPUT → RANGE AYAT
-    let range;
+    // 1️⃣ CONVERT INPUT → RANGES
+    let rangesToSave: any[] = [];
 
     if (inputMode === "surah") {
-
       if (!surah) {
         toast.error("Pilih surah terlebih dahulu");
         return;
@@ -161,55 +160,35 @@ export function EntryModal({
         return;
       }
 
-      range = {
-        surahNumber: Number(surah),
-        ayatDari: Number(ayatDari),
-        ayatSampai: Number(ayatSampai),
-      };
-    }
-
-    if (inputMode === "surah") {
       if (Number(ayatSampai) < Number(ayatDari)) {
         toast.error("Ayat sampai tidak boleh lebih kecil dari ayat dari");
         return;
       }
+
+      // Check against valid juz boundaries
+      const validBoundaries = getAyatRangeForSurahInJuz(Number(juz), Number(surah));
+      if (validBoundaries) {
+        if (Number(ayatDari) < validBoundaries.ayatMin || Number(ayatSampai) > validBoundaries.ayatMax) {
+          toast.error(`Range ayat tidak valid untuk Juz ${juz}. Batas: ${validBoundaries.ayatMin}-${validBoundaries.ayatMax}`);
+          return;
+        }
+      }
+
+      rangesToSave.push({
+        surahNumber: Number(surah),
+        surahName: selectedSurah?.name || surah,
+        ayatDari: Number(ayatDari),
+        ayatSampai: Number(ayatSampai),
+        halaman: halamanDari && halamanSampai ? `${halamanDari}–${halamanSampai}` : halamanDari || undefined,
+      });
     }
 
     if (inputMode === "halaman") {
-
       if (!halamanDari || !halamanSampai) {
         toast.error("Isi halaman dari dan sampai");
         return;
       }
 
-      const startMapping = getPageMappingByJuz(
-        Number(juz),
-        Number(halamanDari)
-      );
-
-      const endMapping = getPageMappingByJuz(
-        Number(juz),
-        Number(halamanSampai)
-      );
-
-      if (!startMapping || !endMapping) {
-        toast.error("Mapping halaman tidak ditemukan");
-        return;
-      }
-
-      range = {
-        surahNumber: startMapping.surahNumber,
-        ayatDari: startMapping.startAyat,
-        ayatSampai: endMapping.endAyat,
-      };
-      
-      // 🔒 sinkronkan ke state supaya tidak mismatch
-        setSurah(String(startMapping.surahNumber));
-        setAyatDari(String(startMapping.startAyat));
-        setAyatSampai(String(endMapping.endAyat));
-    }
-
-    if (inputMode === "halaman") {
       if (Number(halamanSampai) < Number(halamanDari)) {
         toast.error("Halaman sampai tidak boleh lebih kecil dari halaman dari");
         return;
@@ -219,26 +198,33 @@ export function EntryModal({
         toast.error("Halaman melebihi batas juz");
         return;
       }
+
+      const detailedSegments = getDetailedContentForPageRange(
+        Number(juz),
+        Number(halamanDari),
+        Number(halamanSampai)
+      );
+
+      if (detailedSegments.length === 0) {
+        toast.error("Mapping halaman tidak ditemukan");
+        return;
+      }
+
+      rangesToSave = detailedSegments.map(s => ({
+        surahNumber: s.surahNumber,
+        surahName: s.surahName,
+        ayatDari: s.ayatStart,
+        ayatSampai: s.ayatEnd,
+        halaman: `${halamanDari}–${halamanSampai}`, // Keep original page range as reference
+      }));
     }
 
-    if (!range) {
+    if (rangesToSave.length === 0) {
       toast.error("Range tidak valid");
       return;
     }
 
-    // 2️⃣ CEK DUPLICATE
-    const overlap = checkDuplicateSetoran(
-      range,
-      existingRecords,
-      santriId,
-      jenisKey
-    );
-
-    if (overlap) {
-      toast.error("Sudah pernah disetor atau overlap.");
-      return;
-    }
-
+    // 2️⃣ CEK DUPLICATE & SAVE
     const jenisMap: Record<string, string> = {
       setoran_hafalan: "setoran_hafalan",
       drill: "drill",
@@ -247,25 +233,47 @@ export function EntryModal({
       ujian_jilid: "ujian_jilid",
     };
 
-    onSave({
-      tanggal: date,
-      jenis:
-        activeTab === "murojaah"
-          ? "murojaah"
-          : activeTab === "murojaah_rumah"
-          ? "murojaah_rumah"
-          : jenisMap[subType || "setoran_hafalan"] || activeTab,
-      juz: juz ? Number(juz) : undefined,
-      surah: selectedSurah?.name || surah,
-      surahNumber: surah ? Number(surah) : undefined,
-      halaman: halamanDari && halamanSampai ? `${halamanDari}–${halamanSampai}` : halamanDari || undefined,
-      ayat: ayatDari && ayatSampai ? `${ayatDari}-${ayatSampai}` : undefined,
-      ayatDari: Number(ayatDari),
-      ayatSampai: Number(ayatSampai),
-      status,
-      catatan,
-      jilid: jilid || undefined,
-      pageInfo: pageInfo || undefined,
+    const finalJenis = activeTab === "murojaah"
+      ? "murojaah"
+      : activeTab === "murojaah_rumah"
+      ? "murojaah_rumah"
+      : jenisMap[subType || "setoran_hafalan"] || activeTab;
+
+    let overlapFound = false;
+    for (const range of rangesToSave) {
+      const overlap = checkDuplicateSetoran(
+        range,
+        existingRecords,
+        santriId,
+        jenisKey
+      );
+
+      if (overlap) {
+        toast.error(`Overlap di ${range.surahName} ayat ${range.ayatDari}-${range.ayatSampai}`);
+        overlapFound = true;
+        break;
+      }
+    }
+
+    if (overlapFound) return;
+
+    // 3️⃣ SAVE ALL SEGMENTS
+    rangesToSave.forEach((range) => {
+      onSave({
+        tanggal: date,
+        jenis: finalJenis,
+        juz: juz ? Number(juz) : undefined,
+        surah: range.surahName,
+        surahNumber: range.surahNumber,
+        halaman: range.halaman,
+        ayat: `${range.ayatDari}-${range.ayatSampai}`,
+        ayatDari: range.ayatDari,
+        ayatSampai: range.ayatSampai,
+        status,
+        catatan,
+        jilid: jilid || undefined,
+        pageInfo: pageInfo || undefined,
+      });
     });
 
     // Reset
