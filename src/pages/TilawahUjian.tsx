@@ -8,8 +8,17 @@
  import { Badge } from "@/components/ui/badge";
  import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
  import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
- import { Search, Plus, Award, Clock, FileText, RefreshCw } from "lucide-react";
-import { useState, useEffect } from "react";
+ import { Search, Plus, Award, Clock, FileText, RefreshCw, Calendar as CalendarIcon } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { useSearchParams } from "react-router-dom";
 import { 
   MOCK_SANTRI_TILAWAH, 
@@ -45,6 +54,7 @@ export default function TilawahUjian() {
    const [selectedSantri, setSelectedSantri] = useState("");
    const [jilidDari, setJilidDari] = useState("");
    const [jilidTujuan, setJilidTujuan] = useState("");
+   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
    
    // Nilai Tartil
    const [tartilTajwid, setTartilTajwid] = useState("");
@@ -65,7 +75,7 @@ export default function TilawahUjian() {
    const [ghoribBaca, setGhoribBaca] = useState("");
    const [ghoribKomentar, setGhoribKomentar] = useState("");
  
-   const { addEntries } = useSetoranPersistence();
+   const { entries, addEntries } = useSetoranPersistence();
 
    // Mock ujian data with state
    const [ujianData, setUjianData] = useState([
@@ -158,7 +168,7 @@ export default function TilawahUjian() {
      
      // Sync with calendar
      addEntries({
-       tanggal: new Date(),
+       tanggal: selectedDate,
        santriId: selectedSantri,
        jenis: "ujian_jilid",
        jilid: jilidDari,
@@ -206,7 +216,7 @@ export default function TilawahUjian() {
 
      // Sync with calendar
      addEntries({
-       tanggal: new Date(),
+       tanggal: new Date(), // Remedial is usually today, but we could use a date picker here too if needed
        santriId: remedialTarget.santriId,
        jenis: "ujian_jilid",
        jilid: remedialTarget.jilidDari,
@@ -224,6 +234,7 @@ export default function TilawahUjian() {
      setSelectedSantri("");
      setJilidDari("");
      setJilidTujuan("");
+     setSelectedDate(new Date());
      setTartilTajwid("");
      setTartilKalimat("");
      setTartilKelancaran("");
@@ -242,6 +253,33 @@ export default function TilawahUjian() {
    const kriteriaPenilaian = jilidDari
     ? getAspekPenilaianByJilid(parseInt(jilidDari))
     : ["tartil", "fashohah", "tajwid_dasar", "ghorib"];
+
+  const displayUjianData = useMemo(() => {
+    const persistedUjian = entries
+      .filter(e => e.jenis === 'ujian_jilid')
+      .map(e => ({
+        id: e.id,
+        santriId: e.santriId,
+        nama: MOCK_SANTRI_TILAWAH.find(s => s.id === e.santriId)?.nama || "Santri",
+        kelas: MOCK_SANTRI_TILAWAH.find(s => s.id === e.santriId)?.kelas || "Kelas",
+        jilidDari: parseInt(e.jilid as string) || 1,
+        jilidTujuan: (parseInt(e.jilid as string) || 1) + 1,
+        nilaiTotal: 0,
+        skorMaksimal: 0,
+        status: e.status || "Selesai",
+        isRemedial: e.catatan?.toLowerCase().includes("remedial") || false,
+        remedialKe: 0,
+        tanggal: e.tanggal instanceof Date ? e.tanggal.toISOString() : e.tanggal
+      }));
+
+    const combined = [...ujianData, ...persistedUjian];
+    // Filter out potential duplicates if they have the same ID (unlikely with this logic but good practice)
+    return combined.sort((a, b) => {
+      const dateA = a.tanggal ? new Date(a.tanggal).getTime() : 0;
+      const dateB = b.tanggal ? new Date(b.tanggal).getTime() : 0;
+      return dateB - dateA;
+    });
+  }, [entries, ujianData]);
 
   return (
     <Layout>
@@ -287,8 +325,8 @@ export default function TilawahUjian() {
                    </CardContent>
                  </Card>
  
-                 {/* Pilih Santri & Jilid */}
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                 {/* Pilih Santri, Jilid & Tanggal */}
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                    <div className="space-y-2">
                      <Label>Pilih Santri</Label>
                      <Select value={selectedSantri} onValueChange={setSelectedSantri}>
@@ -337,6 +375,31 @@ export default function TilawahUjian() {
                          <SelectItem value="7">Al-Qur'an</SelectItem>
                        </SelectContent>
                      </Select>
+                   </div>
+                   <div className="space-y-2">
+                     <Label>Tanggal Ujian</Label>
+                     <Popover>
+                       <PopoverTrigger asChild>
+                         <Button
+                           variant={"outline"}
+                           className={cn(
+                             "w-full justify-start text-left font-normal",
+                             !selectedDate && "text-muted-foreground"
+                           )}
+                         >
+                           <CalendarIcon className="mr-2 h-4 w-4" />
+                           {selectedDate ? format(selectedDate, "PPP", { locale: id }) : <span>Pilih tanggal</span>}
+                         </Button>
+                       </PopoverTrigger>
+                       <PopoverContent className="w-auto p-0">
+                         <Calendar
+                           mode="single"
+                           selected={selectedDate}
+                           onSelect={(date) => date && setSelectedDate(date)}
+                           initialFocus
+                         />
+                       </PopoverContent>
+                     </Popover>
                    </div>
                  </div>
  
@@ -581,14 +644,14 @@ export default function TilawahUjian() {
               </TableHeader>
 
               <TableBody>
-                {ujianData.length === 0 ? (
+                {displayUjianData.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                       Belum ada data ujian tilawah
                     </TableCell>
                   </TableRow>
                 ) : (
-                  ujianData.map((item, index) => {
+                  displayUjianData.map((item, index) => {
                     const isLulus = item.status?.toLowerCase().includes("lulus");
                     const isMengulang = item.status === "Mengulang";
 

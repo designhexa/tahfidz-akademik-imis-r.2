@@ -31,9 +31,10 @@ interface Props {
   santriName: string;
   santriList: any[];
   getPredikat: (nilai: number) => { label: string; color: string; passed: boolean };
+  onSuccess?: (data: any) => void;
 }
 
-export const TasmiForm1Juz = ({ open, onOpenChange, santriList, getPredikat, date, santriName }: Props) => {
+export const TasmiForm1Juz = ({ open, onOpenChange, santriList, getPredikat, date, santriName, onSuccess }: Props) => {
   const [selectedSantri, setSelectedSantri] = useState("");
   useEffect(() => {
     if (open && santriName) {
@@ -70,6 +71,19 @@ export const TasmiForm1Juz = ({ open, onOpenChange, santriList, getPredikat, dat
     setCatatanUmum("");
     setDiberhentikan(false);
     setPenilaianHalaman([]);
+  };
+
+  const handleSave = () => {
+    onSuccess?.({
+      tanggal: date,
+      santriId: selectedSantri,
+      jenis: "tasmi",
+      juz: Number(selectedJuz),
+      status: predikat.label,
+      catatan: catatanUmum + (diberhentikan ? " (Diberhentikan)" : ""),
+    });
+    onOpenChange(false);
+    resetForm();
   };
 
   if (!date) return null;
@@ -141,7 +155,7 @@ export const TasmiForm1Juz = ({ open, onOpenChange, santriList, getPredikat, dat
 
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>Batal</Button>
-            <Button onClick={() => { onOpenChange(false); resetForm(); }} className="bg-gradient-to-r from-amber-500 to-orange-500" disabled={!selectedSantri || !selectedJuz}>Simpan</Button>
+            <Button onClick={handleSave} className="bg-gradient-to-r from-amber-500 to-orange-500" disabled={!selectedSantri || !selectedJuz}>Simpan</Button>
           </div>
         </div>
       </DialogContent>

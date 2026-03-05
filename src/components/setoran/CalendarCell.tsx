@@ -21,6 +21,8 @@ export interface CalendarEntry {
   ayatDari?: number;
   ayatSampai?: number;
   jilid?: string;
+  level?: number;
+  nilai?: number;
   status?: string;
   catatan?: string;
   rolePengisi?: string;

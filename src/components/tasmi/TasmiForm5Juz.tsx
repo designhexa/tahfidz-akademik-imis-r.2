@@ -113,16 +113,17 @@ export const TasmiForm5Juz = ({
   };
 
   const handleSave = () => {
-    onSuccess?.({
-      tanggal: date,
-      santri: santriName || selectedSantri,
-      juzList: selectedJuzList,
-      nilaiTotal: hitungNilaiTotal(),
-      persentase: nilaiTotal,
-      predikat: predikat.label,
-      diberhentikan,
-      catatan: catatanUmum,
-    });
+    const entries = selectedJuzList
+      .filter((j) => j)
+      .map((juz) => ({
+        tanggal: date,
+        santriId: selectedSantri || "s1", // Fallback if needed, but should be selected
+        jenis: "tasmi",
+        juz: juz,
+        status: predikat.label,
+        catatan: catatanUmum + (diberhentikan ? " (Diberhentikan)" : ""),
+      }));
+    onSuccess?.(entries);
     onOpenChange(false);
     resetForm();
   };

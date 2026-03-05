@@ -87,11 +87,13 @@ const SetoranHafalan = () => {
   const [openHistory, setOpenHistory] = useState(false);
 
   // Tasmi' component state
-  const dummySantri = [
-    { id: "1", nama: "Ahmad Fauzi", halaqoh: "Halaqoh Al-Fatih", kelas: "Paket A Kelas 6", juzSelesai: [30, 29] },
-    { id: "2", nama: "Muhammad Rizki", halaqoh: "Halaqoh Al-Fatih", kelas: "Paket A Kelas 6", juzSelesai: [30] },
-    { id: "3", nama: "Abdullah Hakim", halaqoh: "Halaqoh An-Nur", kelas: "KBTK A", juzSelesai: [] },
-  ];
+  const dummySantri = useMemo(() => MOCK_SANTRI.map(s => ({
+    id: s.id,
+    nama: s.nama,
+    halaqoh: MOCK_HALAQOH.find(h => h.id === s.idHalaqoh)?.nama || "-",
+    kelas: "-",
+    juzSelesai: []
+  })), []);
   const getPredikat = (nilai: number): { label: string; color: string; passed: boolean } => {
     if (nilai >= 96) return { label: "Mumtaz Murtafi'", color: "bg-emerald-500", passed: true };
     if (nilai >= 90) return { label: "Mumtaz", color: "bg-green-500", passed: true };
@@ -509,7 +511,7 @@ const SetoranHafalan = () => {
           date={modalDate}
           santriName={santriData?.nama || ""}
           initialSantriId={selectedSantri || undefined}
-          onSuccess={() => {}}
+          onSuccess={handleSaveEntry}
           drillHistory={[]}
         />
 
@@ -520,6 +522,7 @@ const SetoranHafalan = () => {
           date={modalDate}
           santriName={santriData?.nama || ""}
           getPredikat={getPredikat} 
+          onSuccess={handleSaveEntry}
         />
 
         <TasmiForm5Juz
@@ -529,12 +532,12 @@ const SetoranHafalan = () => {
           date={modalDate}
           santriName={santriData?.nama || ""}
           getPredikat={getPredikat}
-          onSuccess={() => {}}
+          onSuccess={handleSaveEntry}
         />
 
         <TilawatiUjianForm 
           open={openUjianJilid} 
-          onSubmit={()=> {}}
+          onSubmit={handleSaveEntry}
           date={modalDate}
           santriName={santriData?.nama || ""}
           onOpenChange={setOpenUjianJilid}
@@ -546,7 +549,7 @@ const SetoranHafalan = () => {
           onOpenChange={setOpenTilawah}
           date={modalDate}
           santriName={santriData?.nama || ""}
-          onSuccess={() => {}}
+          onSuccess={handleSaveEntry}
           initialSantriId={selectedSantri}
         />
 
