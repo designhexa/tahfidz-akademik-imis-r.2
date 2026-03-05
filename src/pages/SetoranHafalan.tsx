@@ -331,23 +331,24 @@ const SetoranHafalan = () => {
   );
 
   const handleSaveEntry = useCallback(
-    (data: any) => {
-      const newEntry: CalendarEntry = {
-        tanggal: data.tanggal,
+    (data: any | any[]) => {
+      const dataArray = Array.isArray(data) ? data : [data];
+      const newEntries = dataArray.map((item) => ({
+        tanggal: item.tanggal,
         santriId: selectedSantri,
-        jenis: data.jenis,
-        juz: data.juz,
-        surah: data.surah,
-        surahNumber: data.surahNumber,
-        halaman: data.halaman,
-        ayat: data.ayat,
-        ayatDari: data.ayatDari,
-        ayatSampai: data.ayatSampai,
-        jilid: data.jilid,
-        status: data.status,
-        catatan: data.catatan,
-      };
-      setEntries((prev) => [...prev, newEntry]);
+        jenis: item.jenis,
+        juz: item.juz,
+        surah: item.surah,
+        surahNumber: item.surahNumber,
+        halaman: item.halaman,
+        ayat: item.ayat,
+        ayatDari: item.ayatDari,
+        ayatSampai: item.ayatSampai,
+        jilid: item.jilid,
+        status: item.status,
+        catatan: item.catatan,
+      }));
+      setEntries((prev) => [...prev, ...newEntries]);
     },
     [selectedSantri]
   );

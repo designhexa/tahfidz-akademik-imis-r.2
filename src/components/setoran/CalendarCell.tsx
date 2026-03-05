@@ -114,7 +114,7 @@ export function CalendarCell({
       )}
 
       {/* Entry content */}
-      {hasEntries && (!isWeekend || allowWeekends) && (
+      {hasEntries && (
         <div className="mt-0.5 space-y-0.5 overflow-hidden">
           {entries.slice(0, 2).map((entry, i) => (
             <div key={i} className="text-[9px] md:text-xs leading-tight">
