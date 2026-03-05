@@ -26,6 +26,13 @@ import {
   isPageBasedDrill,
   formatDrillDescription,
 } from "@/lib/drill-data";
+import {
+  getPageMappingByJuz,
+  getPageRangeFromAyatRange,
+  getPageSummaryByJuz,
+  getPageCountForJuz,
+  getSurahListByJuz,
+} from "@/lib/mushaf-madinah";
 
 const BATAS_LULUS_DRILL = 88;
 const BATAS_KESALAHAN_DRILL = 12;
