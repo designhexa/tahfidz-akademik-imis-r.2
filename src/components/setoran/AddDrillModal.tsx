@@ -197,20 +197,17 @@ export const AddDrillModal = ({
       return;
     }
 
-    const santri = mockSantri.find(s => s.id === selectedSantri);
-
     onSuccess({
-      tanggal: format(date, "dd/MM/yyyy"),
-      santri: santri?.nama,
+      tanggal: date,
+      santriId: selectedSantri,
+      jenis: "drill",
       juz: Number(juz),
       level: Number(level),
-      materi: formatDrillDescription(selectedDrill!),
-      halamanDari: halamanDari ? Number(halamanDari) : null,
-      halamanSampai: halamanSampai ? Number(halamanSampai) : null,
-      surahNumber: surah ? Number(surah) : null,
-      ayatDari: ayatDari ? Number(ayatDari) : null,
-      ayatSampai: ayatSampai ? Number(ayatSampai) : null,
-      nilai,
+      halaman: halamanDari && halamanSampai ? `${halamanDari}–${halamanSampai}` : halamanDari || undefined,
+      surah: surahByJuz.find(s => String(s.number) === surah)?.name || surah || undefined,
+      surahNumber: surah ? Number(surah) : undefined,
+      ayatDari: ayatDari ? Number(ayatDari) : undefined,
+      ayatSampai: ayatSampai ? Number(ayatSampai) : undefined,
       status,
       catatan
     });

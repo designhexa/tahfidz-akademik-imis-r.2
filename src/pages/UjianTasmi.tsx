@@ -46,8 +46,18 @@ import {
   ChevronUp,
   User,
   Image,
-  Users
+  Users,
+  Calendar as CalendarIcon
 } from "lucide-react";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { getJuzName } from "@/lib/quran-data";
 import { JuzSelector } from "@/components/JuzSelector";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,6 +66,7 @@ import { TasmiForm1Juz } from "@/components/tasmi/TasmiForm1Juz";
 import { mockSantriProgress, getNextTasmiJuz } from "@/lib/target-hafalan";
 import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
 import { toast } from "sonner";
+import { MOCK_SANTRI, getHalaqohNama, getKelasNama } from "@/lib/mock-data";
 
 const JUZ_ORDER = [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
 
@@ -82,11 +93,13 @@ interface Kelas {
   nama_kelas: string;
 }
 
-const dummySantri = [
-  { id: "1", nama: "Ahmad Fauzi", halaqoh: "Halaqoh Al-Fatih", kelas: "Paket A Kelas 6", juzSelesai: [30, 29] },
-  { id: "2", nama: "Muhammad Rizki", halaqoh: "Halaqoh Al-Fatih", kelas: "Paket A Kelas 6", juzSelesai: [30] },
-  { id: "3", nama: "Abdullah Hakim", halaqoh: "Halaqoh An-Nur", kelas: "KBTK A", juzSelesai: [] },
-];
+const dummySantri = MOCK_SANTRI.map(s => ({
+  id: s.id,
+  nama: s.nama,
+  halaqoh: getHalaqohNama(s.idHalaqoh),
+  kelas: getKelasNama(s.idKelas),
+  juzSelesai: [] // Mock or derive from somewhere if possible
+}));
 
 const dummyHasilUjian = [
   { id: "1", santriId: "1", santriNama: "Ahmad Fauzi", juz: 30, tanggal: "2025-01-05", nilaiTotal: 92, predikat: "Mumtaz", status: "Lulus", penguji: "Ustadz Ahmad", catatanPerHalaman: [], catatanUmum: "Bagus" },
@@ -113,6 +126,7 @@ const UjianTasmi = () => {
   
   const [selectedSantri, setSelectedSantri] = useState("");
   const [selectedJuz, setSelectedJuz] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   useEffect(() => {
     if (!selectedJuz) return;
@@ -134,11 +148,12 @@ const UjianTasmi = () => {
 
   const [selectedSantri5Juz, setSelectedSantri5Juz] = useState("");
   const [selectedJuzList, setSelectedJuzList] = useState<number[]>([]);
+  const [selectedDate5Juz, setSelectedDate5Juz] = useState<Date>(new Date());
   const [penilaian5Juz, setPenilaian5Juz] = useState<PenilaianJuz[]>([]);
   const [catatanUmum5Juz, setCatatanUmum5Juz] = useState("");
   const [diberhentikan5Juz, setDiberhentikan5Juz] = useState(false);
 
-  const { addEntries } = useSetoranPersistence();
+  const { entries, addEntries } = useSetoranPersistence();
 
   const handleSelectJuz5Juz = (juzIndex: number, juzValue: string) => {
     const juzNumber = parseInt(juzValue);
@@ -180,7 +195,7 @@ const UjianTasmi = () => {
   const resetForm1Juz = () => {
     // Sync with calendar
     addEntries({
-      tanggal: new Date(),
+      tanggal: selectedDate,
       santriId: selectedSantri,
       jenis: "tasmi",
       juz: Number(selectedJuz),
@@ -189,28 +204,50 @@ const UjianTasmi = () => {
     });
     toast.success("Hasil Tasmi' 1 Juz disimpan ke kalender");
 
-    setSelectedSantri(""); setSelectedJuz(""); setPenilaianHalaman([]); setDiberhentikan(false);
+    setSelectedSantri(""); setSelectedJuz(""); setPenilaianHalaman([]); setDiberhentikan(false); setSelectedDate(new Date());
   };
   const resetForm5Juz = () => {
     // Sync with calendar
-    const entries = selectedJuzList.filter(j => j).map(juz => ({
-      tanggal: new Date(),
+    const newEntries = selectedJuzList.filter(j => j).map(juz => ({
+      tanggal: selectedDate5Juz,
       santriId: selectedSantri5Juz,
       jenis: "tasmi",
       juz: juz,
       status: getPredikat(hitungPersentase5Juz()).label,
       catatan: catatanUmum5Juz + (diberhentikan5Juz ? " (Diberhentikan)" : ""),
     }));
-    addEntries(entries);
+    addEntries(newEntries);
     toast.success("Hasil Tasmi' 5 Juz disimpan ke kalender");
 
-    setSelectedSantri5Juz(""); setSelectedJuzList([]); setPenilaian5Juz([]); setCatatanUmum5Juz(""); setDiberhentikan5Juz(false);
+    setSelectedSantri5Juz(""); setSelectedJuzList([]); setPenilaian5Juz([]); setCatatanUmum5Juz(""); setDiberhentikan5Juz(false); setSelectedDate5Juz(new Date());
   };
 
   const handleUjian = (santri: any) => {
-    console.log("Mulai ujian:", santri.nama);
-    // buka dialog / redirect / set state
+    setSelectedSantri(santri.id);
+    setIsFormOpen(true);
   };
+
+  const displayHasilUjian = useMemo(() => {
+    const persistedTasmi = entries
+      .filter(e => e.jenis === 'tasmi')
+      .map(e => ({
+        id: e.id,
+        santriId: e.santriId,
+        santriNama: MOCK_SANTRI.find(s => s.id === e.santriId)?.nama || "Santri",
+        juz: e.juz || 30,
+        tanggal: e.tanggal instanceof Date ? e.tanggal.toISOString() : e.tanggal,
+        nilaiTotal: 0, // We don't store full score details in calendar entries yet
+        predikat: e.status || "Selesai",
+        status: e.status === "Mengulang" ? "Mengulang" : "Lulus",
+        penguji: "Ustadz",
+        catatanPerHalaman: [],
+        catatanUmum: e.catatan || ""
+      }));
+
+    // Merge persisted with dummy data, filter out duplicates by ID if necessary
+    const combined = [...persistedTasmi, ...dummyHasilUjian];
+    return combined.sort((a, b) => new Date(b.tanggal).getTime() - new Date(a.tanggal).getTime());
+  }, [entries]);
 
   return (
     <Layout>
@@ -233,9 +270,40 @@ const UjianTasmi = () => {
               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader><DialogTitle className="flex items-center gap-2"><Award className="w-5 h-5 text-amber-500" />Form Ujian Tasmi' (1 Juz)</DialogTitle></DialogHeader>
                 <div className="space-y-6 py-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2"><Label>Santri</Label><Select value={selectedSantri} onValueChange={setSelectedSantri}><SelectTrigger><SelectValue placeholder="Pilih santri" /></SelectTrigger><SelectContent>{dummySantri.map((s) => (<SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>))}</SelectContent></Select></div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>Santri</Label>
+                      <Select value={selectedSantri} onValueChange={setSelectedSantri}>
+                        <SelectTrigger><SelectValue placeholder="Pilih santri" /></SelectTrigger>
+                        <SelectContent>{dummySantri.map((s) => (<SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>))}</SelectContent>
+                      </Select>
+                    </div>
                     <JuzSelector value={selectedJuz} onValueChange={setSelectedJuz} label="Juz" required />
+                    <div className="space-y-2">
+                      <Label>Tanggal Ujian</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !selectedDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {selectedDate ? format(selectedDate, "PPP", { locale: id }) : <span>Pilih tanggal</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={selectedDate}
+                            onSelect={(date) => date && setSelectedDate(date)}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                   </div>
                   <Card className={`${predikat.passed ? 'border-green-500/50 bg-green-500/5' : 'border-red-500/50 bg-red-500/5'}`}><CardContent className="p-4"><div className="flex items-center justify-between"><div><p className="text-sm text-muted-foreground">Nilai Total</p><p className="text-3xl font-bold">{nilaiTotal}</p></div><div className="text-right"><p className="text-sm text-muted-foreground">Predikat</p><Badge className={`${predikat.color} text-white`}>{predikat.label}</Badge></div></div></CardContent></Card>
                   <div className="space-y-3"><Label className="text-base font-semibold">Penilaian Per Halaman</Label><p className="text-xs text-muted-foreground">Nilai per halaman: 5 poin. Maks 5 pancingan/halaman.</p>
@@ -262,7 +330,40 @@ const UjianTasmi = () => {
               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader><DialogTitle className="flex items-center gap-2"><Award className="w-5 h-5 text-purple-500" />Form Ujian Tasmi' (5 Juz)</DialogTitle></DialogHeader>
                 <div className="space-y-6 py-4">
-                  <div className="space-y-2"><Label>Santri</Label><Select value={selectedSantri5Juz} onValueChange={setSelectedSantri5Juz}><SelectTrigger><SelectValue placeholder="Pilih santri" /></SelectTrigger><SelectContent>{dummySantri.map((s) => (<SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>))}</SelectContent></Select></div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Santri</Label>
+                      <Select value={selectedSantri5Juz} onValueChange={setSelectedSantri5Juz}>
+                        <SelectTrigger><SelectValue placeholder="Pilih santri" /></SelectTrigger>
+                        <SelectContent>{dummySantri.map((s) => (<SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>))}</SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Tanggal Ujian</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !selectedDate5Juz && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {selectedDate5Juz ? format(selectedDate5Juz, "PPP", { locale: id }) : <span>Pilih tanggal</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={selectedDate5Juz}
+                            onSelect={(date) => date && setSelectedDate5Juz(date)}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
                   <Card className={`${predikat5Juz.passed ? 'border-green-500/50 bg-green-500/5' : 'border-red-500/50 bg-red-500/5'}`}><CardContent className="p-4"><div className="flex items-center justify-between"><div><p className="text-sm text-muted-foreground">Nilai Total</p><p className="text-3xl font-bold">{hitungNilaiTotal5Juz()} <span className="text-lg text-muted-foreground">/ {getMaxScore5Juz()}</span></p><p className="text-xs text-muted-foreground">Persentase: {nilaiTotal5Juz}%</p></div><div className="text-right"><p className="text-sm text-muted-foreground">Predikat</p><Badge className={`${predikat5Juz.color} text-white`}>{predikat5Juz.label}</Badge></div></div></CardContent></Card>
                   <div className="space-y-3"><Label className="text-base font-semibold">Penilaian Per Juz</Label>
                     <Accordion type="multiple" className="space-y-2">
@@ -401,8 +502,11 @@ const UjianTasmi = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {dummyHasilUjian.map((ujian) => {
-                        const pred = getPredikat(ujian.nilaiTotal);
+                      {displayHasilUjian.map((ujian) => {
+                        const pred = getPredikat(ujian.nilaiTotal || (ujian.predikat === "Mengulang" ? 60 : 80));
+                        const displayPredikat = ujian.predikat || pred.label;
+                        const isLulus = displayPredikat !== "Mengulang";
+
                         return (
                           <TableRow key={ujian.id}>
                             <TableCell className="whitespace-nowrap">
@@ -410,12 +514,12 @@ const UjianTasmi = () => {
                             </TableCell>
                             <TableCell className="font-medium">{ujian.santriNama}</TableCell>
                             <TableCell>{getJuzName(ujian.juz)}</TableCell>
-                            <TableCell className="text-center font-bold">{ujian.nilaiTotal}</TableCell>
+                            <TableCell className="text-center font-bold">{ujian.nilaiTotal || "-"}</TableCell>
                             <TableCell className="text-center">
-                              <Badge className={`${pred.color} text-white`}>{ujian.predikat}</Badge>
+                              <Badge className={`${isLulus ? 'bg-green-500' : 'bg-red-500'} text-white`}>{displayPredikat}</Badge>
                             </TableCell>
                             <TableCell className="text-center">
-                              {pred.passed ? (
+                              {isLulus ? (
                                 <Badge variant="outline" className="border-green-500 text-green-600">
                                   <CheckCircle2 className="w-3 h-3 mr-1" />Lulus
                                 </Badge>

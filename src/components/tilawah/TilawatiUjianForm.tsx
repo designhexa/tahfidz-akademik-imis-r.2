@@ -113,15 +113,12 @@ export const TilawatiUjianForm = ({
 
   const handleProcessSubmit = () => {
     onSubmit({
-      ...initialData,
+      tanggal: date,
       santriId: selectedSantri,
-      jilidDari: currentJilid,
-      jilidTujuan: parseInt(jilidTujuan),
-      nilaiTotal: totalNilai,
-      skorMaksimal: skorMaks,
-      status: lulus ? (isRemedial ? "Lulus (Remedial)" : "Lulus") : "Mengulang",
-      isRemedial: isRemedial,
-      remedialKe: isRemedial ? (initialData.remedialKe || 0) + 1 : 0
+      jenis: "ujian_jilid",
+      jilid: jilidDari,
+      status: lulus ? "Lulus" : "Mengulang",
+      catatan: `Ujian Jilid ${jilidDari} ke ${jilidTujuan}. Skor: ${totalNilai}/${skorMaks}`,
     });
     onOpenChange(false);
   };

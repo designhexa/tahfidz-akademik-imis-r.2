@@ -20,6 +20,8 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { JuzSelector } from "@/components/JuzSelector";
+import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
+import { MOCK_SANTRI, MOCK_HALAQOH } from "@/lib/mock-data";
 import {
   getDrillsForJuz,
   DrillDefinition,
@@ -37,17 +39,6 @@ import {
 const BATAS_LULUS_DRILL = 88;
 const BATAS_KESALAHAN_DRILL = 12;
 
-const mockSantri = [
-  { id: "1", nama: "Muhammad Faiz", nis: "S001", halaqoh: "Halaqoh Al-Azhary" },
-  { id: "2", nama: "Fatimah Zahra", nis: "S003", halaqoh: "Halaqoh Al-Furqon" },
-  { id: "3", nama: "Aisyah Nur", nis: "S002", halaqoh: "Halaqoh Al-Azhary" },
-];
-
-const mockHalaqoh = [
-  { id: "h1", nama_halaqoh: "Halaqoh Al-Azhary" },
-  { id: "h2", nama_halaqoh: "Halaqoh Al-Furqon" },
-];
-
 const mockDrillList = [
   { id: 1, tanggal: "15/01/2025", santri: "Muhammad Faiz", juz: 30, level: 1, materi: "Drill 1 - An-Naba", nilai: 92, status: "Lulus" },
   { id: 2, tanggal: "14/01/2025", santri: "Aisyah Nur", juz: 30, level: 1, materi: "Drill 1 - An-Naba", nilai: 88, status: "Lulus" },
@@ -59,6 +50,8 @@ const DrillHafalan = () => {
   const [search, setSearch] = useState("");
   const [filterJuz, setFilterJuz] = useState("all");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
+
+  const { entries, addEntries } = useSetoranPersistence();
 
   // Dialog state
   const [isDrillDialogOpen, setIsDrillDialogOpen] = useState(false);
@@ -143,8 +136,8 @@ const DrillHafalan = () => {
   }, [useManualInput, drillLevelSelected, drillJuz, drills, manualPages, manualSurahs]);
 
   const filteredSantriForDrillForm = useMemo(() => {
-    if (!drillFormHalaqohFilter) return mockSantri;
-    return mockSantri.filter(s => s.halaqoh === mockHalaqoh.find(h => h.id === drillFormHalaqohFilter)?.nama_halaqoh);
+    if (!drillFormHalaqohFilter) return MOCK_SANTRI;
+    return MOCK_SANTRI.filter(s => s.idHalaqoh === drillFormHalaqohFilter);
   }, [drillFormHalaqohFilter]);
 
   const isDrillUnlocked = (santriId: string, drillNumber: number, juzNum: number) => {
@@ -207,54 +200,63 @@ const DrillHafalan = () => {
     setManualSurahs(prev => prev.filter(s => s.id !== id));
   };
 
-  const handleSaveDrill = () => {
+  const handleSaveDrill = (status: "Lulus" | "Mengulang") => {
     if (!tanggalDrill || !drillSelectedSantri || !drillJuz) {
       toast.error("Silakan lengkapi data drill terlebih dahulu");
       return;
     }
-    const santriData = mockSantri.find(s => s.id === drillSelectedSantri);
-    const selectedDrill = drills.find(d => d.drillNumber === Number(drillLevelSelected));
-    console.log({
-      jenis: "drill", santri: santriData?.nama,
-      tanggal: format(tanggalDrill, "yyyy-MM-dd"),
-      juz: drillJuz, drillLevel: drillLevelSelected,
-      nilai: drillNilaiKelancaran, catatan: catatanTajwid,
-      isManualInput: useManualInput,
-      manualPages: useManualInput && selectedDrill?.type === 'page' ? manualPages.map(p => p.page) : null,
-      manualSurahs: useManualInput && selectedDrill?.type === 'surah' ? manualSurahs : null,
+
+    addEntries({
+      tanggal: tanggalDrill,
+      santriId: drillSelectedSantri,
+      jenis: "drill",
+      juz: Number(drillJuz),
+      halaman: drillHalamanDari && drillHalamanSampai ? `${drillHalamanDari}–${drillHalamanSampai}` : drillHalamanDari || undefined,
+      surah: drillSurahByJuz.find(s => String(s.number) === drillSurah)?.name || drillSurah || undefined,
+      surahNumber: drillSurah ? Number(drillSurah) : undefined,
+      ayatDari: drillAyatDari ? Number(drillAyatDari) : undefined,
+      ayatSampai: drillAyatSampai ? Number(drillAyatSampai) : undefined,
+      status: status,
+      catatan: catatanTajwid
     });
-    const manualInfo = useManualInput
-      ? selectedDrill?.type === 'page' ? `${manualPages.length} halaman` : `${manualSurahs.length} surat`
-      : null;
-    toast.success(manualInfo ? `Drill (input manual: ${manualInfo}) berhasil disimpan!` : "Drill berhasil disimpan!");
+
+    toast.success("Drill berhasil disimpan ke kalender!");
     setIsDrillDialogOpen(false);
     resetDrillForm();
   };
 
   const handleLulusDrill = () => {
     if (drillNilaiKelancaran >= BATAS_LULUS_DRILL) {
-      handleSaveDrill();
-      toast.success("Drill LULUS! 🎉");
+      handleSaveDrill("Lulus");
     }
   };
 
   const handleUlangiDrill = () => {
-    if (!tanggalDrill || !drillSelectedSantri) {
-      toast.error("Silakan lengkapi data drill terlebih dahulu");
-      return;
-    }
-    const santriData = mockSantri.find(s => s.id === drillSelectedSantri);
-    console.log({ jenis: "drill", santri: santriData?.nama, status: "ulangi", nilai: drillNilaiKelancaran });
-    toast.info("Drill dicatat. Santri perlu mengulang.");
-    setIsDrillDialogOpen(false);
-    resetDrillForm();
+    handleSaveDrill("Mengulang");
   };
 
   const handleExport = () => {
     toast.success("Data drill berhasil diexport!");
   };
 
-  const filteredDrill = mockDrillList.filter((item) => {
+  const displayDrillList = useMemo(() => {
+    const persistedDrills = entries
+      .filter(e => e.jenis === "drill")
+      .map((e, idx) => ({
+        id: `p-${idx}`,
+        tanggal: format(e.tanggal, "dd/MM/yyyy"),
+        santri: MOCK_SANTRI.find(s => s.id === e.santriId)?.nama || "Unknown",
+        juz: e.juz || 0,
+        level: e.level || 0,
+        materi: e.surah ? `${e.surah} (Ayat ${e.ayat})` : `Halaman ${e.halaman}`,
+        nilai: e.nilai || 0,
+        status: e.status || "Lulus"
+      }));
+
+    return [...persistedDrills, ...mockDrillList];
+  }, [entries]);
+
+  const filteredDrill = displayDrillList.filter((item) => {
     const matchSearch = item.santri.toLowerCase().includes(search.toLowerCase());
     const matchJuz = filterJuz === "all" || item.juz === Number(filterJuz);
     return matchSearch && matchJuz;
@@ -304,8 +306,8 @@ const DrillHafalan = () => {
                       <SelectTrigger><SelectValue placeholder="Semua Halaqoh" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Semua Halaqoh</SelectItem>
-                        {mockHalaqoh.map((h) => (
-                          <SelectItem key={h.id} value={h.id}>{h.nama_halaqoh}</SelectItem>
+                        {MOCK_HALAQOH.map((h) => (
+                          <SelectItem key={h.id} value={h.id}>{h.nama}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -716,8 +718,9 @@ const DrillHafalan = () => {
                 <SelectTrigger className="h-9 md:h-10 text-sm"><SelectValue placeholder="Halaqoh" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Semua Halaqoh</SelectItem>
-                  <SelectItem value="azhary">Halaqoh Al-Azhary</SelectItem>
-                  <SelectItem value="furqon">Halaqoh Al-Furqon</SelectItem>
+                  {MOCK_HALAQOH.map(h => (
+                    <SelectItem key={h.id} value={h.id}>{h.nama}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

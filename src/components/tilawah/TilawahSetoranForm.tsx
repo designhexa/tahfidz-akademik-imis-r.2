@@ -134,19 +134,18 @@ export const TilawahSetoranForm = ({
       : 0;
 
     const finalData = {
-      id: `set-${Date.now()}`,
-      idSantri: selectedSantri,
-      jilid: parseInt(selectedJilid),
-      juz: selectedJilid === "7" ? parseInt(selectedJuz) : null,
-      surah: surah || null,
-      ayatDari: ayatDari ? parseInt(ayatDari) : null,
-      ayatSampai: ayatSampai ? parseInt(ayatSampai) : null,
-      halamanDari: halamanDari ? parseInt(halamanDari) : null,
-      halamanSampai: halamanSampai ? parseInt(halamanSampai) : null,
-      status,
-      nilaiRataRata: rataRata,
+      tanggal: date,
+      santriId: selectedSantri,
+      jenis: "tilawah",
+      jilid: selectedJilid === "7" ? "quran" : selectedJilid,
+      juz: selectedJilid === "7" ? Number(selectedJuz) : undefined,
+      surah: surahByJuz.find(s => String(s.number) === surah)?.name || surah || undefined,
+      surahNumber: surah ? Number(surah) : undefined,
+      ayatDari: ayatDari ? Number(ayatDari) : undefined,
+      ayatSampai: ayatSampai ? Number(ayatSampai) : undefined,
+      halaman: halamanDari && halamanSampai ? `${halamanDari}–${halamanSampai}` : halamanDari || undefined,
+      status: status === "selesai" ? "Lancar" : status === "ulang" ? "Ulangi" : "Lancar",
       catatan,
-      tanggal: new Date().toISOString()
     };
     onSuccess(finalData);
     toast.success("Setoran berhasil disimpan");
