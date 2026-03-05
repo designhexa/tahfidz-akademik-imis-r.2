@@ -14,7 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Switch } from "@/components/ui/switch";
 import {
   Plus, Download, Target, Search, CalendarIcon, Unlock, Lock,
-  Save, Trophy, RotateCcw, CheckCircle, AlertCircle, X, Edit3, BookOpen
+  Save, Trophy, RotateCcw, CheckCircle, AlertCircle, X, Edit3, BookOpen, Info
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
