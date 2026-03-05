@@ -338,8 +338,11 @@ const SetoranHafalan = () => {
         jenis: data.jenis,
         juz: data.juz,
         surah: data.surah,
+        surahNumber: data.surahNumber,
         halaman: data.halaman,
         ayat: data.ayat,
+        ayatDari: data.ayatDari,
+        ayatSampai: data.ayatSampai,
         status: data.status,
         catatan: data.catatan,
       };
@@ -628,6 +631,8 @@ const SetoranHafalan = () => {
           activeTab={activeTab}
           subType={subType as any}
           onSave={handleSaveEntry}
+          santriId={selectedSantri}
+          existingRecords={entries as any}
         />
 
         <AddDrillModal
