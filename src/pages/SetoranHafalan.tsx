@@ -524,6 +524,7 @@ const SetoranHafalan = () => {
           santriList={dummySantri} 
           date={modalDate}
           santriName={santriData?.nama || ""}
+          santriId={selectedSantri}
           getPredikat={getPredikat} 
           onSuccess={handleSaveEntry}
         />
@@ -534,6 +535,7 @@ const SetoranHafalan = () => {
           santriList={dummySantri}
           date={modalDate}
           santriName={santriData?.nama || ""}
+          santriId={selectedSantri}
           getPredikat={getPredikat}
           onSuccess={handleSaveEntry}
         />
@@ -543,6 +545,7 @@ const SetoranHafalan = () => {
           onSubmit={handleSaveEntry}
           date={modalDate}
           santriName={santriData?.nama || ""}
+          santriId={selectedSantri}
           onOpenChange={setOpenUjianJilid}
           initialData={remedialTarget} 
         />

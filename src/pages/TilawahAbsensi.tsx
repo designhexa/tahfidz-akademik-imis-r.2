@@ -19,8 +19,9 @@
    getAspekPenilaianByJilid,
    SetoranTilawah 
  } from "@/lib/tilawah-data";
- import { MOCK_KELAS } from "@/lib/mock-data";
+ import { MOCK_KELAS, MOCK_SANTRI } from "@/lib/mock-data";
  import { toast } from "sonner";
+ import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
 
 type TilawahAbsensiProps = {
   open?: boolean;
@@ -35,6 +36,7 @@ export default function TilawahAbsensi({
   initialSantriId,
   initialTanggal,
 }: TilawahAbsensiProps = {}) {
+  const { entries, addEntries } = useSetoranPersistence();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
   const onOpenChange = externalOnOpenChange ?? setInternalOpen;
@@ -97,6 +99,25 @@ export default function TilawahAbsensi({
        toast.error("Lengkapi data setoran");
        return;
      }
+
+     const nTartil = parseFloat(nilaiTartil) || 0;
+     const nFashohah = parseFloat(nilaiFashohah) || 0;
+     const nTajwid = parseFloat(nilaiTajwid) || 0;
+     const nGhorib = parseFloat(nilaiGhorib) || 0;
+
+     const count = 2 + (aspekPenilaian.includes("tajwid_dasar") ? 1 : 0) + (aspekPenilaian.includes("ghorib") ? 1 : 0);
+     const total = (nTartil + nFashohah + nTajwid + nGhorib) / count;
+
+     addEntries({
+       tanggal: initialTanggal || new Date(),
+       santriId: selectedSantri,
+       jenis: "tilawah",
+       jilid: selectedJilid === "quran" ? "quran" : selectedJilid,
+       halaman: `${halamanDari}-${halamanSampai}`,
+       nilai: Math.round(total),
+       status: status === "selesai" ? "Lancar" : status === "ulang" ? "Ulangi" : "Lancar",
+       catatan,
+     });
      
      toast.success("Setoran tilawah berhasil disimpan");
      onOpenChange(false);
@@ -116,16 +137,33 @@ export default function TilawahAbsensi({
      setStatus("lanjut");
    };
  
-   const filteredSetoran = MOCK_SETORAN_TILAWAH.filter(setoran => {
-     const santri = MOCK_SANTRI_TILAWAH.find(s => s.id === setoran.idSantri);
-     if (!santri) return false;
-     
-     const matchSearch = santri.nama.toLowerCase().includes(search.toLowerCase());
-     const matchHalaqoh = filterHalaqoh === "all" || santri.halaqoh === filterHalaqoh;
-     const matchKelas = filterKelas === "all" || santri.kelas === filterKelas;
-     
-     return matchSearch && matchHalaqoh && matchKelas;
-   });
+   const filteredSetoran = useMemo(() => {
+     const persisted = entries
+       .filter(e => e.jenis === "tilawah")
+       .map((e, idx) => ({
+         id: `p-${idx}`,
+         idSantri: e.santriId,
+         tanggal: e.tanggal.toISOString().split('T')[0],
+         jilid: Number(e.jilid) || 1,
+         halamanDari: Number(e.halaman?.split('-')[0]) || 0,
+         halamanSampai: Number(e.halaman?.split('-')[1]) || 0,
+         nilaiRataRata: e.nilai || 0,
+         status: e.status === "Lancar" ? "lanjut" : "ulang",
+       }));
+
+     const combined = [...persisted, ...MOCK_SETORAN_TILAWAH];
+
+     return combined.filter(setoran => {
+       const santri = MOCK_SANTRI_TILAWAH.find(s => s.id === setoran.idSantri);
+       if (!santri) return false;
+
+       const matchSearch = santri.nama.toLowerCase().includes(search.toLowerCase());
+       const matchHalaqoh = filterHalaqoh === "all" || santri.halaqoh === filterHalaqoh;
+       const matchKelas = filterKelas === "all" || santri.kelas === filterKelas;
+
+       return matchSearch && matchHalaqoh && matchKelas;
+     });
+   }, [entries, search, filterHalaqoh, filterKelas]);
 
   return (
     <Layout>

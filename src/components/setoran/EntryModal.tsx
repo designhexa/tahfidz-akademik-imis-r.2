@@ -68,6 +68,13 @@ export function EntryModal({
   existingRecords = [],
   santriId = "",
 }: EntryModalProps) {
+  // Debug log if santriId is missing when modal is open
+  useMemo(() => {
+    if (open && !santriId) {
+      console.warn("EntryModal opened without santriId!");
+    }
+  }, [open, santriId]);
+
   const [juz, setJuz] = useState("");
   const [surah, setSurah] = useState("");
   const [halamanDari, setHalamanDari] = useState("");
@@ -267,6 +274,7 @@ export function EntryModal({
     // 3️⃣ SAVE ALL SEGMENTS
     const segmentsToSave = rangesToSave.map((range) => ({
       tanggal: date,
+      santriId: santriId, // Include santriId explicitly
       jenis: finalJenis,
       juz: juz ? Number(juz) : undefined,
       surah: range.surahName,

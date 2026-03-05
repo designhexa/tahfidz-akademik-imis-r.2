@@ -49,6 +49,7 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   date: Date | null;
   santriName: string;
+  santriId?: string;
   santriList: any[];
   getPredikat: (nilai: number) => { label: string; color: string; passed: boolean };
   onSuccess?: (data: any) => void;
@@ -59,11 +60,22 @@ export const TasmiForm5Juz = ({
   onOpenChange,
   date,
   santriName,
+  santriId,
   santriList,
   getPredikat,
   onSuccess,
 }: Props) => {
   const [selectedSantri, setSelectedSantri] = useState("");
+  useEffect(() => {
+    if (open) {
+      if (santriId) {
+        setSelectedSantri(santriId);
+      } else if (santriName) {
+        const santri = santriList.find(s => s.nama === santriName);
+        if (santri) setSelectedSantri(santri.id);
+      }
+    }
+  }, [open, santriName, santriId, santriList]);
   const [selectedJuzList, setSelectedJuzList] = useState<number[]>([]);
   const [penilaian5Juz, setPenilaian5Juz] = useState<PenilaianJuz[]>([]);
   const [catatanUmum, setCatatanUmum] = useState("");

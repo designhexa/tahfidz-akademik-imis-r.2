@@ -20,6 +20,7 @@ import {
   type SetoranRecord,
 } from "@/lib/mushaf-madinah";
 import { MOCK_SANTRI, MOCK_HALAQOH, getHalaqohNama } from "@/lib/mock-data";
+import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
 
 /* ================= MOCK DATA ================= */
 
@@ -57,6 +58,7 @@ const TAB_DESCRIPTIONS: Record<string, string> = {
 /* ================= COMPONENT ================= */
 
 const TambahSetoran = () => {
+  const { entries, addEntries } = useSetoranPersistence();
   const [halaqohFilter, setHalaqohFilter] = useState("");
   const [selectedSantri, setSelectedSantri] = useState("");
   const [tanggalSetoran, setTanggalSetoran] = useState<Date>();
@@ -134,18 +136,18 @@ const TambahSetoran = () => {
       santriId: selectedSantri,
       tanggal: tanggalSetoran,
       jenis: activeTab,
-      juz,
-      surah: inputMode === "surah" ? surah : undefined,
+      juz: juz ? Number(juz) : undefined,
+      surah: inputMode === "surah" ? surahByJuz.find(s => String(s.number) === surah)?.name || surah : undefined,
+      surahNumber: inputMode === "surah" ? Number(surah) : undefined,
       halaman: inputMode === "halaman" ? `${halamanDari}–${halamanSampai}` : undefined,
-      ayatDari: inputMode === "surah" ? ayatDari : undefined,
-      ayatSampai: inputMode === "surah" ? ayatSampai : undefined,
+      ayatDari: inputMode === "surah" ? Number(ayatDari) : undefined,
+      ayatSampai: inputMode === "surah" ? Number(ayatSampai) : undefined,
       nilai,
       status,
-      catatanTajwid,
-      pageInfo: pageInfo || undefined,
+      catatan: catatanTajwid,
     };
 
-    console.log("SETORAN BARU:", dataBaru);
+    addEntries(dataBaru as any);
 
     toast.success(
       status === "Lancar"
@@ -260,7 +262,12 @@ const TambahSetoran = () => {
         <>
           <SetoranCalendar
             santriId={selectedSantri}
-            setoranRecords={resetMode ? [] : mockSetoranRecords}
+            setoranRecords={resetMode ? [] : entries.filter(e => e.santriId === selectedSantri).map(e => ({
+              tanggal: e.tanggal,
+              santriId: e.santriId,
+              jenis: "setoran_baru",
+              status: (e.status === "Lancar" || e.status === "Lulus") ? "selesai" : "tidak_hadir"
+            }))}
             onSelectDate={handleDateSelect}
             selectedDate={tanggalSetoran}
           />

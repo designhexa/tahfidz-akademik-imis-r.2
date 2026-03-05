@@ -172,6 +172,7 @@ export default function TilawahUjian() {
        santriId: selectedSantri,
        jenis: "ujian_jilid",
        jilid: jilidDari,
+       nilai: totalNilai,
        status: lulus ? "Lulus" : "Mengulang",
        catatan: `Ujian Jilid ${jilidDari} ke ${jilidTujuan}. Skor: ${totalNilai}/${getSkorMaksimal()}`,
      });
@@ -220,6 +221,7 @@ export default function TilawahUjian() {
        santriId: remedialTarget.santriId,
        jenis: "ujian_jilid",
        jilid: remedialTarget.jilidDari,
+       nilai: totalNilai,
        status: lulus ? "Lulus" : "Mengulang",
        catatan: `Remedial ${remedialResult.remedialKe} Jilid ${remedialTarget.jilidDari}. Skor: ${totalNilai}/${getSkorMaksimal()}`,
      });

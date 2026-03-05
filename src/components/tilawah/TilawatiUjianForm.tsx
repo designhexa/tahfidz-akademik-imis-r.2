@@ -38,6 +38,7 @@ interface TilawatiUjianFormProps {
   initialData?: any; // Jika ada, otomatis masuk mode Remedial
   date: Date | null;
   santriName: string;
+  santriId?: string;
 }
 
 export const TilawatiUjianForm = ({ 
@@ -46,7 +47,8 @@ export const TilawatiUjianForm = ({
   onSubmit, 
   initialData, 
   date, 
-  santriName
+  santriName,
+  santriId
 }: TilawatiUjianFormProps) => {
   const isRemedial = !!initialData;
 
@@ -64,14 +66,17 @@ export const TilawatiUjianForm = ({
 
   // Sync state saat initialData berubah (untuk Remedial)
   useEffect(() => {
-    if (initialData) {
-      setSelectedSantri(initialData.santriId);
-      setJilidDari(initialData.jilidDari.toString());
-      setJilidTujuan(initialData.jilidTujuan.toString());
-    } else {
-      resetForm();
+    if (open) {
+      if (initialData) {
+        setSelectedSantri(initialData.santriId);
+        setJilidDari(initialData.jilidDari.toString());
+        setJilidTujuan(initialData.jilidTujuan.toString());
+      } else {
+        resetForm();
+        if (santriId) setSelectedSantri(santriId);
+      }
     }
-  }, [initialData, open]);
+  }, [initialData, open, santriId]);
 
   const resetForm = () => {
     setSelectedSantri("");

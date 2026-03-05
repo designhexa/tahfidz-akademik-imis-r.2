@@ -12,7 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Search, Plus, BookOpenCheck, RefreshCw, Shuffle } from "lucide-react";
 import { toast } from "sonner";
 import { MOCK_SANTRI_TILAWAH, TILAWATI_JILID, HALAMAN_PER_JILID } from "@/lib/tilawah-data";
-import { MOCK_HALAQOH, MOCK_KELAS } from "@/lib/mock-data";
+import { MOCK_HALAQOH, MOCK_KELAS, MOCK_SANTRI } from "@/lib/mock-data";
+import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
 
 interface SoalUjianSemester {
   id: number;
@@ -79,11 +80,11 @@ const MOCK_UJIAN_SEMESTER: HasilUjianSemester[] = [
 ];
 
 export default function TilawahUjianSemester() {
+  const { entries, addEntries } = useSetoranPersistence();
   const [search, setSearch] = useState("");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [ujianList, setUjianList] = useState<HasilUjianSemester[]>(MOCK_UJIAN_SEMESTER);
 
   // Form state
   const [selectedSantri, setSelectedSantri] = useState("");
@@ -152,7 +153,16 @@ export default function TilawahUjianSemester() {
       status,
     };
 
-    setUjianList(prev => [newUjian, ...prev]);
+    addEntries({
+      tanggal: new Date(),
+      santriId: selectedSantri,
+      jenis: "tilawah",
+      jilid: String(selectedSantriData?.jilidSaatIni || 1),
+      nilai: total,
+      status: status,
+      catatan: `Ujian Semester Tilawah. ${catatan}`,
+    });
+
     toast.success(`Ujian disimpan. Nilai: ${total} - ${status}`);
     resetForm();
     setDialogOpen(false);
@@ -167,10 +177,25 @@ export default function TilawahUjianSemester() {
     setCatatan("");
   };
 
-  const filteredUjian = ujianList.filter(u => {
-    const matchSearch = u.namaSantri.toLowerCase().includes(search.toLowerCase());
-    return matchSearch;
-  });
+  const filteredUjian = useMemo(() => {
+    const persisted = entries
+      .filter(e => e.jenis === "tilawah" && e.catatan?.includes("Ujian Semester"))
+      .map((e, idx) => ({
+        id: `p-${idx}`,
+        namaSantri: MOCK_SANTRI.find(s => s.id === e.santriId)?.nama || "Santri",
+        kelas: MOCK_SANTRI.find(s => s.id === e.santriId)?.idKelas || "Kelas",
+        jilid: Number(e.jilid) || 1,
+        nilaiKelancaran: e.nilai || 0,
+        nilaiTartil: e.nilai || 0,
+        nilaiFashohah: e.nilai || 0,
+        nilaiTotal: e.nilai || 0,
+        status: e.status as any,
+        tanggal: e.tanggal.toISOString().split('T')[0],
+      }));
+
+    const combined = [...persisted, ...MOCK_UJIAN_SEMESTER];
+    return combined.filter(u => u.namaSantri.toLowerCase().includes(search.toLowerCase()));
+  }, [entries, search]);
 
   return (
     <Layout>

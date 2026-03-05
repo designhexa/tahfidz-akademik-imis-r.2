@@ -29,19 +29,24 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   date: Date | null;
   santriName: string;
+  santriId?: string;
   santriList: any[];
   getPredikat: (nilai: number) => { label: string; color: string; passed: boolean };
   onSuccess?: (data: any) => void;
 }
 
-export const TasmiForm1Juz = ({ open, onOpenChange, santriList, getPredikat, date, santriName, onSuccess }: Props) => {
+export const TasmiForm1Juz = ({ open, onOpenChange, santriList, getPredikat, date, santriName, santriId, onSuccess }: Props) => {
   const [selectedSantri, setSelectedSantri] = useState("");
   useEffect(() => {
-    if (open && santriName) {
-      const santri = santriList.find(s => s.nama === santriName);
-      if (santri) setSelectedSantri(santri.id);
+    if (open) {
+      if (santriId) {
+        setSelectedSantri(santriId);
+      } else if (santriName) {
+        const santri = santriList.find(s => s.nama === santriName);
+        if (santri) setSelectedSantri(santri.id);
+      }
     }
-  }, [open, santriName, santriList]);
+  }, [open, santriName, santriId, santriList]);
 
   const [selectedJuz, setSelectedJuz] = useState("");
   const [catatanUmum, setCatatanUmum] = useState("");
