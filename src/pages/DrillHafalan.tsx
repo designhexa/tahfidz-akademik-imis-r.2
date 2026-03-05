@@ -361,6 +361,114 @@ const DrillHafalan = () => {
                     </Select>
                   </div>
 
+                  {/* Page/Surah sync input */}
+                  {drillJuz && drillLevelSelected && (
+                    <>
+                      <div className="flex gap-2">
+                        <Button type="button" size="sm" variant={drillInputMode === "halaman" ? "default" : "outline"} className="h-7 text-xs flex-1" onClick={() => setDrillInputMode("halaman")}>
+                          Pilih Halaman
+                        </Button>
+                        <Button type="button" size="sm" variant={drillInputMode === "surah" ? "default" : "outline"} className="h-7 text-xs flex-1" onClick={() => setDrillInputMode("surah")}>
+                          Pilih Surah & Ayat
+                        </Button>
+                      </div>
+
+                      {drillInputMode === "halaman" && (
+                        <>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <Label className="text-xs">Halaman dari (maks {drillMaxHalaman})</Label>
+                              <Input type="number" value={drillHalamanDari} min={1} max={drillMaxHalaman}
+                                onChange={(e) => {
+                                  setDrillHalamanDari(e.target.value);
+                                  if (e.target.value) {
+                                    const mapping = getPageMappingByJuz(Number(drillJuz), Number(e.target.value));
+                                    if (mapping) { setDrillSurah(String(mapping.surahNumber)); setDrillAyatDari(String(mapping.startAyat)); }
+                                  }
+                                }}
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">Halaman sampai</Label>
+                              <Input type="number" value={drillHalamanSampai} min={Number(drillHalamanDari) || 1} max={drillMaxHalaman}
+                                onChange={(e) => {
+                                  setDrillHalamanSampai(e.target.value);
+                                  if (e.target.value) {
+                                    const mapping = getPageMappingByJuz(Number(drillJuz), Number(e.target.value));
+                                    if (mapping) { setDrillAyatSampai(String(mapping.endAyat)); }
+                                  }
+                                }}
+                              />
+                            </div>
+                          </div>
+                          {drillPageInfo && (
+                            <div className="flex items-start gap-2 p-2 bg-primary/10 rounded text-xs text-foreground">
+                              <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-primary" />
+                              <span>Isi halaman: <strong>{drillPageInfo}</strong></span>
+                            </div>
+                          )}
+                          {drillSurah && drillAyatDari && (
+                            <div className="flex items-start gap-2 p-2 bg-muted/50 rounded text-xs text-muted-foreground">
+                              <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                              <span>📖 Surah {drillSurahByJuz.find(s => String(s.number) === drillSurah)?.name || drillSurah}, Ayat {drillAyatDari}{drillAyatSampai ? `–${drillAyatSampai}` : ""}</span>
+                            </div>
+                          )}
+                        </>
+                      )}
+
+                      {drillInputMode === "surah" && (
+                        <>
+                          <div className="space-y-2">
+                            <Label className="text-xs">Surah</Label>
+                            <Select value={drillSurah} onValueChange={(val) => { setDrillSurah(val); setDrillAyatDari("1"); setDrillAyatSampai("1"); setDrillHalamanDari(""); setDrillHalamanSampai(""); }}>
+                              <SelectTrigger className="h-9"><SelectValue placeholder="Pilih surah" /></SelectTrigger>
+                              <SelectContent>
+                                {drillSurahByJuz.map((s) => (
+                                  <SelectItem key={s.number} value={String(s.number)}>{s.number}. {s.name}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          {drillSelectedSurahObj && (
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-1">
+                                <Label className="text-xs">Ayat dari</Label>
+                                <Input type="number" value={drillAyatDari} min={1} max={drillSelectedSurahObj.numberOfAyahs}
+                                  onChange={(e) => {
+                                    setDrillAyatDari(e.target.value);
+                                    if (e.target.value && drillAyatSampai) {
+                                      const pr = getPageRangeFromAyatRange(Number(drillJuz), Number(drillSurah), Number(e.target.value), Number(drillAyatSampai));
+                                      if (pr) { setDrillHalamanDari(String(pr.dari)); setDrillHalamanSampai(String(pr.sampai)); }
+                                    }
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs">Ayat sampai</Label>
+                                <Input type="number" value={drillAyatSampai} min={Number(drillAyatDari)} max={drillSelectedSurahObj.numberOfAyahs}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value);
+                                    if (val >= Number(drillAyatDari)) {
+                                      setDrillAyatSampai(e.target.value);
+                                      const pr = getPageRangeFromAyatRange(Number(drillJuz), Number(drillSurah), Number(drillAyatDari), val);
+                                      if (pr) { setDrillHalamanDari(String(pr.dari)); setDrillHalamanSampai(String(pr.sampai)); }
+                                    }
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                          {drillHalamanDari && (
+                            <div className="flex items-start gap-2 p-2 bg-muted/50 rounded text-xs text-muted-foreground">
+                              <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                              <span>📖 Halaman {drillHalamanDari}{drillHalamanSampai && drillHalamanSampai !== drillHalamanDari ? `–${drillHalamanSampai}` : ""} (dalam juz)</span>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
+
                   {/* Info Drill */}
                   {drillLevelSelected && drillJuz && (() => {
                     const selectedDrill = drills.find(d => d.drillNumber === Number(drillLevelSelected));
