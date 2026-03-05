@@ -76,6 +76,30 @@ const DrillHafalan = () => {
   const [drillJumlahKesalahan, setDrillJumlahKesalahan] = useState("0");
   const [catatanTajwid, setCatatanTajwid] = useState("");
 
+  // Page/Surah sync state for drill form
+  const [drillInputMode, setDrillInputMode] = useState<"halaman" | "surah">("halaman");
+  const [drillHalamanDari, setDrillHalamanDari] = useState("");
+  const [drillHalamanSampai, setDrillHalamanSampai] = useState("");
+  const [drillSurah, setDrillSurah] = useState("");
+  const [drillAyatDari, setDrillAyatDari] = useState("");
+  const [drillAyatSampai, setDrillAyatSampai] = useState("");
+
+  const drillSurahByJuz = useMemo(() => {
+    if (!drillJuz) return [];
+    return getSurahListByJuz(Number(drillJuz));
+  }, [drillJuz]);
+
+  const drillSelectedSurahObj = useMemo(() => {
+    return drillSurahByJuz.find((s) => String(s.number) === drillSurah);
+  }, [drillSurah, drillSurahByJuz]);
+
+  const drillMaxHalaman = drillJuz ? getPageCountForJuz(Number(drillJuz)) : 20;
+
+  const drillPageInfo = useMemo(() => {
+    if (!drillJuz || !drillHalamanDari) return "";
+    return getPageSummaryByJuz(Number(drillJuz), Number(drillHalamanDari));
+  }, [drillJuz, drillHalamanDari]);
+
   // Manual drill input state
   const [useManualInput, setUseManualInput] = useState(false);
   const [manualPages, setManualPages] = useState<{ id: string; page: number }[]>([]);
