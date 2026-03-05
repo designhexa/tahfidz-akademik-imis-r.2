@@ -20,6 +20,7 @@ export interface CalendarEntry {
   ayat?: string;
   ayatDari?: number;
   ayatSampai?: number;
+  jilid?: string;
   status?: string;
   catatan?: string;
   rolePengisi?: string;
