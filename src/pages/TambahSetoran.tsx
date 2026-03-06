@@ -53,7 +53,7 @@ const TAB_DESCRIPTIONS: Record<string, string> = {
   setoran_baru: "Hafalan baru yang belum pernah disetorkan sebelumnya",
   murojaah: "Mengulang hafalan yang sudah pernah disetorkan",
   tilawah: "Membaca Al-Quran dengan tartil di hadapan ustadz",
-  tilawah_rumah: "Laporan tilawah yang dilakukan di rumah",
+  tilawah_rumah: "Laporan murojaah yang dilakukan di rumah",
 };
 
 /* ================= COMPONENT ================= */
@@ -282,11 +282,12 @@ const TambahSetoran = () => {
             setoranRecords={resetMode ? [] : entries.filter(e => e.santriId === selectedSantri).map(e => ({
               tanggal: e.tanggal,
               santriId: e.santriId,
-              jenis: "setoran_baru",
-              status: (e.status === "Lancar" || e.status === "Lulus") ? "selesai" : "tidak_hadir"
+              jenis: e.jenis,
+              status: (e.status === "Lancar" || e.status === "Lulus" || (e.status && ["Mumtaz", "Jayyid"].some(p => e.status?.includes(p)))) ? "selesai" : "tidak_hadir"
             }))}
             onSelectDate={handleDateSelect}
             selectedDate={tanggalSetoran}
+            allowPastFilling={activeTab === 'tilawah_rumah'}
           />
 
           <div className="flex items-center justify-between p-3 bg-muted rounded-lg">

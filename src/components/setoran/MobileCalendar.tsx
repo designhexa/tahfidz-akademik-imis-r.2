@@ -161,25 +161,28 @@ export function MobileCalendar({
 
                         const monthStart = startOfMonth(new Date(year, month));
 
-                        const previousDays = eachDayOfInterval({
-                          start: monthStart,
-                          end: new Date(day.getFullYear(), day.getMonth(), day.getDate() - 1),
-                        });
+                        // Bypassed for Murojaah Rumah (allowWeekends=true)
+                        if (!allowWeekends && day.getDate() > 1) {
+                          const previousDays = eachDayOfInterval({
+                            start: monthStart,
+                            end: new Date(day.getFullYear(), day.getMonth(), day.getDate() - 1),
+                          });
 
-                        const activePreviousDays = previousDays.filter((d) => {
-                          const dow = getDay(d);
-                          const weekend = dow === 0 || dow === 6;
-                          return allowWeekends || !weekend;
-                        });
+                          const activePreviousDays = previousDays.filter((d) => {
+                            const dow = getDay(d);
+                            const weekend = dow === 0 || dow === 6;
+                            return !weekend;
+                          });
 
-                        const hasUnfilledDay = activePreviousDays.some((d) => {
-                          const key = format(d, "yyyy-MM-dd");
-                          return !entriesByDate.has(key);
-                        });
+                          const hasUnfilledDay = activePreviousDays.some((d) => {
+                            const key = format(d, "yyyy-MM-dd");
+                            return !entriesByDate.has(key);
+                          });
 
-                        if (hasUnfilledDay) {
-                          alert("Hari sebelumnya belum diisi.");
-                          return;
+                          if (hasUnfilledDay) {
+                            alert("Hari sebelumnya belum diisi.");
+                            return;
+                          }
                         }
 
                         onDateClick(day);

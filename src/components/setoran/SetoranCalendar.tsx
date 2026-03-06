@@ -10,7 +10,7 @@ import { CheckCircle, XCircle, AlertCircle, Lock } from "lucide-react";
 interface SetoranRecord {
   tanggal: Date;
   santriId: string;
-  jenis: "setoran_baru" | "murojaah" | "tilawah" | "tilawah_rumah" | "drill";
+  jenis: string;
   status: "selesai" | "tidak_hadir";
 }
 
@@ -19,6 +19,7 @@ interface SetoranCalendarProps {
   setoranRecords: SetoranRecord[];
   onSelectDate: (date: Date | undefined) => void;
   selectedDate?: Date;
+  allowPastFilling?: boolean;
 }
 
 export function SetoranCalendar({
@@ -26,14 +27,16 @@ export function SetoranCalendar({
   setoranRecords,
   onSelectDate,
   selectedDate,
+  allowPastFilling = false,
 }: SetoranCalendarProps) {
   const today = startOfDay(new Date());
 
-  // Cari tanggal terakhir yang belum diisi
+  // Cari tanggal terakhir yang belum diisi (H-2)
   const getFirstMissingDate = useMemo(() => {
-    // Target tanggal = H-2
-    const targetDate = subDays(today, 2);
+    if (allowPastFilling) return null;
 
+    // Logic: check if H-2 is missing
+    const targetDate = subDays(today, 2);
     const hasRecord = setoranRecords.some(
       (r) =>
         r.santriId === santriId &&
@@ -41,21 +44,24 @@ export function SetoranCalendar({
     );
 
     return hasRecord ? null : targetDate;
-  }, [setoranRecords, santriId, today]);
+  }, [setoranRecords, santriId, today, allowPastFilling]);
 
   // Cek apakah tanggal bisa dipilih
   const isDateSelectable = (date: Date): boolean => {
+    const dateDay = startOfDay(date);
     const dateStr = format(date, "yyyy-MM-dd");
     
     // Tidak bisa pilih tanggal masa depan
-    if (isBefore(today, startOfDay(date))) return false;
+    if (isBefore(today, dateDay)) return false;
     
-    // Jika ada tanggal sebelumnya yang belum diisi, hanya tanggal itu yang bisa dipilih
+    // Boleh pilih tanggal mana saja di masa lalu (backlog)
+    if (allowPastFilling) return true;
+
+    // Strict logic for non-backlog:
     if (getFirstMissingDate) {
       return format(getFirstMissingDate, "yyyy-MM-dd") === dateStr;
     }
     
-    // Jika hari ini sudah diisi, tidak ada yang bisa dipilih
     const todayHasRecord = setoranRecords.some(
       (r) =>
         r.santriId === santriId &&
@@ -64,7 +70,6 @@ export function SetoranCalendar({
     
     if (todayHasRecord) return false;
     
-    // Hanya hari ini yang bisa dipilih
     return isToday(date);
   };
 
@@ -148,31 +153,13 @@ export function SetoranCalendar({
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
-          📅 Kalender Setoran
+          📅 Kalender Monitoring
         </CardTitle>
         <CardDescription>
-          Setoran wajib setiap hari. Isi hari sebelumnya dulu jika belum diisi.
+          Pilih tanggal untuk menginput data setoran, drill, atau murojaah.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {getFirstMissingDate && (
-          <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-yellow-800 dark:text-yellow-200">
-                <p className="font-medium">Setoran belum lengkap!</p>
-                <p className="text-xs mt-1">
-                  Silakan isi setoran untuk tanggal{" "}
-                  <strong>
-                    {format(getFirstMissingDate, "d MMMM yyyy", { locale: id })}
-                  </strong>
-                  {" "}
-                  terlebih dahulu.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
 
         <Calendar
           mode="single"

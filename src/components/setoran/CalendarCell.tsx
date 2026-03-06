@@ -43,6 +43,7 @@ const STATUS_COLORS: Record<string, string> = {
   Lancar: "bg-[hsl(160,60%,45%)]/15 text-[hsl(160,60%,30%)] border-[hsl(160,60%,45%)]/30",
   Lulus: "bg-[hsl(160,60%,45%)]/15 text-[hsl(160,60%,30%)] border-[hsl(160,60%,45%)]/30",
   "Kurang Lancar": "bg-[hsl(45,90%,55%)]/15 text-[hsl(45,90%,35%)] border-[hsl(45,90%,55%)]/30",
+  "Kurang": "bg-[hsl(45,90%,55%)]/15 text-[hsl(45,90%,35%)] border-[hsl(45,90%,55%)]/30",
   Ulangi: "bg-destructive/15 text-destructive border-destructive/30",
   Mengulang: "bg-destructive/15 text-destructive border-destructive/30",
   Sakit: "bg-muted text-muted-foreground border-border",
