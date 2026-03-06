@@ -67,6 +67,7 @@ import { mockSantriProgress, getNextTasmiJuz } from "@/lib/target-hafalan";
 import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
 import { toast } from "sonner";
 import { MOCK_SANTRI, getHalaqohNama, getKelasNama } from "@/lib/mock-data";
+import { getSantriProgressStatus, FULL_PROGRESSION_ORDER } from "@/lib/progression-logic";
 
 const JUZ_ORDER = [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
 
@@ -232,6 +233,29 @@ const UjianTasmi = () => {
     setSelectedSantri(santri.id);
     setIsFormOpen(true);
   };
+
+  const handleRegisterTasmi = (santriId: string, juz: number) => {
+    addEntries({
+      tanggal: new Date(),
+      santriId: santriId,
+      jenis: "tasmi",
+      juz: juz,
+      status: "Registered",
+      catatan: "Didaftarkan oleh Ustadz"
+    });
+    toast.success("Santri berhasil didaftarkan untuk Tasmi'");
+  };
+
+  const tasmiCandidates = useMemo(() => {
+    return MOCK_SANTRI.map(s => {
+      const status = getSantriProgressStatus(s.id, entries);
+      return {
+        ...s,
+        status: status,
+        isEligible: status.stage === 'tasmi_eligible' || status.stage === 'tasmi_registered'
+      };
+    }).filter(s => s.isEligible);
+  }, [entries]);
 
   const displayHasilUjian = useMemo(() => {
     const persistedTasmi = entries
@@ -443,41 +467,48 @@ const UjianTasmi = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {mockSantriProgress
-                        .filter(s => s.eligibleForTasmi)
-                        .map((student, index) => {
-                          const nextJuz = getNextTasmiJuz(student.juzSelesai);
-                          return (
-                            <TableRow key={student.id}>
-                              <TableCell className="font-medium">{index + 1}</TableCell>
-                              <TableCell className="font-medium">{student.nama}</TableCell>
-                              <TableCell>{student.kelas}</TableCell>
-                              <TableCell className="text-center">
-                                <Badge variant="secondary">{student.jumlahJuzHafal} Juz</Badge>
-                              </TableCell>
-                              <TableCell className="text-center">
-                                {nextJuz ? (
-                                  <Badge className="bg-amber-500 hover:bg-amber-600 text-white">
-                                    Juz {nextJuz}
-                                  </Badge>
-                                ) : (
-                                  <Badge className="bg-emerald-500 text-white">Khatam!</Badge>
-                                )}
-                              </TableCell>
-                              <TableCell className="text-center">
+                      {tasmiCandidates.map((student, index) => {
+                        const juz = student.status.currentJuz;
+                        const isRegistered = student.status.stage === 'tasmi_registered';
+                        return (
+                          <TableRow key={student.id}>
+                            <TableCell className="font-medium">{index + 1}</TableCell>
+                            <TableCell className="font-medium">{student.nama}</TableCell>
+                            <TableCell>{getKelasNama(student.idKelas)}</TableCell>
+                            <TableCell className="text-center">
+                              <Badge variant="secondary">{student.status.completedJuzList.length} Juz</Badge>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <Badge className="bg-amber-500 hover:bg-amber-600 text-white">
+                                Juz {juz}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {isRegistered ? (
+                                <Button
+                                  variant="default"
+                                  size="sm"
+                                  className="bg-emerald-600 hover:bg-emerald-700"
+                                  onClick={() => handleUjian(student)}
+                                >
+                                  <Award className="w-3 h-3 mr-1" />
+                                  Mulai Ujian
+                                </Button>
+                              ) : (
                                 <Button
                                   variant="outline"
                                   size="sm"
                                   className="border-primary text-primary hover:bg-primary/10"
-                                  onClick={() => handleUjian(student)}
+                                  onClick={() => handleRegisterTasmi(student.id, juz)}
                                 >
                                   <CheckCircle2 className="w-3 h-3 mr-1" />
-                                  Daftarkan
+                                  Konfirmasi Daftar
                                 </Button>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </div>

@@ -34,8 +34,9 @@ import {
   getDetailedContentForPageRange,
   type SetoranRecord,
 } from "@/lib/mushaf-madinah";
-import { Plus, Info } from "lucide-react";
+import { Plus, Info, Lock } from "lucide-react";
 import { SurahAyatLimitInfo, PageRangeDetailInfo } from "@/components/setoran/AyatRangeInfo";
+import { getSantriProgressStatus, isEntryBackward } from "@/lib/progression-logic";
 
 type TabType = "setoran_hafalan" | "murojaah" | "tilawah" | "murojaah_rumah";
 type SubType =
@@ -271,7 +272,27 @@ export function EntryModal({
 
     if (overlapFound) return;
 
-    // 3️⃣ SAVE ALL SEGMENTS
+    // 3️⃣ CEK PROGRESSION (SETORAN/DRILL/TASMI)
+    if (finalJenis === "setoran_hafalan" || finalJenis === "drill" || finalJenis === "tasmi") {
+      const currentStatus = getSantriProgressStatus(santriId, existingRecords as any);
+
+      for (const range of rangesToSave) {
+        const check = isEntryBackward({
+          jenis: finalJenis as any,
+          juz: juz ? Number(juz) : undefined,
+          halaman: range.halaman,
+          surah: range.surahName,
+          level: (finalJenis === "drill") ? undefined : undefined // level handled in AddDrillModal
+        }, currentStatus);
+
+        if (check.backward) {
+          toast.error(`Input tidak valid: ${check.message}`);
+          return;
+        }
+      }
+    }
+
+    // 4️⃣ SAVE ALL SEGMENTS
     const segmentsToSave = rangesToSave.map((range) => ({
       tanggal: date,
       santriId: santriId, // Include santriId explicitly
@@ -445,12 +466,14 @@ export function EntryModal({
                       max={validBoundaries?.ayatMax || selectedSurah.numberOfAyahs}
                           onChange={(e) => {
                             const val = Number(e.target.value);
-                            const min = validBoundaries?.ayatMin || 1;
                             const max = validBoundaries?.ayatMax || selectedSurah.numberOfAyahs;
-                            const clamped = Math.max(min, Math.min(max, val));
-                            setAyatDari(String(clamped));
-                            // Sync to page
-                            if (clamped && ayatSampai) {
+                            const clamped = Math.min(max, val);
+                            const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
+                            setAyatDari(finalVal);
+
+                            // Sync to page if valid
+                            const min = validBoundaries?.ayatMin || 1;
+                            if (!isNaN(clamped) && clamped >= min && clamped <= max && ayatSampai) {
                               const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), clamped, Number(ayatSampai));
                               if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
                             }
@@ -466,13 +489,17 @@ export function EntryModal({
                       max={validBoundaries?.ayatMax || selectedSurah.numberOfAyahs}
                           onChange={(e) => {
                             const val = Number(e.target.value);
-                            const min = Number(ayatDari);
                             const max = validBoundaries?.ayatMax || selectedSurah.numberOfAyahs;
-                            const clamped = Math.max(min, Math.min(max, val));
-                            setAyatSampai(String(clamped));
-                            // Sync to page
-                            const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(ayatDari), clamped);
-                            if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
+                            const clamped = Math.min(max, val);
+                            const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
+                            setAyatSampai(finalVal);
+
+                            // Sync to page if valid
+                            const min = Number(ayatDari) || 1;
+                            if (!isNaN(clamped) && clamped >= min && clamped <= max) {
+                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(ayatDari), clamped);
+                              if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
+                            }
                           }}
                         />
                       </div>
@@ -502,10 +529,12 @@ export function EntryModal({
                         max={maxHalaman}
                         onChange={(e) => {
                           const val = Number(e.target.value);
-                          const clamped = Math.max(1, Math.min(maxHalaman, val));
-                          setHalamanDari(String(clamped));
-                          // Sync to surah/ayat
-                          if (clamped) {
+                          const clamped = Math.min(maxHalaman, val);
+                          const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
+                          setHalamanDari(finalVal);
+
+                          // Sync to surah/ayat if valid
+                          if (!isNaN(clamped) && clamped >= 1 && clamped <= maxHalaman) {
                             const mapping = getPageMappingByJuz(Number(juz), clamped);
                             if (mapping) {
                               setSurah(String(mapping.surahNumber));
@@ -524,11 +553,13 @@ export function EntryModal({
                         max={maxHalaman}
                         onChange={(e) => {
                           const val = Number(e.target.value);
+                          const clamped = Math.min(maxHalaman, val);
+                          const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
+                          setHalamanSampai(finalVal);
+
+                          // Sync end ayat if valid
                           const min = Number(halamanDari) || 1;
-                          const clamped = Math.max(min, Math.min(maxHalaman, val));
-                          setHalamanSampai(String(clamped));
-                          // Sync end ayat
-                          if (clamped) {
+                          if (!isNaN(clamped) && clamped >= min && clamped <= maxHalaman) {
                             const mapping = getPageMappingByJuz(Number(juz), clamped);
                             if (mapping) {
                               setAyatSampai(String(mapping.endAyat));

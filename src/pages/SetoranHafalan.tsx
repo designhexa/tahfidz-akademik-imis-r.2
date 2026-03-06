@@ -515,7 +515,7 @@ const SetoranHafalan = () => {
           santriName={santriData?.nama || ""}
           initialSantriId={selectedSantri || undefined}
           onSuccess={handleSaveEntry}
-          drillHistory={[]}
+        drillHistory={entries}
         />
 
         <TasmiForm1Juz 
@@ -527,6 +527,7 @@ const SetoranHafalan = () => {
           santriId={selectedSantri}
           getPredikat={getPredikat} 
           onSuccess={handleSaveEntry}
+          existingEntries={entries}
         />
 
         <TasmiForm5Juz
@@ -538,6 +539,7 @@ const SetoranHafalan = () => {
           santriId={selectedSantri}
           getPredikat={getPredikat}
           onSuccess={handleSaveEntry}
+          existingEntries={entries}
         />
 
         <TilawatiUjianForm 

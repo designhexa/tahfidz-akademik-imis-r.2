@@ -21,6 +21,7 @@ import {
 } from "@/lib/mushaf-madinah";
 import { MOCK_SANTRI, MOCK_HALAQOH, getHalaqohNama } from "@/lib/mock-data";
 import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
+import { getSantriProgressStatus, isEntryBackward } from "@/lib/progression-logic";
 
 /* ================= MOCK DATA ================= */
 
@@ -131,6 +132,22 @@ const TambahSetoran = () => {
 
     const nilai = nilaiKelancaran;
     const status = tentukanStatusSetoran(nilai);
+
+    // Progression check
+    if (activeTab === "setoran_baru") {
+      const currentStatus = getSantriProgressStatus(selectedSantri, entries);
+      const check = isEntryBackward({
+        jenis: activeTab as any,
+        juz: juz ? Number(juz) : undefined,
+        halaman: inputMode === "halaman" ? `${halamanDari}–${halamanSampai}` : undefined,
+        surah: inputMode === "surah" ? surahByJuz.find(s => String(s.number) === surah)?.name : undefined
+      }, currentStatus);
+
+      if (check.backward) {
+        toast.error(`Input tidak valid: ${check.message}`);
+        return;
+      }
+    }
 
     const dataBaru = {
       santriId: selectedSantri,
@@ -379,7 +396,12 @@ const TambahSetoran = () => {
                             value={ayatDari}
                             min={1}
                             max={selectedSurah?.numberOfAyahs}
-                            onChange={(e) => setAyatDari(e.target.value)}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              const max = selectedSurah?.numberOfAyahs || 999;
+                              const clamped = Math.min(max, val);
+                              setAyatDari(isNaN(clamped) || e.target.value === "" ? "" : String(clamped));
+                            }}
                             disabled={!selectedSurah}
                           />
                         </div>
@@ -390,7 +412,12 @@ const TambahSetoran = () => {
                             value={ayatSampai}
                             min={Number(ayatDari)}
                             max={selectedSurah?.numberOfAyahs}
-                            onChange={(e) => setAyatSampai(e.target.value)}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              const max = selectedSurah?.numberOfAyahs || 999;
+                              const clamped = Math.min(max, val);
+                              setAyatSampai(isNaN(clamped) || e.target.value === "" ? "" : String(clamped));
+                            }}
                             disabled={!selectedSurah}
                           />
                         </div>
@@ -409,7 +436,11 @@ const TambahSetoran = () => {
                             value={halamanDari}
                             min={1}
                             max={maxHalaman}
-                            onChange={(e) => setHalamanDari(e.target.value)}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              const clamped = Math.min(maxHalaman, val);
+                              setHalamanDari(isNaN(clamped) || e.target.value === "" ? "" : String(clamped));
+                            }}
                           />
                         </div>
                         <div className="space-y-1">
@@ -419,7 +450,11 @@ const TambahSetoran = () => {
                             value={halamanSampai}
                             min={Number(halamanDari) || 1}
                             max={maxHalaman}
-                            onChange={(e) => setHalamanSampai(e.target.value)}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              const clamped = Math.min(maxHalaman, val);
+                              setHalamanSampai(isNaN(clamped) || e.target.value === "" ? "" : String(clamped));
+                            }}
                           />
                         </div>
                       </div>

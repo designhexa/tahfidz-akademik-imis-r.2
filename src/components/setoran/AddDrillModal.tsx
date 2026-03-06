@@ -30,6 +30,8 @@ import {
 } from "@/lib/mushaf-madinah";
 import { SurahAyatLimitInfo, PageRangeDetailInfo } from "@/components/setoran/AyatRangeInfo";
 import { MOCK_SANTRI } from "@/lib/mock-data";
+import { getSantriProgressStatus, isEntryBackward } from "@/lib/progression-logic";
+import { CalendarEntry } from "./CalendarCell";
 
 interface AddDrillModalProps {
   open: boolean;
@@ -38,12 +40,7 @@ interface AddDrillModalProps {
   date: Date | null;
   santriName: string;
   initialSantriId?: string;
-  drillHistory: {
-    santri: string;
-    juz: number;
-    level: number;
-    status: string;
-  }[];
+  drillHistory: CalendarEntry[];
 }
 
 const BATAS_LULUS_DRILL = 88;
@@ -169,16 +166,14 @@ export const AddDrillModal = ({
   // 🔒 FUNCTION PENGUNCI LEVEL
   const isDrillUnlocked = (drillNumber: number) => {
     if (!selectedSantri || !juz) return false;
+    const currentStatus = getSantriProgressStatus(selectedSantri, drillHistory);
+
+    // Must be in drill stage for this juz
+    if (currentStatus.currentJuz !== Number(juz)) return false;
+    if (currentStatus.stage !== 'drill' && currentStatus.stage !== 'tasmi_eligible' && currentStatus.stage !== 'tasmi_registered') return false;
+
     if (drillNumber === 1) return true;
-    const santri = MOCK_SANTRI.find(s => s.id === selectedSantri);
-    if (!santri) return false;
-    const previousLevelLulus = (drillHistory ?? []).some(d =>
-      d.santri === santri.nama &&
-      d.juz === Number(juz) &&
-      d.level === drillNumber - 1 &&
-      d.status === "Lulus"
-    );
-    return previousLevelLulus;
+    return (currentStatus.lastDrillLevel || 0) >= drillNumber - 1;
   };
 
   const handleSave = (status: "Lulus" | "Mengulang") => {
@@ -189,6 +184,19 @@ export const AddDrillModal = ({
 
     if (!halamanDari && !surah) {
       toast.error("Pilih halaman atau surah yang disetor");
+      return;
+    }
+
+    // Progression check
+    const currentStatus = getSantriProgressStatus(selectedSantri, drillHistory);
+    const check = isEntryBackward({
+      jenis: 'drill',
+      juz: Number(juz),
+      level: Number(level)
+    }, currentStatus);
+
+    if (check.backward) {
+      toast.error(`Input tidak valid: ${check.message}`);
       return;
     }
 
@@ -318,9 +326,13 @@ export const AddDrillModal = ({
                       <Input
                         type="number" value={halamanDari} min={1} max={maxHalaman}
                         onChange={(e) => {
-                          setHalamanDari(e.target.value);
-                          if (e.target.value) {
-                            const mapping = getPageMappingByJuz(Number(juz), Number(e.target.value));
+                          const val = Number(e.target.value);
+                          const clamped = Math.min(maxHalaman, val);
+                          const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
+                          setHalamanDari(finalVal);
+
+                          if (!isNaN(clamped) && clamped >= 1 && clamped <= maxHalaman) {
+                            const mapping = getPageMappingByJuz(Number(juz), clamped);
                             if (mapping) {
                               setSurah(String(mapping.surahNumber));
                               setAyatDari(String(mapping.startAyat));
@@ -334,9 +346,14 @@ export const AddDrillModal = ({
                       <Input
                         type="number" value={halamanSampai} min={Number(halamanDari) || 1} max={maxHalaman}
                         onChange={(e) => {
-                          setHalamanSampai(e.target.value);
-                          if (e.target.value) {
-                            const mapping = getPageMappingByJuz(Number(juz), Number(e.target.value));
+                          const val = Number(e.target.value);
+                          const clamped = Math.min(maxHalaman, val);
+                          const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
+                          setHalamanSampai(finalVal);
+
+                          const min = Number(halamanDari) || 1;
+                          if (!isNaN(clamped) && clamped >= min && clamped <= maxHalaman) {
+                            const mapping = getPageMappingByJuz(Number(juz), clamped);
                             if (mapping) {
                               setAyatSampai(String(mapping.endAyat));
                             }
@@ -406,9 +423,14 @@ export const AddDrillModal = ({
                         <Input
                           type="number" value={ayatDari} min={1} max={selectedSurah.numberOfAyahs}
                           onChange={(e) => {
-                            setAyatDari(e.target.value);
-                            if (e.target.value && ayatSampai) {
-                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(e.target.value), Number(ayatSampai));
+                            const val = Number(e.target.value);
+                            const max = selectedSurah.numberOfAyahs;
+                            const clamped = Math.min(max, val);
+                            const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
+                            setAyatDari(finalVal);
+
+                            if (!isNaN(clamped) && clamped >= 1 && clamped <= max && ayatSampai) {
+                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), clamped, Number(ayatSampai));
                               if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
                             }
                           }}
@@ -420,9 +442,14 @@ export const AddDrillModal = ({
                           type="number" value={ayatSampai} min={Number(ayatDari)} max={selectedSurah.numberOfAyahs}
                           onChange={(e) => {
                             const val = Number(e.target.value);
-                            if (val >= Number(ayatDari)) {
-                              setAyatSampai(e.target.value);
-                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(ayatDari), val);
+                            const max = selectedSurah.numberOfAyahs;
+                            const clamped = Math.min(max, val);
+                            const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
+                            setAyatSampai(finalVal);
+
+                            const min = Number(ayatDari) || 1;
+                            if (!isNaN(clamped) && clamped >= min && clamped <= max) {
+                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(ayatDari), clamped);
                               if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
                             }
                           }}

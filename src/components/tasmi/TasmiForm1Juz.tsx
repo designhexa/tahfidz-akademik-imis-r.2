@@ -23,6 +23,8 @@ import { JuzSelector } from "@/components/JuzSelector";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import { useEffect } from "react";
+import { getSantriProgressStatus } from "@/lib/progression-logic";
+import { toast } from "sonner";
 
 interface Props {
   open: boolean;
@@ -33,9 +35,10 @@ interface Props {
   santriList: any[];
   getPredikat: (nilai: number) => { label: string; color: string; passed: boolean };
   onSuccess?: (data: any) => void;
+  existingEntries?: any[];
 }
 
-export const TasmiForm1Juz = ({ open, onOpenChange, santriList, getPredikat, date, santriName, santriId, onSuccess }: Props) => {
+export const TasmiForm1Juz = ({ open, onOpenChange, santriList, getPredikat, date, santriName, santriId, onSuccess, existingEntries = [] }: Props) => {
   const [selectedSantri, setSelectedSantri] = useState("");
   useEffect(() => {
     if (open) {
@@ -79,6 +82,17 @@ export const TasmiForm1Juz = ({ open, onOpenChange, santriList, getPredikat, dat
   };
 
   const handleSave = () => {
+    // Eligibility Check
+    const status = getSantriProgressStatus(selectedSantri, existingEntries);
+    if (status.currentJuz !== Number(selectedJuz)) {
+      toast.error(`Santri belum mencapai Juz ${selectedJuz}. Sekarang: Juz ${status.currentJuz}`);
+      return;
+    }
+    if (status.stage !== 'tasmi_registered') {
+      toast.error("Santri harus didaftarkan oleh Ustadz terlebih dahulu di menu Ujian Tasmi'");
+      return;
+    }
+
     onSuccess?.({
       tanggal: date,
       santriId: selectedSantri,

@@ -12,6 +12,8 @@ interface JuzSelectorProps {
   required?: boolean;
 }
 
+import { MANDATORY_JUZ_ORDER } from "@/lib/progression-logic";
+
 export const JuzSelector = ({ value, onValueChange, label = "Juz", required = false }: JuzSelectorProps) => {
   const [open, setOpen] = useState(false);
 
@@ -19,6 +21,11 @@ export const JuzSelector = ({ value, onValueChange, label = "Juz", required = fa
     onValueChange(juz);
     setOpen(false);
   };
+
+  const juzList = [
+    ...MANDATORY_JUZ_ORDER,
+    ...Array.from({ length: 30 }, (_, i) => i + 1).filter(j => !MANDATORY_JUZ_ORDER.includes(j))
+  ];
 
   return (
     <div className="space-y-2">
@@ -36,15 +43,19 @@ export const JuzSelector = ({ value, onValueChange, label = "Juz", required = fa
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[300px] p-2" align="start">
+          <div className="mb-2 px-1 py-1 bg-amber-50 text-[10px] text-amber-600 font-medium rounded border border-amber-100">
+            Urutan: {MANDATORY_JUZ_ORDER.join(' → ')} (Wajib)
+          </div>
           <div className="grid grid-cols-6 gap-1">
-            {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
+            {juzList.map((juz) => (
               <Button
                 key={juz}
                 variant="ghost"
                 size="sm"
                 className={cn(
                   "h-10 w-full font-medium",
-                  value === String(juz) && "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                  value === String(juz) && "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
+                  MANDATORY_JUZ_ORDER.includes(juz) && value !== String(juz) && "bg-amber-50 text-amber-700"
                 )}
                 onClick={() => handleSelect(String(juz))}
               >

@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { JuzSelector } from "@/components/JuzSelector";
 import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
 import { MOCK_SANTRI, MOCK_HALAQOH } from "@/lib/mock-data";
+import { getSantriProgressStatus, isEntryBackward } from "@/lib/progression-logic";
 import {
   getDrillsForJuz,
   DrillDefinition,
@@ -141,7 +142,16 @@ const DrillHafalan = () => {
   }, [drillFormHalaqohFilter]);
 
   const isDrillUnlocked = (santriId: string, drillNumber: number, juzNum: number) => {
-    return drillNumber === 1;
+    if (!santriId || !juzNum) return false;
+    const currentStatus = getSantriProgressStatus(santriId, entries);
+
+    // Must be in drill stage for this juz
+    if (currentStatus.currentJuz !== juzNum) return false;
+    const validStages = ['drill', 'tasmi_eligible', 'tasmi_registered'];
+    if (!validStages.includes(currentStatus.stage)) return false;
+
+    if (drillNumber === 1) return true;
+    return (currentStatus.lastDrillLevel || 0) >= drillNumber - 1;
   };
 
   const resetDrillForm = () => {
@@ -203,6 +213,19 @@ const DrillHafalan = () => {
   const handleSaveDrill = (status: "Lulus" | "Mengulang") => {
     if (!tanggalDrill || !drillSelectedSantri || !drillJuz || !drillLevelSelected) {
       toast.error("Silakan lengkapi data drill terlebih dahulu");
+      return;
+    }
+
+    // Progression check
+    const currentStatus = getSantriProgressStatus(drillSelectedSantri, entries);
+    const check = isEntryBackward({
+      jenis: 'drill',
+      juz: Number(drillJuz),
+      level: Number(drillLevelSelected)
+    }, currentStatus);
+
+    if (check.backward) {
+      toast.error(`Input tidak valid: ${check.message}`);
       return;
     }
 
@@ -384,9 +407,12 @@ const DrillHafalan = () => {
                               <Label className="text-xs">Halaman dari (maks {drillMaxHalaman})</Label>
                               <Input type="number" value={drillHalamanDari} min={1} max={drillMaxHalaman}
                                 onChange={(e) => {
-                                  setDrillHalamanDari(e.target.value);
-                                  if (e.target.value) {
-                                    const mapping = getPageMappingByJuz(Number(drillJuz), Number(e.target.value));
+                                  const val = Number(e.target.value);
+                                  const clamped = Math.min(drillMaxHalaman, val);
+                                  const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
+                                  setDrillHalamanDari(finalVal);
+                                  if (!isNaN(clamped) && clamped >= 1 && clamped <= drillMaxHalaman) {
+                                    const mapping = getPageMappingByJuz(Number(drillJuz), clamped);
                                     if (mapping) { setDrillSurah(String(mapping.surahNumber)); setDrillAyatDari(String(mapping.startAyat)); }
                                   }
                                 }}
@@ -396,9 +422,13 @@ const DrillHafalan = () => {
                               <Label className="text-xs">Halaman sampai</Label>
                               <Input type="number" value={drillHalamanSampai} min={Number(drillHalamanDari) || 1} max={drillMaxHalaman}
                                 onChange={(e) => {
-                                  setDrillHalamanSampai(e.target.value);
-                                  if (e.target.value) {
-                                    const mapping = getPageMappingByJuz(Number(drillJuz), Number(e.target.value));
+                                  const val = Number(e.target.value);
+                                  const clamped = Math.min(drillMaxHalaman, val);
+                                  const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
+                                  setDrillHalamanSampai(finalVal);
+                                  const min = Number(drillHalamanDari) || 1;
+                                  if (!isNaN(clamped) && clamped >= min && clamped <= drillMaxHalaman) {
+                                    const mapping = getPageMappingByJuz(Number(drillJuz), clamped);
                                     if (mapping) { setDrillAyatSampai(String(mapping.endAyat)); }
                                   }
                                 }}
@@ -439,9 +469,13 @@ const DrillHafalan = () => {
                                 <Label className="text-xs">Ayat dari</Label>
                                 <Input type="number" value={drillAyatDari} min={1} max={drillSelectedSurahObj.numberOfAyahs}
                                   onChange={(e) => {
-                                    setDrillAyatDari(e.target.value);
-                                    if (e.target.value && drillAyatSampai) {
-                                      const pr = getPageRangeFromAyatRange(Number(drillJuz), Number(drillSurah), Number(e.target.value), Number(drillAyatSampai));
+                                    const val = Number(e.target.value);
+                                    const max = drillSelectedSurahObj.numberOfAyahs;
+                                    const clamped = Math.min(max, val);
+                                    const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
+                                    setDrillAyatDari(finalVal);
+                                    if (!isNaN(clamped) && clamped >= 1 && clamped <= max && drillAyatSampai) {
+                                      const pr = getPageRangeFromAyatRange(Number(drillJuz), Number(drillSurah), clamped, Number(drillAyatSampai));
                                       if (pr) { setDrillHalamanDari(String(pr.dari)); setDrillHalamanSampai(String(pr.sampai)); }
                                     }
                                   }}
@@ -452,9 +486,13 @@ const DrillHafalan = () => {
                                 <Input type="number" value={drillAyatSampai} min={Number(drillAyatDari)} max={drillSelectedSurahObj.numberOfAyahs}
                                   onChange={(e) => {
                                     const val = Number(e.target.value);
-                                    if (val >= Number(drillAyatDari)) {
-                                      setDrillAyatSampai(e.target.value);
-                                      const pr = getPageRangeFromAyatRange(Number(drillJuz), Number(drillSurah), Number(drillAyatDari), val);
+                                    const max = drillSelectedSurahObj.numberOfAyahs;
+                                    const clamped = Math.min(max, val);
+                                    const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
+                                    setDrillAyatSampai(finalVal);
+                                    const min = Number(drillAyatDari) || 1;
+                                    if (!isNaN(clamped) && clamped >= min && clamped <= max) {
+                                      const pr = getPageRangeFromAyatRange(Number(drillJuz), Number(drillSurah), Number(drillAyatDari), clamped);
                                       if (pr) { setDrillHalamanDari(String(pr.dari)); setDrillHalamanSampai(String(pr.sampai)); }
                                     }
                                   }}

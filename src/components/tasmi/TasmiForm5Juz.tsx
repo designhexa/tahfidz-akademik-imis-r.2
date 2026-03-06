@@ -29,6 +29,8 @@ import { JuzSelector } from "@/components/JuzSelector";
 import { getJuzName } from "@/lib/quran-data";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+import { getSantriProgressStatus } from "@/lib/progression-logic";
+import { toast } from "sonner";
 
 const getTotalHalamanByJuz = (juz: number) => (juz === 30 ? 23 : 20);
 
@@ -53,6 +55,7 @@ interface Props {
   santriList: any[];
   getPredikat: (nilai: number) => { label: string; color: string; passed: boolean };
   onSuccess?: (data: any) => void;
+  existingEntries?: any[];
 }
 
 export const TasmiForm5Juz = ({
@@ -64,6 +67,7 @@ export const TasmiForm5Juz = ({
   santriList,
   getPredikat,
   onSuccess,
+  existingEntries = [],
 }: Props) => {
   const [selectedSantri, setSelectedSantri] = useState("");
   useEffect(() => {
@@ -125,16 +129,40 @@ export const TasmiForm5Juz = ({
   };
 
   const handleSave = () => {
-    const entries = selectedJuzList
-      .filter((j) => j)
-      .map((juz) => ({
-        tanggal: date,
-        santriId: selectedSantri || "s1", // Fallback if needed, but should be selected
-        jenis: "tasmi",
-        juz: juz,
-        status: predikat.label,
-        catatan: catatanUmum + (diberhentikan ? " (Diberhentikan)" : ""),
-      }));
+    // Eligibility check
+    const status = getSantriProgressStatus(selectedSantri, existingEntries);
+    const selectedJuzs = selectedJuzList.filter(Boolean);
+
+    // Check if at least one juz is selected
+    if (selectedJuzs.length === 0) {
+      toast.error("Pilih minimal satu Juz");
+      return;
+    }
+
+    // Check if all selected juz are within student's progress
+    // and they are registered
+    if (status.stage !== 'tasmi_registered') {
+      toast.error("Santri harus didaftarkan oleh Ustadz terlebih dahulu di menu Ujian Tasmi'");
+      return;
+    }
+
+    // For 5 Juz, we usually check if they are at or beyond these juz
+    // For simplicity, let's just check the currentJuz and completedJuzList
+    for (const juz of selectedJuzs) {
+      if (juz !== status.currentJuz && !status.completedJuzList.includes(juz)) {
+        toast.error(`Santri belum mencapai Juz ${juz}. Sekarang: Juz ${status.currentJuz}`);
+        return;
+      }
+    }
+
+    const entries = selectedJuzs.map((juz) => ({
+      tanggal: date,
+      santriId: selectedSantri,
+      jenis: "tasmi",
+      juz: juz,
+      status: predikat.label,
+      catatan: catatanUmum + (diberhentikan ? " (Diberhentikan)" : ""),
+    }));
     onSuccess?.(entries);
     onOpenChange(false);
     resetForm();
