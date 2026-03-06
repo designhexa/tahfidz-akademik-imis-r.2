@@ -39,6 +39,21 @@ export const TasmiCandidateCard = ({
     "\"Sesungguhnya Allah mengangkat dengan kitab Al-Qur'an ini beberapa kaum dan juga dengan kitab Al-Qur'an ini Allah merendahkan yang lainnya.\"\n\n(HR. Muslim)"
   );
 
+  const pastelColors = [
+    "#F0F9FF", // Blue
+    "#F0FDF4", // Green
+    "#FFF7ED", // Orange
+    "#FEF2F2", // Red
+    "#FAF5FF", // Purple
+    "#FFFBEB", // Amber
+    "#F5F3FF", // Violet
+    "#FDF2F8", // Pink
+  ];
+
+  const getRandomPastel = (index: number) => {
+    return pastelColors[index % pastelColors.length];
+  };
+
   const handleDownloadImage = async () => {
     if (!printRef.current) return;
     
@@ -174,7 +189,7 @@ export const TasmiCandidateCard = ({
                   {candidates.map((candidate, index) => (
                     <tr
                       key={candidate.no}
-                      className={index % 2 === 0 ? "bg-amber-50" : "bg-white"}
+                      style={{ backgroundColor: getRandomPastel(index) }}
                     >
                       <td className="py-3 px-4 text-center border-r border-gray-200 font-medium">
                         {candidate.no}
