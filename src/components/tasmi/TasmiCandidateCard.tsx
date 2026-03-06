@@ -3,6 +3,7 @@ import html2canvas from "html2canvas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Download, Image, Calendar } from "lucide-react";
 import { format } from "date-fns";
@@ -34,6 +35,9 @@ export const TasmiCandidateCard = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [customDate, setCustomDate] = useState<string>(format(scheduledDate, "yyyy-MM-dd"));
   const [customSchoolName, setCustomSchoolName] = useState(schoolName);
+  const [customCaption, setCustomCaption] = useState(
+    "\"Sesungguhnya Allah mengangkat dengan kitab Al-Qur'an ini beberapa kaum dan juga dengan kitab Al-Qur'an ini Allah merendahkan yang lainnya.\"\n\n(HR. Muslim)"
+  );
 
   const handleDownloadImage = async () => {
     if (!printRef.current) return;
@@ -91,6 +95,17 @@ export const TasmiCandidateCard = ({
               />
             </div>
           </div>
+
+          <div className="space-y-2">
+            <Label>Caption / Quote (Bawah Tabel)</Label>
+            <Textarea
+              value={customCaption}
+              onChange={(e) => setCustomCaption(e.target.value)}
+              placeholder="Masukkan caption atau quote hafalan..."
+              rows={4}
+            />
+          </div>
+
           <Button
             onClick={handleDownloadImage}
             disabled={isGenerating || candidates.length === 0}
@@ -122,13 +137,16 @@ export const TasmiCandidateCard = ({
           {/* Content Container */}
           <div className="relative z-10 p-8 flex flex-col items-center">
             {/* Logo */}
-            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-green-600 to-green-800 flex items-center justify-center shadow-lg border-4 border-amber-400 mb-4">
-              <div className="text-center text-white">
-                <div className="text-3xl mb-1">📖</div>
-                <div className="text-[8px] font-bold leading-tight px-2">
-                  {customSchoolName.split(' ').slice(0, 2).join(' ')}
-                </div>
-              </div>
+            <div className="mb-4">
+              <img 
+                src="/assets/logo-imis.png" 
+                alt="Logo IMIS" 
+                className="w-32 h-32 object-contain"
+                onError={(e) => {
+                  // Fallback if image not found
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
             </div>
 
             {/* Title */}
@@ -180,12 +198,10 @@ export const TasmiCandidateCard = ({
             </div>
 
             {/* Quote */}
-            <div className="mt-8 max-w-3xl text-center">
-              <p className="text-gray-700 italic text-lg leading-relaxed">
-                "Sesungguhnya Allah mengangkat dengan kitab Al-Qur'an ini beberapa kaum dan juga
-                dengan kitab Al-Qur'an ini Allah merendahkan yang lainnya."
+            <div className="mt-8 max-w-3xl text-center whitespace-pre-wrap">
+              <p className="text-gray-700 italic text-lg leading-relaxed font-medium">
+                {customCaption}
               </p>
-              <p className="text-gray-600 mt-2 font-semibold">(HR. Muslim)</p>
             </div>
 
             {/* Footer */}
