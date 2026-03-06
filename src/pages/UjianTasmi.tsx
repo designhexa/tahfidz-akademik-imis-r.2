@@ -76,9 +76,9 @@ const getTotalHalamanByJuz = (juz: number) => {
 };
 
 const getPredikat = (nilai: number): { label: string; color: string; passed: boolean } => {
-  if (nilai >= 96) return { label: "Mumtaz Murtafi'", color: "bg-emerald-500", passed: true };
-  if (nilai >= 90) return { label: "Mumtaz", color: "bg-green-500", passed: true };
-  if (nilai >= 76) return { label: "Jayyid Jiddan", color: "bg-blue-500", passed: true };
+  if (nilai >= 93) return { label: "Mumtaz Murtafi'", color: "bg-emerald-500", passed: true };
+  if (nilai >= 86) return { label: "Mumtaz", color: "bg-green-500", passed: true };
+  if (nilai >= 78) return { label: "Jayyid Jiddan", color: "bg-blue-500", passed: true };
   if (nilai >= 70) return { label: "Jayyid", color: "bg-amber-500", passed: true };
   return { label: "Mengulang", color: "bg-red-500", passed: false };
 };
