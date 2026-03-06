@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -69,10 +69,23 @@ export function EntryModal({
   existingRecords = [],
   santriId = "",
 }: EntryModalProps) {
-  // Debug log if santriId is missing when modal is open
-  useMemo(() => {
-    if (open && !santriId) {
-      console.warn("EntryModal opened without santriId!");
+  // Sync local state when modal opens
+  useEffect(() => {
+    if (open) {
+      if (!santriId) {
+        console.warn("EntryModal opened without santriId!");
+      }
+      // Reset form fields
+      setJuz("");
+      setSurah("");
+      setHalamanDari("");
+      setHalamanSampai("");
+      setAyatDari("1");
+      setAyatSampai("7");
+      setStatus("");
+      setCatatan("");
+      setJilid("");
+      setInputMode("surah");
     }
   }, [open, santriId]);
 
@@ -312,17 +325,6 @@ export function EntryModal({
 
     onSave(segmentsToSave);
 
-    // Reset
-    setJuz("");
-    setSurah("");
-    setHalamanDari("");
-    setHalamanSampai("");
-    setAyatDari("1");
-    setAyatSampai("7");
-    setStatus("");
-    setCatatan("");
-    setJilid("");
-    setInputMode("surah");
     onOpenChange(false);
     toast.success("Data berhasil disimpan!");
   };
@@ -462,19 +464,16 @@ export function EntryModal({
                         <Input
                           type="number"
                           value={ayatDari}
-                      min={validBoundaries?.ayatMin || 1}
-                      max={validBoundaries?.ayatMax || selectedSurah.numberOfAyahs}
                           onChange={(e) => {
-                            const val = Number(e.target.value);
-                            const max = validBoundaries?.ayatMax || selectedSurah.numberOfAyahs;
-                            const clamped = Math.min(max, val);
-                            const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
-                            setAyatDari(finalVal);
+                            const val = e.target.value;
+                            setAyatDari(val);
 
                             // Sync to page if valid
+                            const nVal = Number(val);
+                            const max = validBoundaries?.ayatMax || selectedSurah.numberOfAyahs;
                             const min = validBoundaries?.ayatMin || 1;
-                            if (!isNaN(clamped) && clamped >= min && clamped <= max && ayatSampai) {
-                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), clamped, Number(ayatSampai));
+                            if (!isNaN(nVal) && nVal >= min && nVal <= max && ayatSampai) {
+                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), nVal, Number(ayatSampai));
                               if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
                             }
                           }}
@@ -485,19 +484,16 @@ export function EntryModal({
                         <Input
                           type="number"
                           value={ayatSampai}
-                          min={Number(ayatDari)}
-                      max={validBoundaries?.ayatMax || selectedSurah.numberOfAyahs}
                           onChange={(e) => {
-                            const val = Number(e.target.value);
-                            const max = validBoundaries?.ayatMax || selectedSurah.numberOfAyahs;
-                            const clamped = Math.min(max, val);
-                            const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
-                            setAyatSampai(finalVal);
+                            const val = e.target.value;
+                            setAyatSampai(val);
 
                             // Sync to page if valid
+                            const nVal = Number(val);
+                            const max = validBoundaries?.ayatMax || selectedSurah.numberOfAyahs;
                             const min = Number(ayatDari) || 1;
-                            if (!isNaN(clamped) && clamped >= min && clamped <= max) {
-                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(ayatDari), clamped);
+                            if (!isNaN(nVal) && nVal >= min && nVal <= max) {
+                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(ayatDari), nVal);
                               if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
                             }
                           }}
@@ -525,17 +521,14 @@ export function EntryModal({
                       <Input
                         type="number"
                         value={halamanDari}
-                        min={1}
-                        max={maxHalaman}
                         onChange={(e) => {
-                          const val = Number(e.target.value);
-                          const clamped = Math.min(maxHalaman, val);
-                          const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
-                          setHalamanDari(finalVal);
+                          const val = e.target.value;
+                          setHalamanDari(val);
 
                           // Sync to surah/ayat if valid
-                          if (!isNaN(clamped) && clamped >= 1 && clamped <= maxHalaman) {
-                            const mapping = getPageMappingByJuz(Number(juz), clamped);
+                          const nVal = Number(val);
+                          if (!isNaN(nVal) && nVal >= 1 && nVal <= maxHalaman) {
+                            const mapping = getPageMappingByJuz(Number(juz), nVal);
                             if (mapping) {
                               setSurah(String(mapping.surahNumber));
                               setAyatDari(String(mapping.startAyat));
@@ -549,18 +542,15 @@ export function EntryModal({
                       <Input
                         type="number"
                         value={halamanSampai}
-                        min={Number(halamanDari) || 1}
-                        max={maxHalaman}
                         onChange={(e) => {
-                          const val = Number(e.target.value);
-                          const clamped = Math.min(maxHalaman, val);
-                          const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
-                          setHalamanSampai(finalVal);
+                          const val = e.target.value;
+                          setHalamanSampai(val);
 
                           // Sync end ayat if valid
+                          const nVal = Number(val);
                           const min = Number(halamanDari) || 1;
-                          if (!isNaN(clamped) && clamped >= min && clamped <= maxHalaman) {
-                            const mapping = getPageMappingByJuz(Number(juz), clamped);
+                          if (!isNaN(nVal) && nVal >= min && nVal <= maxHalaman) {
+                            const mapping = getPageMappingByJuz(Number(juz), nVal);
                             if (mapping) {
                               setAyatSampai(String(mapping.endAyat));
                             }

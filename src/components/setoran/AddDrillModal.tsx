@@ -324,15 +324,14 @@ export const AddDrillModal = ({
                     <div className="space-y-1">
                       <Label className="text-xs">Halaman dari (maks {maxHalaman})</Label>
                       <Input
-                        type="number" value={halamanDari} min={1} max={maxHalaman}
+                        type="number" value={halamanDari}
                         onChange={(e) => {
-                          const val = Number(e.target.value);
-                          const clamped = Math.min(maxHalaman, val);
-                          const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
-                          setHalamanDari(finalVal);
+                          const val = e.target.value;
+                          setHalamanDari(val);
 
-                          if (!isNaN(clamped) && clamped >= 1 && clamped <= maxHalaman) {
-                            const mapping = getPageMappingByJuz(Number(juz), clamped);
+                          const nVal = Number(val);
+                          if (!isNaN(nVal) && nVal >= 1 && nVal <= maxHalaman) {
+                            const mapping = getPageMappingByJuz(Number(juz), nVal);
                             if (mapping) {
                               setSurah(String(mapping.surahNumber));
                               setAyatDari(String(mapping.startAyat));
@@ -344,16 +343,15 @@ export const AddDrillModal = ({
                     <div className="space-y-1">
                       <Label className="text-xs">Halaman sampai</Label>
                       <Input
-                        type="number" value={halamanSampai} min={Number(halamanDari) || 1} max={maxHalaman}
+                        type="number" value={halamanSampai}
                         onChange={(e) => {
-                          const val = Number(e.target.value);
-                          const clamped = Math.min(maxHalaman, val);
-                          const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
-                          setHalamanSampai(finalVal);
+                          const val = e.target.value;
+                          setHalamanSampai(val);
 
+                          const nVal = Number(val);
                           const min = Number(halamanDari) || 1;
-                          if (!isNaN(clamped) && clamped >= min && clamped <= maxHalaman) {
-                            const mapping = getPageMappingByJuz(Number(juz), clamped);
+                          if (!isNaN(nVal) && nVal >= min && nVal <= maxHalaman) {
+                            const mapping = getPageMappingByJuz(Number(juz), nVal);
                             if (mapping) {
                               setAyatSampai(String(mapping.endAyat));
                             }
@@ -421,16 +419,15 @@ export const AddDrillModal = ({
                       <div className="space-y-1">
                         <Label className="text-xs">Ayat dari</Label>
                         <Input
-                          type="number" value={ayatDari} min={1} max={selectedSurah.numberOfAyahs}
+                          type="number" value={ayatDari}
                           onChange={(e) => {
-                            const val = Number(e.target.value);
-                            const max = selectedSurah.numberOfAyahs;
-                            const clamped = Math.min(max, val);
-                            const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
-                            setAyatDari(finalVal);
+                            const val = e.target.value;
+                            setAyatDari(val);
 
-                            if (!isNaN(clamped) && clamped >= 1 && clamped <= max && ayatSampai) {
-                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), clamped, Number(ayatSampai));
+                            const nVal = Number(val);
+                            const max = selectedSurah.numberOfAyahs;
+                            if (!isNaN(nVal) && nVal >= 1 && nVal <= max && ayatSampai) {
+                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), nVal, Number(ayatSampai));
                               if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
                             }
                           }}
@@ -439,17 +436,16 @@ export const AddDrillModal = ({
                       <div className="space-y-1">
                         <Label className="text-xs">Ayat sampai</Label>
                         <Input
-                          type="number" value={ayatSampai} min={Number(ayatDari)} max={selectedSurah.numberOfAyahs}
+                          type="number" value={ayatSampai}
                           onChange={(e) => {
-                            const val = Number(e.target.value);
-                            const max = selectedSurah.numberOfAyahs;
-                            const clamped = Math.min(max, val);
-                            const finalVal = isNaN(clamped) || e.target.value === "" ? "" : String(clamped);
-                            setAyatSampai(finalVal);
+                            const val = e.target.value;
+                            setAyatSampai(val);
 
+                            const nVal = Number(val);
+                            const max = selectedSurah.numberOfAyahs;
                             const min = Number(ayatDari) || 1;
-                            if (!isNaN(clamped) && clamped >= min && clamped <= max) {
-                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(ayatDari), clamped);
+                            if (!isNaN(nVal) && nVal >= min && nVal <= max) {
+                              const pr = getPageRangeFromAyatRange(Number(juz), Number(surah), Number(ayatDari), nVal);
                               if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
                             }
                           }}

@@ -42,6 +42,7 @@ interface TilawahSetoranFormProps {
   onOpenChange: (open: boolean) => void;
   onSuccess: (newData: any) => void;
   initialSantriId?: string;
+  santriId?: string;
   date: Date | null;
   santriName: string;
 }
@@ -51,6 +52,7 @@ export const TilawahSetoranForm = ({
   onOpenChange, 
   onSuccess,
   initialSantriId,
+  santriId,
   date, 
   santriName
 }: TilawahSetoranFormProps) => {
@@ -91,8 +93,9 @@ export const TilawahSetoranForm = ({
 
   useEffect(() => {
     if (!open) return;
-    if (initialSantriId) {
-      setSelectedSantri(initialSantriId);
+    const sId = initialSantriId || santriId;
+    if (sId) {
+      setSelectedSantri(sId);
       const santri = MOCK_SANTRI_TILAWAH.find(s => s.id === initialSantriId);
       if (santri) setSelectedJilid(String(santri.jilidSaatIni));
     } else {
@@ -284,10 +287,11 @@ export const TilawahSetoranForm = ({
                           <Label className="text-xs">Ayat sampai</Label>
                           <Input type="number" value={ayatSampai} min={Number(ayatDari)} max={selectedSurah.numberOfAyahs}
                             onChange={(e) => {
-                              const val = Number(e.target.value);
-                              if (val >= Number(ayatDari)) {
-                                setAyatSampai(e.target.value);
-                                const pr = getPageRangeFromAyatRange(Number(selectedJuz), Number(surah), Number(ayatDari), val);
+                              const val = e.target.value;
+                              setAyatSampai(val);
+                              const nVal = Number(val);
+                              if (!isNaN(nVal) && nVal >= Number(ayatDari)) {
+                                const pr = getPageRangeFromAyatRange(Number(selectedJuz), Number(surah), Number(ayatDari), nVal);
                                 if (pr) { setHalamanDari(String(pr.dari)); setHalamanSampai(String(pr.sampai)); }
                               }
                             }}

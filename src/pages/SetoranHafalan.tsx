@@ -559,6 +559,7 @@ const SetoranHafalan = () => {
           santriName={santriData?.nama || ""}
           onSuccess={handleSaveEntry}
           initialSantriId={selectedSantri}
+          santriId={selectedSantri}
         />
 
         <EntryHistoryPopup

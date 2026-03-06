@@ -150,22 +150,6 @@ export default function TilawahUjian() {
      const lulus = totalNilai >= nilaiMinimum;
      const santriData = MOCK_SANTRI_TILAWAH.find(s => s.id === selectedSantri);
 
-     const newUjian = {
-       id: `uj${Date.now()}`,
-       santriId: selectedSantri,
-       nama: santriData?.nama || "",
-       kelas: santriData?.kelas || "",
-       jilidDari: parseInt(jilidDari),
-       jilidTujuan: parseInt(jilidTujuan),
-       nilaiTotal: totalNilai,
-       skorMaksimal: getSkorMaksimal(),
-       status: lulus ? "Lulus" : "Mengulang",
-       isRemedial: false,
-       remedialKe: 0,
-     };
-
-     setUjianData(prev => [newUjian, ...prev]);
-
      // Sync with calendar
      addEntries({
        tanggal: selectedDate,
@@ -208,12 +192,6 @@ export default function TilawahUjian() {
        isRemedial: true,
        remedialKe: (remedialTarget.remedialKe || 0) + 1,
      };
-
-     // Update the original entry status if lulus
-     setUjianData(prev => {
-       const updated = prev.map(u => u.id === remedialTarget.id ? { ...u, status: lulus ? "Lulus (Remedial)" : "Mengulang" } : u);
-       return [remedialResult, ...updated.filter(u => u.id !== remedialTarget.id)];
-     });
 
      // Sync with calendar
      addEntries({
@@ -259,24 +237,46 @@ export default function TilawahUjian() {
   const displayUjianData = useMemo(() => {
     const persistedUjian = entries
       .filter(e => e.jenis === 'ujian_jilid')
-      .map(e => ({
-        id: e.id,
-        santriId: e.santriId,
-        nama: MOCK_SANTRI_TILAWAH.find(s => s.id === e.santriId)?.nama || "Santri",
-        kelas: MOCK_SANTRI_TILAWAH.find(s => s.id === e.santriId)?.kelas || "Kelas",
-        jilidDari: parseInt(e.jilid as string) || 1,
-        jilidTujuan: (parseInt(e.jilid as string) || 1) + 1,
-        nilaiTotal: 0,
-        skorMaksimal: 0,
-        status: e.status || "Selesai",
-        isRemedial: e.catatan?.toLowerCase().includes("remedial") || false,
-        remedialKe: 0,
-        tanggal: e.tanggal instanceof Date ? e.tanggal.toISOString() : e.tanggal
-      }));
+      .map(e => {
+        const jilid = parseInt(e.jilid as string) || 1;
+        const scoreMatch = e.catatan?.match(/Skor: ([\d.]+)\/(\d+)/);
+        const nilaiTotal = scoreMatch ? parseFloat(scoreMatch[1]) : 0;
+        const skorMaksimal = scoreMatch ? parseInt(scoreMatch[2]) : 0;
 
+        return {
+          id: e.id || `uj-${e.tanggal.getTime()}-${e.santriId}`,
+          santriId: e.santriId,
+          nama: MOCK_SANTRI_TILAWAH.find(s => s.id === e.santriId)?.nama || "Santri",
+          kelas: MOCK_SANTRI_TILAWAH.find(s => s.id === e.santriId)?.kelas || "Kelas",
+          jilidDari: jilid,
+          jilidTujuan: jilid + 1,
+          nilaiTotal,
+          skorMaksimal,
+          status: e.status || "Selesai",
+          isRemedial: e.catatan?.toLowerCase().includes("remedial") || false,
+          remedialKe: e.catatan?.match(/Remedial (\d+)/)?.[1] || 0,
+          tanggal: e.tanggal instanceof Date ? e.tanggal.toISOString() : e.tanggal
+        };
+      });
+
+    // Also include initial mock data but filter out those that might have been "overwritten" by persistence
+    // For simplicity in this mock app, we'll just show persisted ones if they exist,
+    // but the user wants to see the mock data too.
     const combined = [...ujianData, ...persistedUjian];
-    // Filter out potential duplicates if they have the same ID (unlikely with this logic but good practice)
-    return combined.sort((a, b) => {
+
+    // Deduplicate by santriId, jilidDari, and status if they match exactly (crude deduplication)
+    const unique = combined.reduce((acc: any[], curr) => {
+      const isDup = acc.some(item =>
+        item.santriId === curr.santriId &&
+        item.jilidDari === curr.jilidDari &&
+        item.status === curr.status &&
+        Math.abs(new Date(item.tanggal).getTime() - new Date(curr.tanggal).getTime()) < 60000
+      );
+      if (!isDup) acc.push(curr);
+      return acc;
+    }, []);
+
+    return unique.sort((a, b) => {
       const dateA = a.tanggal ? new Date(a.tanggal).getTime() : 0;
       const dateB = b.tanggal ? new Date(b.tanggal).getTime() : 0;
       return dateB - dateA;

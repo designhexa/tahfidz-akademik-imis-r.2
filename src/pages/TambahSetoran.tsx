@@ -395,14 +395,7 @@ const TambahSetoran = () => {
                           <Input
                             type="number"
                             value={ayatDari}
-                            min={1}
-                            max={selectedSurah?.numberOfAyahs}
-                            onChange={(e) => {
-                              const val = Number(e.target.value);
-                              const max = selectedSurah?.numberOfAyahs || 999;
-                              const clamped = Math.min(max, val);
-                              setAyatDari(isNaN(clamped) || e.target.value === "" ? "" : String(clamped));
-                            }}
+                            onChange={(e) => setAyatDari(e.target.value)}
                             disabled={!selectedSurah}
                           />
                         </div>
@@ -411,14 +404,7 @@ const TambahSetoran = () => {
                           <Input
                             type="number"
                             value={ayatSampai}
-                            min={Number(ayatDari)}
-                            max={selectedSurah?.numberOfAyahs}
-                            onChange={(e) => {
-                              const val = Number(e.target.value);
-                              const max = selectedSurah?.numberOfAyahs || 999;
-                              const clamped = Math.min(max, val);
-                              setAyatSampai(isNaN(clamped) || e.target.value === "" ? "" : String(clamped));
-                            }}
+                            onChange={(e) => setAyatSampai(e.target.value)}
                             disabled={!selectedSurah}
                           />
                         </div>
@@ -435,13 +421,7 @@ const TambahSetoran = () => {
                           <Input
                             type="number"
                             value={halamanDari}
-                            min={1}
-                            max={maxHalaman}
-                            onChange={(e) => {
-                              const val = Number(e.target.value);
-                              const clamped = Math.min(maxHalaman, val);
-                              setHalamanDari(isNaN(clamped) || e.target.value === "" ? "" : String(clamped));
-                            }}
+                            onChange={(e) => setHalamanDari(e.target.value)}
                           />
                         </div>
                         <div className="space-y-1">
@@ -449,13 +429,7 @@ const TambahSetoran = () => {
                           <Input
                             type="number"
                             value={halamanSampai}
-                            min={Number(halamanDari) || 1}
-                            max={maxHalaman}
-                            onChange={(e) => {
-                              const val = Number(e.target.value);
-                              const clamped = Math.min(maxHalaman, val);
-                              setHalamanSampai(isNaN(clamped) || e.target.value === "" ? "" : String(clamped));
-                            }}
+                            onChange={(e) => setHalamanSampai(e.target.value)}
                           />
                         </div>
                       </div>
