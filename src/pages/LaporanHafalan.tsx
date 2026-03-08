@@ -53,12 +53,39 @@ const mockCapaianJuz = [
 ];
 
 const mockDrillHafalan = [
-  { santri: "Muhammad Faiz", halaqoh: "Al-Azhary", kelas: "Paket A Kelas 6", drill1: "Lulus", drill2: "Lulus", drill12Juz: "Proses", drill1Juz: "-", tasmi: "-", nilaiTerakhir: 92 },
-  { santri: "Fatimah Zahra", halaqoh: "Al-Azhary", kelas: "KBTK A", drill1: "Lulus", drill2: "Lulus", drill12Juz: "Lulus", drill1Juz: "Proses", tasmi: "-", nilaiTerakhir: 88 },
-  { santri: "Aisyah Nur", halaqoh: "Al-Furqon", kelas: "Paket B Kelas 8", drill1: "Lulus", drill2: "Proses", drill12Juz: "-", drill1Juz: "-", tasmi: "-", nilaiTerakhir: 90 },
-  { santri: "Ahmad Rasyid", halaqoh: "Al-Furqon", kelas: "Paket A Kelas 6", drill1: "Lulus", drill2: "Lulus", drill12Juz: "Lulus", drill1Juz: "Lulus", tasmi: "Lulus", nilaiTerakhir: 95 },
-  { santri: "Umar Faruq", halaqoh: "Al-Hidayah", kelas: "KBTK B", drill1: "Proses", drill2: "-", drill12Juz: "-", drill1Juz: "-", tasmi: "-", nilaiTerakhir: 85 },
+  { id: 1, tanggal: "15/01/2025", santri: "Muhammad Faiz", halaqoh: "Al-Azhary", kelas: "Paket A Kelas 6", juz: 30, level: 3, materi: "Drill 3 - Al-Buruj s.d Al-Fajr", nilai: 92, status: "Lulus" },
+  { id: 2, tanggal: "14/01/2025", santri: "Fatimah Zahra", halaqoh: "Al-Azhary", kelas: "KBTK A", juz: 30, level: 5, materi: "Drill 5 - Az-Zalzalah s.d An-Nas", nilai: 88, status: "Lulus" },
+  { id: 3, tanggal: "13/01/2025", santri: "Aisyah Nur", halaqoh: "Al-Furqon", kelas: "Paket B Kelas 8", juz: 29, level: 2, materi: "Drill 2 - Al-Haqqah & Al-Ma'arij", nilai: 75, status: "Mengulang" },
+  { id: 4, tanggal: "12/01/2025", santri: "Ahmad Rasyid", halaqoh: "Al-Furqon", kelas: "Paket A Kelas 6", juz: 1, level: 4, materi: "Drill 4 - Halaman 16-20", nilai: 95, status: "Lulus" },
+  { id: 5, tanggal: "11/01/2025", santri: "Umar Faruq", halaqoh: "Al-Hidayah", kelas: "KBTK B", juz: 30, level: 1, materi: "Drill 1 - An-Naba s.d Abasa", nilai: 85, status: "Mengulang" },
 ];
+
+// Drill Level Indicator for Laporan
+const DrillLevelIndicator = ({ juz, currentLevel }: { juz: number; currentLevel: number }) => {
+  const totalLevels = getDrillsForJuz(juz).length || 7;
+  return (
+    <div className="flex flex-wrap gap-0.5">
+      {Array.from({ length: totalLevels }, (_, i) => {
+        const level = i + 1;
+        const isCurrent = level === currentLevel;
+        return (
+          <div
+            key={level}
+            className={cn(
+              "w-5 h-5 md:w-6 md:h-6 rounded-sm flex items-center justify-center text-[9px] md:text-[10px] font-semibold border",
+              isCurrent
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-muted text-muted-foreground border-border"
+            )}
+            title={`Level ${level}`}
+          >
+            {level}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 // Chart data
 const mockCapaianKelas = [
