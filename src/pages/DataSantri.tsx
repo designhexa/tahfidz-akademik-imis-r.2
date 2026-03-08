@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,10 @@ import {
   getWaliNama,
   MockSantri,
 } from "@/lib/mock-data";
+import { TILAWATI_JILID } from "@/lib/tilawah-data";
+import { JuzSelector } from "@/components/JuzSelector";
+import { getSurahsByJuz } from "@/lib/quran-data";
+import { getSurahListByJuz, getPageCountForJuz } from "@/lib/mushaf-madinah";
 import { toast } from "sonner";
 
 const INITIAL_FORM: Omit<MockSantri, "id"> = {
@@ -67,7 +71,21 @@ export default function DataSantri() {
   const [modalMode, setModalMode] = useState<ModalMode>("add");
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(INITIAL_FORM);
+  const [tilawahJuz, setTilawahJuz] = useState("");
+  const [hafalanJuz, setHafalanJuz] = useState("30");
   const [, forceUpdate] = useState(0);
+
+  // Surah list for tilawah (Al-Qur'an level)
+  const tilawahSurahList = useMemo(() => {
+    if (!tilawahJuz) return [];
+    return getSurahListByJuz(Number(tilawahJuz));
+  }, [tilawahJuz]);
+
+  // Surah list for hafalan
+  const hafalanSurahList = useMemo(() => {
+    if (!hafalanJuz) return [];
+    return getSurahsByJuz(Number(hafalanJuz));
+  }, [hafalanJuz]);
 
   const filteredSantri = MOCK_SANTRI.filter((santri) => {
     const matchSearch = santri.nama.toLowerCase().includes(search.toLowerCase()) ||
@@ -79,6 +97,8 @@ export default function DataSantri() {
 
   const openAdd = () => {
     setForm(INITIAL_FORM);
+    setTilawahJuz("");
+    setHafalanJuz("30");
     setModalMode("add");
     setEditId(null);
     setShowModal(true);
@@ -87,6 +107,8 @@ export default function DataSantri() {
   const openEdit = (santri: MockSantri) => {
     const { id, ...rest } = santri;
     setForm(rest);
+    setTilawahJuz(santri.jilidSaatIni >= 7 ? String(santri.halamanSaatIni || 1) : "");
+    setHafalanJuz(String(santri.posisiHafalanJuz));
     setModalMode("edit");
     setEditId(id);
     setShowModal(true);
@@ -262,45 +284,88 @@ export default function DataSantri() {
               </div>
             </div>
 
-            {/* Tilawah */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Jilid Tilawah Saat Ini</Label>
-                <Select value={String(form.jilidSaatIni)} onValueChange={(v) => setForm({ ...form, jilidSaatIni: Number(v) })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {[1, 2, 3, 4, 5, 6].map((j) => (<SelectItem key={j} value={String(j)}>Jilid {j}</SelectItem>))}
-                    <SelectItem value="7">Al-Qur'an</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Halaman Tilawah</Label>
-                <Input type="number" min={1} value={form.halamanSaatIni} onChange={(e) => setForm({ ...form, halamanSaatIni: Number(e.target.value) })} />
-              </div>
+            {/* ── Posisi Tilawah ── */}
+            <div className="border-t pt-4 mt-2">
+              <Label className="text-sm font-semibold text-muted-foreground">Posisi Tilawah Saat Ini</Label>
+            </div>
+            <div className="space-y-2">
+              <Label>Jilid / Level</Label>
+              <Select value={String(form.jilidSaatIni)} onValueChange={(v) => {
+                setForm({ ...form, jilidSaatIni: Number(v), halamanSaatIni: 1 });
+                if (v !== "7") setTilawahJuz("");
+              }}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {TILAWATI_JILID.map((j) => (
+                    <SelectItem key={j.jilid} value={String(j.jilid)}>Jilid {j.jilid}</SelectItem>
+                  ))}
+                  <SelectItem value="7">Al-Qur'an</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Hafalan */}
-            <div className="grid grid-cols-3 gap-4">
+            {/* Jilid 1-6: halaman saja */}
+            {form.jilidSaatIni < 7 && (
               <div className="space-y-2">
-                <Label>Posisi Hafalan (Juz)</Label>
-                <Select value={String(form.posisiHafalanJuz)} onValueChange={(v) => setForm({ ...form, posisiHafalanJuz: Number(v) })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Label>Halaman Saat Ini</Label>
+                <Input type="number" min={1} max={44} value={form.halamanSaatIni}
+                  onChange={(e) => setForm({ ...form, halamanSaatIni: Number(e.target.value) })}
+                  placeholder="1-44" />
+              </div>
+            )}
+
+            {/* Al-Qur'an: JuzSelector + Halaman */}
+            {form.jilidSaatIni >= 7 && (
+              <>
+                <JuzSelector
+                  value={tilawahJuz}
+                  onValueChange={(v) => {
+                    setTilawahJuz(v);
+                    setForm({ ...form, halamanSaatIni: 1 });
+                  }}
+                  label="Juz Tilawah"
+                  order="asc"
+                />
+                {tilawahJuz && (
+                  <div className="space-y-2">
+                    <Label>Halaman dalam Juz (maks {getPageCountForJuz(Number(tilawahJuz))})</Label>
+                    <Input type="number" min={1} max={getPageCountForJuz(Number(tilawahJuz))}
+                      value={form.halamanSaatIni}
+                      onChange={(e) => setForm({ ...form, halamanSaatIni: Number(e.target.value) })} />
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* ── Posisi Hafalan ── */}
+            <div className="border-t pt-4 mt-2">
+              <Label className="text-sm font-semibold text-muted-foreground">Posisi Hafalan Saat Ini</Label>
+            </div>
+            <JuzSelector
+              value={hafalanJuz}
+              onValueChange={(v) => {
+                setHafalanJuz(v);
+                setForm({ ...form, posisiHafalanJuz: Number(v), posisiHafalanSurah: "" });
+              }}
+              label="Juz Hafalan"
+              order="desc"
+            />
+            {hafalanJuz && (
+              <div className="space-y-2">
+                <Label>Surah Terakhir Dihafal</Label>
+                <Select value={form.posisiHafalanSurah} onValueChange={(v) => setForm({ ...form, posisiHafalanSurah: v })}>
+                  <SelectTrigger><SelectValue placeholder="Pilih surah" /></SelectTrigger>
                   <SelectContent>
-                    {Array.from({ length: 30 }, (_, i) => 30 - i).map((j) => (
-                      <SelectItem key={j} value={String(j)}>Juz {j}</SelectItem>
+                    {hafalanSurahList.map((s) => (
+                      <SelectItem key={s.number} value={s.name}>{s.number}. {s.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label>Surah Terakhir</Label>
-                <Input value={form.posisiHafalanSurah} onChange={(e) => setForm({ ...form, posisiHafalanSurah: e.target.value })} placeholder="Nama surah" />
-              </div>
-              <div className="space-y-2">
-                <Label>Pencapaian Hafalan</Label>
-                <Input value={form.pencapaianHafalan} onChange={(e) => setForm({ ...form, pencapaianHafalan: e.target.value })} placeholder="cth: 1.5 Juz" />
-              </div>
+            )}
+            <div className="space-y-2">
+              <Label>Pencapaian Hafalan</Label>
+              <Input value={form.pencapaianHafalan} onChange={(e) => setForm({ ...form, pencapaianHafalan: e.target.value })} placeholder="cth: 1.5 Juz" />
             </div>
           </div>
           <DialogFooter>
