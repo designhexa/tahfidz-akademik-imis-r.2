@@ -34,7 +34,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { GraduationCap, Plus, Info, RefreshCw, Shuffle } from "lucide-react";
+import { GraduationCap, Plus, Info, RefreshCw, Shuffle, Search } from "lucide-react";
 import { JuzSelector } from "@/components/JuzSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { generateExamQuestions, formatQuestionDisplay, ExamQuestion, getHalamanPerJuz } from "@/lib/quran-exam-generator";
