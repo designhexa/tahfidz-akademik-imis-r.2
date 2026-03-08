@@ -179,13 +179,9 @@ export const TasmiCandidateCard = ({
             {/* Logo */}
             <div className="mb-4">
               <img 
-                src="/assets/logo-imis.png" 
+                src={logoImis} 
                 alt="Logo IMIS" 
                 className="w-32 h-32 object-contain"
-                onError={(e) => {
-                  // Fallback if image not found
-                  e.currentTarget.style.display = 'none';
-                }}
               />
             </div>
 
