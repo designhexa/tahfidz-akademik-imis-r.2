@@ -541,7 +541,7 @@ const LaporanHafalan = () => {
                 <CardDescription>Progress penyelesaian hafalan santri per juz</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <Select value={capaianFilterHalaqoh} onValueChange={setCapaianFilterHalaqoh}>
                     <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Halaqoh" /></SelectTrigger>
                     <SelectContent>
@@ -556,8 +556,15 @@ const LaporanHafalan = () => {
                       {uniqueHarianKelas.map(k => <SelectItem key={k} value={k}>{k}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  <Select value={capaianFilterSantri} onValueChange={setCapaianFilterSantri}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Santri" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Santri</SelectItem>
+                      {uniqueHarianSantri.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                   <Select value={capaianFilterJuz} onValueChange={setCapaianFilterJuz}>
-                    <SelectTrigger className="text-xs md:text-sm col-span-2 md:col-span-1"><SelectValue placeholder="Juz" /></SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Juz" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Semua Juz</SelectItem>
                       {mockCapaianJuz.map(j => <SelectItem key={j.juz} value={String(j.juz)}>Juz {j.juz}</SelectItem>)}
