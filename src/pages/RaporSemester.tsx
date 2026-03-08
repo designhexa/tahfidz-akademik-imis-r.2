@@ -21,7 +21,7 @@ import {
 import { RaporTahfidzPreview } from "@/components/rapor/RaporTahfidzPreview";
 import { getMockRaporData, RaporTahfidz, getPredikat } from "@/lib/rapor-tahfidz-types";
 import { mockSantriProgress } from "@/lib/target-hafalan";
-import { MOCK_KELAS } from "@/lib/mock-data";
+import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 import html2canvas from "html2canvas";
 import { useToast } from "@/hooks/use-toast";
 
