@@ -97,16 +97,20 @@ const LaporanHafalan = () => {
   const [mingguanFilterMinggu, setMingguanFilterMinggu] = useState("all");
   const [mingguanFilterHalaqoh, setMingguanFilterHalaqoh] = useState("all");
   const [mingguanFilterKelas, setMingguanFilterKelas] = useState("all");
+  const [mingguanFilterSantri, setMingguanFilterSantri] = useState("all");
   const [capaianFilterJuz, setCapaianFilterJuz] = useState("all");
   const [capaianFilterHalaqoh, setCapaianFilterHalaqoh] = useState("all");
   const [capaianFilterKelas, setCapaianFilterKelas] = useState("all");
+  const [capaianFilterSantri, setCapaianFilterSantri] = useState("all");
   const [drillFilterHalaqoh, setDrillFilterHalaqoh] = useState("all");
   const [drillFilterKelas, setDrillFilterKelas] = useState("all");
   const [drillFilterStatus, setDrillFilterStatus] = useState("all");
+  const [drillFilterSantri, setDrillFilterSantri] = useState("all");
   // Tilawah filters
   const [tilawahHalaqoh, setTilawahHalaqoh] = useState("all");
   const [tilawahKelas, setTilawahKelas] = useState("all");
   const [tilawahJilid, setTilawahJilid] = useState("all");
+  const [tilawahSantri, setTilawahSantri] = useState("all");
 
   // Tilawah stats
   const santriTilawahStats = MOCK_SANTRI_TILAWAH.map(santri => {
