@@ -21,11 +21,11 @@ import {
 
 // Mock data
 const mockLaporanHarian = [
-  { tanggal: "15/01/2025", santri: "Muhammad Faiz", juz: 3, halaman: "45-50", ayat: 60, nilai: 95, status: "Lancar" },
-  { tanggal: "15/01/2025", santri: "Fatimah Zahra", juz: 4, halaman: "1-5", ayat: 50, nilai: 92, status: "Lancar" },
-  { tanggal: "14/01/2025", santri: "Aisyah Nur", juz: 3, halaman: "40-44", ayat: 45, nilai: 88, status: "Lancar" },
-  { tanggal: "14/01/2025", santri: "Ahmad Rasyid", juz: 2, halaman: "30-35", ayat: 55, nilai: 90, status: "Lancar" },
-  { tanggal: "13/01/2025", santri: "Muhammad Faiz", juz: 3, halaman: "40-44", ayat: 48, nilai: 94, status: "Lancar" },
+  { tanggal: "15/01/2025", santri: "Muhammad Faiz", halaqoh: "Al-Azhary", kelas: "Paket A Kelas 6", juz: 3, halaman: "45-50", ayat: 60, nilai: 95, status: "Lancar" },
+  { tanggal: "15/01/2025", santri: "Fatimah Zahra", halaqoh: "Al-Azhary", kelas: "KBTK A", juz: 4, halaman: "1-5", ayat: 50, nilai: 92, status: "Lancar" },
+  { tanggal: "14/01/2025", santri: "Aisyah Nur", halaqoh: "Al-Furqon", kelas: "Paket B Kelas 8", juz: 3, halaman: "40-44", ayat: 45, nilai: 88, status: "Lancar" },
+  { tanggal: "14/01/2025", santri: "Ahmad Rasyid", halaqoh: "Al-Furqon", kelas: "Paket A Kelas 6", juz: 2, halaman: "30-35", ayat: 55, nilai: 90, status: "Lancar" },
+  { tanggal: "13/01/2025", santri: "Muhammad Faiz", halaqoh: "Al-Azhary", kelas: "Paket A Kelas 6", juz: 3, halaman: "40-44", ayat: 48, nilai: 94, status: "Lancar" },
 ];
 
 const mockLaporanMingguan = [
