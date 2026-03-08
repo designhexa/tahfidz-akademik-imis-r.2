@@ -360,28 +360,71 @@ export default function DataSantri() {
               value={hafalanJuz}
               onValueChange={(v) => {
                 setHafalanJuz(v);
+                setHafalanSurah("");
+                setHafalanAyat("");
+                setHafalanHalaman("");
+                setHafalanInputMode("surah");
                 setForm({ ...form, posisiHafalanJuz: Number(v), posisiHafalanSurah: "" });
               }}
               label="Juz Hafalan"
               order="desc"
             />
+
             {hafalanJuz && (
-              <div className="space-y-2">
-                <Label>Surah Terakhir Dihafal</Label>
-                <Select value={form.posisiHafalanSurah} onValueChange={(v) => setForm({ ...form, posisiHafalanSurah: v })}>
-                  <SelectTrigger><SelectValue placeholder="Pilih surah" /></SelectTrigger>
-                  <SelectContent>
-                    {hafalanSurahList.map((s) => (
-                      <SelectItem key={s.number} value={s.name}>{s.number}. {s.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <>
+                <div className="flex gap-2">
+                  <Button type="button" size="sm" variant={hafalanInputMode === "surah" ? "default" : "outline"} className="h-7 text-xs flex-1"
+                    onClick={() => { setHafalanInputMode("surah"); setHafalanHalaman(""); }}>
+                    Pilih Surah & Ayat
+                  </Button>
+                  <Button type="button" size="sm" variant={hafalanInputMode === "halaman" ? "default" : "outline"} className="h-7 text-xs flex-1"
+                    onClick={() => { setHafalanInputMode("halaman"); setHafalanSurah(""); setHafalanAyat(""); }}>
+                    Pilih Halaman
+                  </Button>
+                </div>
+
+                {/* Mode Surah */}
+                {hafalanInputMode === "surah" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label>Surah Terakhir Dihafal</Label>
+                      <Select value={hafalanSurah} onValueChange={(v) => {
+                        setHafalanSurah(v);
+                        setHafalanAyat("1");
+                        const s = hafalanSurahList.find(s => String(s.number) === v);
+                        setForm({ ...form, posisiHafalanSurah: s?.name || "" });
+                      }}>
+                        <SelectTrigger><SelectValue placeholder="Pilih surah" /></SelectTrigger>
+                        <SelectContent>
+                          {hafalanSurahList.map((s) => (
+                            <SelectItem key={s.number} value={String(s.number)}>{s.number}. {s.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {selectedHafalanSurah && (
+                      <div className="space-y-2">
+                        <Label className="text-xs">Sampai Ayat ke</Label>
+                        <Input type="number" min={1} max={selectedHafalanSurah.numberOfAyahs}
+                          value={hafalanAyat}
+                          onChange={(e) => setHafalanAyat(e.target.value)}
+                          placeholder={`1 - ${selectedHafalanSurah.numberOfAyahs}`} />
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Mode Halaman */}
+                {hafalanInputMode === "halaman" && (
+                  <div className="space-y-2">
+                    <Label>Halaman dalam Juz (maks {hafalanMaxHalaman})</Label>
+                    <Input type="number" min={1} max={hafalanMaxHalaman}
+                      value={hafalanHalaman}
+                      onChange={(e) => setHafalanHalaman(e.target.value)} />
+                  </div>
+                )}
+              </>
             )}
-            <div className="space-y-2">
-              <Label>Pencapaian Hafalan</Label>
-              <Input value={form.pencapaianHafalan} onChange={(e) => setForm({ ...form, pencapaianHafalan: e.target.value })} placeholder="cth: 1.5 Juz" />
-            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowModal(false)}>Batal</Button>
