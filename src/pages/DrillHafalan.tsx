@@ -763,7 +763,7 @@ const DrillHafalan = () => {
                           <Badge className="bg-primary/10 text-primary border-primary text-[10px] md:text-xs">Juz {item.juz}</Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="text-[10px] md:text-xs">Level {item.level}</Badge>
+                          <DrillLevelIndicator juz={item.juz} currentLevel={item.level} />
                         </TableCell>
                         <TableCell className="text-xs md:text-sm hidden md:table-cell">{item.materi}</TableCell>
                         <TableCell className="font-semibold text-primary text-xs md:text-sm">{item.nilai}</TableCell>
