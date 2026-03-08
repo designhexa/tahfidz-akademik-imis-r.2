@@ -16,6 +16,7 @@
  import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 
 export default function TilawahLaporan() {
+  const navigate = useNavigate();
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
   const [filterPeriod, setFilterPeriod] = useState("bulan-ini");
