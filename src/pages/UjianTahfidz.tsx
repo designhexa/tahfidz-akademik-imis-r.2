@@ -530,6 +530,12 @@ const UjianTahfidz = () => {
             <CardTitle>Riwayat Ujian Tahfidz</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input placeholder="Cari santri..." value={riwayatSearch} onChange={e => setRiwayatSearch(e.target.value)} className="pl-10" />
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="space-y-1">
                 <Label className="text-xs">Filter Halaqoh</Label>
