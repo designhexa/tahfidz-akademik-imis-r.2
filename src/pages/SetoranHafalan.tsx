@@ -314,7 +314,7 @@ const SetoranHafalan = () => {
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Bulan</Label>
+                <Label className="text-xs md:text-sm">Bulan</Label>
                 <Select
                   value={String(month)}
                   onValueChange={(v) => setMonth(Number(v))}
