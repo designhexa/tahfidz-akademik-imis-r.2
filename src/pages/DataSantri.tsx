@@ -109,6 +109,10 @@ export default function DataSantri() {
     setForm(INITIAL_FORM);
     setTilawahJuz("");
     setHafalanJuz("30");
+    setHafalanInputMode("surah");
+    setHafalanSurah("");
+    setHafalanAyat("");
+    setHafalanHalaman("");
     setModalMode("add");
     setEditId(null);
     setShowModal(true);
@@ -119,6 +123,10 @@ export default function DataSantri() {
     setForm(rest);
     setTilawahJuz(santri.jilidSaatIni >= 7 ? String(santri.halamanSaatIni || 1) : "");
     setHafalanJuz(String(santri.posisiHafalanJuz));
+    setHafalanInputMode("surah");
+    setHafalanSurah("");
+    setHafalanAyat("");
+    setHafalanHalaman("");
     setModalMode("edit");
     setEditId(id);
     setShowModal(true);
