@@ -39,6 +39,33 @@ import {
 const BATAS_LULUS_DRILL = 88;
 const BATAS_KESALAHAN_DRILL = 12;
 
+// Drill Level Indicator - square boxes like Progress Tasmi'
+const DrillLevelIndicator = ({ juz, currentLevel }: { juz: number; currentLevel: number }) => {
+  const totalLevels = getDrillsForJuz(juz).length || 7;
+  return (
+    <div className="flex flex-wrap gap-0.5">
+      {Array.from({ length: totalLevels }, (_, i) => {
+        const level = i + 1;
+        const isCurrent = level === currentLevel;
+        return (
+          <div
+            key={level}
+            className={cn(
+              "w-5 h-5 md:w-6 md:h-6 rounded-sm flex items-center justify-center text-[9px] md:text-[10px] font-semibold border",
+              isCurrent
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-muted text-muted-foreground border-border"
+            )}
+            title={`Level ${level}`}
+          >
+            {level}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 const mockDrillList = [
   { id: 1, tanggal: "15/01/2025", santri: "Muhammad Faiz", juz: 30, level: 1, materi: "Drill 1 - An-Naba", nilai: 92, status: "Lulus" },
   { id: 2, tanggal: "14/01/2025", santri: "Aisyah Nur", juz: 30, level: 1, materi: "Drill 1 - An-Naba", nilai: 88, status: "Lulus" },
@@ -741,7 +768,7 @@ const DrillHafalan = () => {
                     <TableHead className="text-xs md:text-sm">Tanggal</TableHead>
                     <TableHead className="text-xs md:text-sm">Santri</TableHead>
                     <TableHead className="text-xs md:text-sm">Juz</TableHead>
-                    <TableHead className="text-xs md:text-sm">Level</TableHead>
+                    <TableHead className="text-xs md:text-sm">Level Drill</TableHead>
                     <TableHead className="text-xs md:text-sm hidden md:table-cell">Materi</TableHead>
                     <TableHead className="text-xs md:text-sm">Nilai</TableHead>
                     <TableHead className="text-xs md:text-sm">Status</TableHead>
@@ -763,7 +790,7 @@ const DrillHafalan = () => {
                           <Badge className="bg-primary/10 text-primary border-primary text-[10px] md:text-xs">Juz {item.juz}</Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="text-[10px] md:text-xs">Level {item.level}</Badge>
+                          <DrillLevelIndicator juz={item.juz} currentLevel={item.level} />
                         </TableCell>
                         <TableCell className="text-xs md:text-sm hidden md:table-cell">{item.materi}</TableCell>
                         <TableCell className="font-semibold text-primary text-xs md:text-sm">{item.nilai}</TableCell>
