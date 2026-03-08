@@ -208,10 +208,10 @@ const UjianTasmi = () => {
   };
   const resetForm5Juz = () => {
     // Sync with calendar
-    const newEntries = selectedJuzList.filter(j => j).map(juz => ({
+    const newEntries: CalendarEntry[] = selectedJuzList.filter(j => j).map(juz => ({
       tanggal: selectedDate5Juz,
       santriId: selectedSantri5Juz,
-      jenis: "tasmi",
+      jenis: "tasmi" as const,
       juz: juz,
       status: getPredikat(hitungPersentase5Juz()).label,
       catatan: catatanUmum5Juz + (diberhentikan5Juz ? " (Diberhentikan)" : ""),
