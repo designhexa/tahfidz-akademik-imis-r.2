@@ -109,6 +109,7 @@ export default function DataSantri() {
   const openAdd = () => {
     setForm(INITIAL_FORM);
     setTilawahJuz("");
+    setTilawahSurah("");
     setHafalanJuz("30");
     setHafalanInputMode("surah");
     setHafalanSurah("");
