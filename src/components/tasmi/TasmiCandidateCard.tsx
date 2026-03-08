@@ -124,6 +124,25 @@ export const TasmiCandidateCard = ({
             />
           </div>
 
+          <div className="space-y-2">
+            <Label>Warna Baris Tabel</Label>
+            <Select value={selectedColor} onValueChange={setSelectedColor}>
+              <SelectTrigger>
+                <SelectValue placeholder="Pilih warna" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.keys(colorSchemes).map((key) => (
+                  <SelectItem key={key} value={key}>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded border" style={{ backgroundColor: colorSchemes[key][1] }} />
+                      <span className="capitalize">{key.replace("-", " ")}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <Button
             onClick={handleDownloadImage}
             disabled={isGenerating || candidates.length === 0}
