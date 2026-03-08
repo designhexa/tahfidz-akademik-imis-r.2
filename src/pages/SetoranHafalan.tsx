@@ -295,7 +295,7 @@ const SetoranHafalan = () => {
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Santri *</Label>
+                <Label className="text-xs md:text-sm">Santri *</Label>
                 <Select
                   value={selectedSantri}
                   onValueChange={setSelectedSantri}
