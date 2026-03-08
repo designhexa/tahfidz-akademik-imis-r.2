@@ -21,11 +21,11 @@ import {
 
 // Mock data
 const mockLaporanHarian = [
-  { tanggal: "15/01/2025", santri: "Muhammad Faiz", juz: 3, halaman: "45-50", ayat: 60, nilai: 95, status: "Lancar" },
-  { tanggal: "15/01/2025", santri: "Fatimah Zahra", juz: 4, halaman: "1-5", ayat: 50, nilai: 92, status: "Lancar" },
-  { tanggal: "14/01/2025", santri: "Aisyah Nur", juz: 3, halaman: "40-44", ayat: 45, nilai: 88, status: "Lancar" },
-  { tanggal: "14/01/2025", santri: "Ahmad Rasyid", juz: 2, halaman: "30-35", ayat: 55, nilai: 90, status: "Lancar" },
-  { tanggal: "13/01/2025", santri: "Muhammad Faiz", juz: 3, halaman: "40-44", ayat: 48, nilai: 94, status: "Lancar" },
+  { tanggal: "15/01/2025", santri: "Muhammad Faiz", halaqoh: "Al-Azhary", kelas: "Paket A Kelas 6", juz: 3, halaman: "45-50", ayat: 60, nilai: 95, status: "Lancar" },
+  { tanggal: "15/01/2025", santri: "Fatimah Zahra", halaqoh: "Al-Azhary", kelas: "KBTK A", juz: 4, halaman: "1-5", ayat: 50, nilai: 92, status: "Lancar" },
+  { tanggal: "14/01/2025", santri: "Aisyah Nur", halaqoh: "Al-Furqon", kelas: "Paket B Kelas 8", juz: 3, halaman: "40-44", ayat: 45, nilai: 88, status: "Lancar" },
+  { tanggal: "14/01/2025", santri: "Ahmad Rasyid", halaqoh: "Al-Furqon", kelas: "Paket A Kelas 6", juz: 2, halaman: "30-35", ayat: 55, nilai: 90, status: "Lancar" },
+  { tanggal: "13/01/2025", santri: "Muhammad Faiz", halaqoh: "Al-Azhary", kelas: "Paket A Kelas 6", juz: 3, halaman: "40-44", ayat: 48, nilai: 94, status: "Lancar" },
 ];
 
 const mockLaporanMingguan = [
@@ -92,8 +92,14 @@ const LaporanHafalan = () => {
   // Per-table filters
   const [harianFilterSantri, setHarianFilterSantri] = useState("all");
   const [harianFilterStatus, setHarianFilterStatus] = useState("all");
+  const [harianFilterHalaqoh, setHarianFilterHalaqoh] = useState("all");
+  const [harianFilterKelas, setHarianFilterKelas] = useState("all");
   const [mingguanFilterMinggu, setMingguanFilterMinggu] = useState("all");
+  const [mingguanFilterHalaqoh, setMingguanFilterHalaqoh] = useState("all");
+  const [mingguanFilterKelas, setMingguanFilterKelas] = useState("all");
   const [capaianFilterJuz, setCapaianFilterJuz] = useState("all");
+  const [capaianFilterHalaqoh, setCapaianFilterHalaqoh] = useState("all");
+  const [capaianFilterKelas, setCapaianFilterKelas] = useState("all");
   const [drillFilterHalaqoh, setDrillFilterHalaqoh] = useState("all");
   const [drillFilterKelas, setDrillFilterKelas] = useState("all");
   const [drillFilterStatus, setDrillFilterStatus] = useState("all");
@@ -137,7 +143,9 @@ const LaporanHafalan = () => {
   const filteredHarian = mockLaporanHarian.filter((item) => {
     const matchSantri = harianFilterSantri === "all" || item.santri === harianFilterSantri;
     const matchStatus = harianFilterStatus === "all" || item.status === harianFilterStatus;
-    return matchSantri && matchStatus;
+    const matchHalaqoh = harianFilterHalaqoh === "all" || item.halaqoh === harianFilterHalaqoh;
+    const matchKelas = harianFilterKelas === "all" || item.kelas === harianFilterKelas;
+    return matchSantri && matchStatus && matchHalaqoh && matchKelas;
   });
 
   const filteredMingguan = mockLaporanMingguan.filter((item) => {
@@ -149,7 +157,10 @@ const LaporanHafalan = () => {
   });
 
   const uniqueHarianSantri = [...new Set(mockLaporanHarian.map(h => h.santri))];
+  const uniqueHarianHalaqoh = [...new Set(mockLaporanHarian.map(h => h.halaqoh))];
+  const uniqueHarianKelas = [...new Set(mockLaporanHarian.map(h => h.kelas))];
   const uniqueDrillHalaqoh = [...new Set(mockDrillHafalan.map(d => d.halaqoh))];
+  const uniqueDrillKelas = [...new Set(mockDrillHafalan.map(d => d.kelas))];
 
   const getStatusBadge = (status: string) => {
     if (status === "Lulus") return <Badge className="bg-green-500 hover:bg-green-600 text-white">Lulus</Badge>;
@@ -379,7 +390,21 @@ const LaporanHafalan = () => {
                 <CardDescription>Daftar setoran hafalan harian santri</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <Select value={harianFilterHalaqoh} onValueChange={setHarianFilterHalaqoh}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Halaqoh" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Halaqoh</SelectItem>
+                      {uniqueHarianHalaqoh.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Select value={harianFilterKelas} onValueChange={setHarianFilterKelas}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Kelas" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Kelas</SelectItem>
+                      {uniqueHarianKelas.map(k => <SelectItem key={k} value={k}>{k}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                   <Select value={harianFilterSantri} onValueChange={setHarianFilterSantri}>
                     <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Santri" /></SelectTrigger>
                     <SelectContent>
@@ -440,9 +465,23 @@ const LaporanHafalan = () => {
                 <CardDescription>Statistik setoran per minggu</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <Select value={mingguanFilterHalaqoh} onValueChange={setMingguanFilterHalaqoh}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Halaqoh" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Halaqoh</SelectItem>
+                      {uniqueHarianHalaqoh.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Select value={mingguanFilterKelas} onValueChange={setMingguanFilterKelas}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Kelas" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Kelas</SelectItem>
+                      {uniqueHarianKelas.map(k => <SelectItem key={k} value={k}>{k}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                   <Select value={mingguanFilterMinggu} onValueChange={setMingguanFilterMinggu}>
-                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Minggu" /></SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm col-span-2 md:col-span-1"><SelectValue placeholder="Minggu" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Semua Minggu</SelectItem>
                       {mockLaporanMingguan.map(m => <SelectItem key={m.minggu} value={m.minggu}>{m.minggu}</SelectItem>)}
@@ -487,9 +526,23 @@ const LaporanHafalan = () => {
                 <CardDescription>Progress penyelesaian hafalan santri per juz</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <Select value={capaianFilterHalaqoh} onValueChange={setCapaianFilterHalaqoh}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Halaqoh" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Halaqoh</SelectItem>
+                      {uniqueHarianHalaqoh.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Select value={capaianFilterKelas} onValueChange={setCapaianFilterKelas}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Kelas" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Kelas</SelectItem>
+                      {uniqueHarianKelas.map(k => <SelectItem key={k} value={k}>{k}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                   <Select value={capaianFilterJuz} onValueChange={setCapaianFilterJuz}>
-                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Juz" /></SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm col-span-2 md:col-span-1"><SelectValue placeholder="Juz" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Semua Juz</SelectItem>
                       {mockCapaianJuz.map(j => <SelectItem key={j.juz} value={String(j.juz)}>Juz {j.juz}</SelectItem>)}
