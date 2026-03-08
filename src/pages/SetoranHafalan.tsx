@@ -300,7 +300,7 @@ const SetoranHafalan = () => {
                   value={selectedSantri}
                   onValueChange={setSelectedSantri}
                 >
-                  <SelectTrigger className="h-9 text-xs">
+                  <SelectTrigger className="h-9 text-xs md:text-sm">
                     <SelectValue placeholder="Pilih Santri" />
                   </SelectTrigger>
                   <SelectContent>
