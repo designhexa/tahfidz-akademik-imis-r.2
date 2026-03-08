@@ -352,22 +352,22 @@ const LaporanHafalan = () => {
 
         {/* Tabs Content */}
         <Tabs defaultValue="harian" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="harian" className="text-[10px] md:text-sm px-1 md:px-3">
-              <Calendar className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-2 shrink-0" />
-              <span className="hidden sm:inline">Rekap </span>Harian
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
+            <TabsTrigger value="harian" className="text-xs md:text-sm px-2 py-2">
+              <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
+              Rekap Harian
             </TabsTrigger>
-            <TabsTrigger value="mingguan" className="text-[10px] md:text-sm px-1 md:px-3">
-              <BarChart3 className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-2 shrink-0" />
-              <span className="hidden sm:inline">Rekap </span>Mingguan
+            <TabsTrigger value="mingguan" className="text-xs md:text-sm px-2 py-2">
+              <BarChart3 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
+              Rekap Mingguan
             </TabsTrigger>
-            <TabsTrigger value="capaian" className="text-[10px] md:text-sm px-1 md:px-3">
-              <TrendingUp className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-2 shrink-0" />
-              <span className="hidden sm:inline">Capaian </span>Juz
+            <TabsTrigger value="capaian" className="text-xs md:text-sm px-2 py-2">
+              <TrendingUp className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
+              Capaian Juz
             </TabsTrigger>
-            <TabsTrigger value="drill" className="text-[10px] md:text-sm px-1 md:px-3">
-              <Target className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-2 shrink-0" />
-              <span className="hidden sm:inline">Rekap </span>Drill
+            <TabsTrigger value="drill" className="text-xs md:text-sm px-2 py-2">
+              <Target className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
+              Rekap Drill
             </TabsTrigger>
           </TabsList>
 
