@@ -36,6 +36,7 @@ import { TasmiForm5Juz } from "@/components/tasmi/TasmiForm5Juz";
 import { TilawatiUjianForm } from "@/components/tilawah/TilawatiUjianForm";
 import { TilawahSetoranForm } from "@/components/tilawah/TilawahSetoranForm";
 import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
+import { toast } from "sonner";
 
 
 type MainTab = "setoran_hafalan" | "murojaah" | "tilawah" | "murojaah_rumah";
@@ -85,6 +86,14 @@ const SetoranHafalan = () => {
   const [openTilawah, setOpenTilawah] = useState(false);
   const [openUjianJilid, setOpenUjianJilid] = useState(false);
   const [openHistory, setOpenHistory] = useState(false);
+
+  // Read tasmi registered candidates from localStorage
+  const registeredCandidates = useMemo(() => {
+    try {
+      const stored = localStorage.getItem("tasmi-registered-candidates");
+      return stored ? JSON.parse(stored) as string[] : [];
+    } catch { return [] as string[]; }
+  }, [openTasmi, openTasmi5Juz]);
 
   // Tasmi' component state
   const dummySantri = useMemo(() => MOCK_SANTRI.map(s => ({
@@ -185,8 +194,16 @@ const SetoranHafalan = () => {
         if (subType === "drill") {
           setOpenDrill(true);
         } else if (subType === "tasmi") {
+          if (!registeredCandidates.includes(selectedSantri)) {
+            toast.warning("Santri belum terdaftar sebagai peserta Tasmi'. Daftarkan terlebih dahulu di halaman Ujian Tasmi'.");
+            return;
+          }
           setOpenTasmi(true);
         } else if (subType === "tasmi5juz") {
+          if (!registeredCandidates.includes(selectedSantri)) {
+            toast.warning("Santri belum terdaftar sebagai peserta Tasmi'. Daftarkan terlebih dahulu di halaman Ujian Tasmi'.");
+            return;
+          }
           setOpenTasmi5Juz(true);
         } else {
           setOpenEntry(true);
