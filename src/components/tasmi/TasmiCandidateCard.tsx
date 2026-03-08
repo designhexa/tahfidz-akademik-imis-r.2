@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import logoImis from "@/assets/logo-imis.png";
 import html2canvas from "html2canvas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -178,13 +179,9 @@ export const TasmiCandidateCard = ({
             {/* Logo */}
             <div className="mb-4">
               <img 
-                src="/assets/logo-imis.png" 
+                src={logoImis} 
                 alt="Logo IMIS" 
                 className="w-32 h-32 object-contain"
-                onError={(e) => {
-                  // Fallback if image not found
-                  e.currentTarget.style.display = 'none';
-                }}
               />
             </div>
 
