@@ -81,6 +81,7 @@ const MOCK_UJIAN_SEMESTER: HasilUjianSemester[] = [
 ];
 
 export default function TilawahUjianSemester() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
