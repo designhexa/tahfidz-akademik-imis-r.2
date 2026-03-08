@@ -173,7 +173,9 @@ export default function TilawahUjianSemester() {
 
   const filteredUjian = ujianList.filter(u => {
     const matchSearch = u.namaSantri.toLowerCase().includes(search.toLowerCase());
-    return matchSearch;
+    const matchHalaqoh = riwayatFilterHalaqoh === "all" || u.halaqoh === riwayatFilterHalaqoh;
+    const matchKelas = riwayatFilterKelas === "all" || u.kelas === riwayatFilterKelas;
+    return matchSearch && matchHalaqoh && matchKelas;
   });
 
   return (
