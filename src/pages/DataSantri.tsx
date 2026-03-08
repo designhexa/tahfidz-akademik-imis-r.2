@@ -56,13 +56,18 @@ const INITIAL_FORM: Omit<MockSantri, "id"> = {
   pencapaianHafalan: "0 Juz",
 };
 
+type ModalMode = "add" | "edit";
+
 export default function DataSantri() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
   const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState<ModalMode>("add");
+  const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(INITIAL_FORM);
+  const [, forceUpdate] = useState(0);
 
   const filteredSantri = MOCK_SANTRI.filter((santri) => {
     const matchSearch = santri.nama.toLowerCase().includes(search.toLowerCase()) ||
@@ -72,19 +77,39 @@ export default function DataSantri() {
     return matchSearch && matchHalaqoh && matchKelas;
   });
 
+  const openAdd = () => {
+    setForm(INITIAL_FORM);
+    setModalMode("add");
+    setEditId(null);
+    setShowModal(true);
+  };
+
+  const openEdit = (santri: MockSantri) => {
+    const { id, ...rest } = santri;
+    setForm(rest);
+    setModalMode("edit");
+    setEditId(id);
+    setShowModal(true);
+  };
+
   const handleSubmit = () => {
     if (!form.nama || !form.nis || !form.idKelas || !form.idHalaqoh) {
       toast.error("Mohon lengkapi data wajib (NIS, Nama, Kelas, Halaqoh)");
       return;
     }
-    const newSantri: MockSantri = {
-      ...form,
-      id: `s${Date.now()}`,
-    };
-    MOCK_SANTRI.push(newSantri);
-    toast.success(`Santri ${form.nama} berhasil ditambahkan`);
+    if (modalMode === "edit" && editId) {
+      const idx = MOCK_SANTRI.findIndex(s => s.id === editId);
+      if (idx !== -1) {
+        MOCK_SANTRI[idx] = { ...form, id: editId };
+        toast.success(`Data ${form.nama} berhasil diperbarui`);
+      }
+    } else {
+      MOCK_SANTRI.push({ ...form, id: `s${Date.now()}` });
+      toast.success(`Santri ${form.nama} berhasil ditambahkan`);
+    }
     setForm(INITIAL_FORM);
     setShowModal(false);
+    forceUpdate(n => n + 1);
   };
 
   const getTilawahLabel = (santri: MockSantri) => {
@@ -97,7 +122,7 @@ export default function DataSantri() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-foreground">Data Santri</h1>
-          <Button className="bg-primary hover:bg-primary/90" onClick={() => setShowModal(true)}>
+          <Button className="bg-primary hover:bg-primary/90" onClick={openAdd}>
             <Plus className="w-4 h-4 mr-2" />
             Tambah Santri
           </Button>
@@ -107,37 +132,20 @@ export default function DataSantri() {
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Cari santri..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
-              />
+              <Input placeholder="Cari santri..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
             </div>
             <Select value={filterHalaqoh} onValueChange={setFilterHalaqoh}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Semua Halaqoh" />
-              </SelectTrigger>
+              <SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Semua Halaqoh" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Halaqoh</SelectItem>
-                {MOCK_HALAQOH.map((h) => (
-                  <SelectItem key={h.id} value={h.id}>
-                    {h.nama}
-                  </SelectItem>
-                ))}
+                {MOCK_HALAQOH.map((h) => (<SelectItem key={h.id} value={h.id}>{h.nama}</SelectItem>))}
               </SelectContent>
             </Select>
             <Select value={filterKelas} onValueChange={setFilterKelas}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Semua Kelas" />
-              </SelectTrigger>
+              <SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Semua Kelas" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Kelas</SelectItem>
-                {MOCK_KELAS.map((k) => (
-                  <SelectItem key={k.id} value={k.id}>
-                    {k.nama_kelas}
-                  </SelectItem>
-                ))}
+                {MOCK_KELAS.map((k) => (<SelectItem key={k.id} value={k.id}>{k.nama_kelas}</SelectItem>))}
               </SelectContent>
             </Select>
           </div>
@@ -165,31 +173,23 @@ export default function DataSantri() {
                     <TableCell className="text-primary">{getHalaqohNama(santri.idHalaqoh)}</TableCell>
                     <TableCell>{getKelasNama(santri.idKelas)}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-xs">
-                        {getTilawahLabel(santri)} - Hal {santri.halamanSaatIni}
-                      </Badge>
+                      <Badge variant="outline" className="text-xs">{getTilawahLabel(santri)} - Hal {santri.halamanSaatIni}</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-xs">
-                        Juz {santri.posisiHafalanJuz} - {santri.posisiHafalanSurah || "-"}
-                      </Badge>
+                      <Badge variant="outline" className="text-xs">Juz {santri.posisiHafalanJuz} - {santri.posisiHafalanSurah || "-"}</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="text-xs font-semibold">
-                        {santri.pencapaianHafalan}
-                      </Badge>
+                      <Badge variant="secondary" className="text-xs font-semibold">{santri.pencapaianHafalan}</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="default" className="bg-primary/10 text-primary hover:bg-primary/20">
-                        {santri.status}
-                      </Badge>
+                      <Badge variant="default" className="bg-primary/10 text-primary hover:bg-primary/20">{santri.status}</Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                         <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => navigate(`/santri/${santri.id}`)}>
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" size="icon" className="h-8 w-8">
+                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => openEdit(santri)}>
                           <Pencil className="w-4 h-4" />
                         </Button>
                         <Button variant="outline" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
@@ -205,11 +205,11 @@ export default function DataSantri() {
         </div>
       </div>
 
-      {/* Modal Tambah Santri */}
+      {/* Modal Tambah / Edit Santri */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Tambah Santri Baru</DialogTitle>
+            <DialogTitle>{modalMode === "edit" ? "Edit Data Santri" : "Tambah Santri Baru"}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
@@ -232,9 +232,7 @@ export default function DataSantri() {
                 <Select value={form.idKelas} onValueChange={(v) => setForm({ ...form, idKelas: v })}>
                   <SelectTrigger><SelectValue placeholder="Pilih Kelas" /></SelectTrigger>
                   <SelectContent>
-                    {MOCK_KELAS.map((k) => (
-                      <SelectItem key={k.id} value={k.id}>{k.nama_kelas}</SelectItem>
-                    ))}
+                    {MOCK_KELAS.map((k) => (<SelectItem key={k.id} value={k.id}>{k.nama_kelas}</SelectItem>))}
                   </SelectContent>
                 </Select>
               </div>
@@ -243,9 +241,7 @@ export default function DataSantri() {
                 <Select value={form.idHalaqoh} onValueChange={(v) => setForm({ ...form, idHalaqoh: v })}>
                   <SelectTrigger><SelectValue placeholder="Pilih Halaqoh" /></SelectTrigger>
                   <SelectContent>
-                    {MOCK_HALAQOH.map((h) => (
-                      <SelectItem key={h.id} value={h.id}>{h.nama}</SelectItem>
-                    ))}
+                    {MOCK_HALAQOH.map((h) => (<SelectItem key={h.id} value={h.id}>{h.nama}</SelectItem>))}
                   </SelectContent>
                 </Select>
               </div>
@@ -256,9 +252,7 @@ export default function DataSantri() {
                 <Select value={form.idWali} onValueChange={(v) => setForm({ ...form, idWali: v })}>
                   <SelectTrigger><SelectValue placeholder="Pilih Wali" /></SelectTrigger>
                   <SelectContent>
-                    {MOCK_WALI.map((w) => (
-                      <SelectItem key={w.id} value={w.id}>{w.nama}</SelectItem>
-                    ))}
+                    {MOCK_WALI.map((w) => (<SelectItem key={w.id} value={w.id}>{w.nama}</SelectItem>))}
                   </SelectContent>
                 </Select>
               </div>
@@ -267,28 +261,51 @@ export default function DataSantri() {
                 <Input type="date" value={form.tanggalMasuk} onChange={(e) => setForm({ ...form, tanggalMasuk: e.target.value })} />
               </div>
             </div>
+
+            {/* Tilawah */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Jilid Tilawah Saat Ini</Label>
                 <Select value={String(form.jilidSaatIni)} onValueChange={(v) => setForm({ ...form, jilidSaatIni: Number(v) })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {[1, 2, 3, 4, 5, 6].map((j) => (
-                      <SelectItem key={j} value={String(j)}>Jilid {j}</SelectItem>
-                    ))}
+                    {[1, 2, 3, 4, 5, 6].map((j) => (<SelectItem key={j} value={String(j)}>Jilid {j}</SelectItem>))}
                     <SelectItem value="7">Al-Qur'an</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Halaman Saat Ini</Label>
+                <Label>Halaman Tilawah</Label>
                 <Input type="number" min={1} value={form.halamanSaatIni} onChange={(e) => setForm({ ...form, halamanSaatIni: Number(e.target.value) })} />
+              </div>
+            </div>
+
+            {/* Hafalan */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label>Posisi Hafalan (Juz)</Label>
+                <Select value={String(form.posisiHafalanJuz)} onValueChange={(v) => setForm({ ...form, posisiHafalanJuz: Number(v) })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 30 }, (_, i) => 30 - i).map((j) => (
+                      <SelectItem key={j} value={String(j)}>Juz {j}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Surah Terakhir</Label>
+                <Input value={form.posisiHafalanSurah} onChange={(e) => setForm({ ...form, posisiHafalanSurah: e.target.value })} placeholder="Nama surah" />
+              </div>
+              <div className="space-y-2">
+                <Label>Pencapaian Hafalan</Label>
+                <Input value={form.pencapaianHafalan} onChange={(e) => setForm({ ...form, pencapaianHafalan: e.target.value })} placeholder="cth: 1.5 Juz" />
               </div>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowModal(false)}>Batal</Button>
-            <Button onClick={handleSubmit}>Simpan</Button>
+            <Button onClick={handleSubmit}>{modalMode === "edit" ? "Perbarui" : "Simpan"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
