@@ -383,7 +383,14 @@ export default function TilawahAbsensi({
                    filteredSetoran.map((setoran, index) => (
                      <TableRow key={setoran.id}>
                        <TableCell>{index + 1}</TableCell>
-                       <TableCell className="font-medium">{getSantriName(setoran.idSantri)}</TableCell>
+                       <TableCell
+                         className="font-medium text-primary cursor-pointer hover:underline"
+                         onClick={() => {
+                           const santriName = getSantriName(setoran.idSantri);
+                           const s = getSantriByNama(santriName);
+                           if (s) navigate(`/santri/${s.id}`);
+                         }}
+                       >{getSantriName(setoran.idSantri)}</TableCell>
                        <TableCell>{getSantriKelas(setoran.idSantri)}</TableCell>
                        <TableCell>{getSantriHalaqoh(setoran.idSantri)}</TableCell>
                        <TableCell>Jilid {setoran.jilid}</TableCell>

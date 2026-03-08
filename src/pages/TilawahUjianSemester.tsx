@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Search, Plus, BookOpenCheck, RefreshCw, Shuffle } from "lucide-react";
 import { toast } from "sonner";
 import { MOCK_SANTRI_TILAWAH, TILAWATI_JILID, HALAMAN_PER_JILID } from "@/lib/tilawah-data";
-import { MOCK_HALAQOH, MOCK_KELAS } from "@/lib/mock-data";
+import { MOCK_HALAQOH, MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 
 interface SoalUjianSemester {
   id: number;
