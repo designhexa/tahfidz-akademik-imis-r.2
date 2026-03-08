@@ -66,18 +66,6 @@ export default function DataKelas() {
     setIsLoading(false);
   };
 
-  const fetchProfiles = async () => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("id, nama_lengkap")
-      .order("nama_lengkap");
-
-    if (error) {
-      console.error("Error fetching profiles:", error);
-    } else {
-      setProfiles(data || []);
-    }
-  };
 
   useEffect(() => {
     fetchKelas();
