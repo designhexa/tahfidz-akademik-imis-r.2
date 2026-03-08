@@ -675,9 +675,9 @@ const LaporanHafalan = () => {
                 <CardTitle>Filter Laporan Tilawah</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Select value={tilawahHalaqoh} onValueChange={setTilawahHalaqoh}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm">
                       <SelectValue placeholder="Pilih Halaqoh" />
                     </SelectTrigger>
                     <SelectContent>
@@ -689,7 +689,7 @@ const LaporanHafalan = () => {
                     </SelectContent>
                   </Select>
                   <Select value={tilawahKelas} onValueChange={setTilawahKelas}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm">
                       <SelectValue placeholder="Pilih Kelas" />
                     </SelectTrigger>
                     <SelectContent>
@@ -701,8 +701,17 @@ const LaporanHafalan = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                  <Select value={tilawahSantri} onValueChange={setTilawahSantri}>
+                    <SelectTrigger className="text-xs md:text-sm">
+                      <SelectValue placeholder="Pilih Santri" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Santri</SelectItem>
+                      {uniqueTilawahSantri.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                   <Select value={tilawahJilid} onValueChange={setTilawahJilid}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm">
                       <SelectValue placeholder="Pilih Jilid" />
                     </SelectTrigger>
                     <SelectContent>
