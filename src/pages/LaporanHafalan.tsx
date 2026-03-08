@@ -473,7 +473,7 @@ const LaporanHafalan = () => {
                 <CardDescription>Statistik setoran per minggu</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <Select value={mingguanFilterHalaqoh} onValueChange={setMingguanFilterHalaqoh}>
                     <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Halaqoh" /></SelectTrigger>
                     <SelectContent>
@@ -488,8 +488,15 @@ const LaporanHafalan = () => {
                       {uniqueHarianKelas.map(k => <SelectItem key={k} value={k}>{k}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  <Select value={mingguanFilterSantri} onValueChange={setMingguanFilterSantri}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Santri" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Santri</SelectItem>
+                      {uniqueHarianSantri.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                   <Select value={mingguanFilterMinggu} onValueChange={setMingguanFilterMinggu}>
-                    <SelectTrigger className="text-xs md:text-sm col-span-2 md:col-span-1"><SelectValue placeholder="Minggu" /></SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Minggu" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Semua Minggu</SelectItem>
                       {mockLaporanMingguan.map(m => <SelectItem key={m.minggu} value={m.minggu}>{m.minggu}</SelectItem>)}
