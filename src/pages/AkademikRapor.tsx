@@ -193,7 +193,13 @@ export default function AkademikRapor() {
                         <TableCell>{index + 1}</TableCell>
                         <TableCell className="font-mono text-xs">{santri.nis}</TableCell>
                         <TableCell className="font-mono text-xs">{santri.nisn}</TableCell>
-                        <TableCell className="font-medium">{santri.nama}</TableCell>
+                        <TableCell
+                          className="font-medium text-primary cursor-pointer hover:underline"
+                          onClick={() => {
+                            const s = getSantriByNama(santri.nama);
+                            if (s) navigate(`/santri/${s.id}`);
+                          }}
+                        >{santri.nama}</TableCell>
                         <TableCell>{santri.kelas}</TableCell>
                         <TableCell className="text-center">
                           {getStatusBadge(santri.statusNilai)}

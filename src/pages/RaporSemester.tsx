@@ -208,7 +208,13 @@ const RaporSemester = () => {
                       <TableRow key={santri.id}>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell className="font-mono text-xs">{santri.nis}</TableCell>
-                        <TableCell className="font-medium">{santri.nama}</TableCell>
+                        <TableCell
+                          className="font-medium text-primary cursor-pointer hover:underline"
+                          onClick={() => {
+                            const s = getSantriByNama(santri.nama);
+                            if (s) navigate(`/santri/${s.id}`);
+                          }}
+                        >{santri.nama}</TableCell>
                         <TableCell>{santri.kelas}</TableCell>
                         <TableCell>{santri.halaqoh}</TableCell>
                         <TableCell className="text-center">
