@@ -384,7 +384,7 @@ export default function DataSantri() {
                 setForm({ ...form, posisiHafalanJuz: Number(v), posisiHafalanSurah: "" });
               }}
               label="Juz Hafalan"
-              order="desc"
+              order="asc"
             />
 
             {hafalanJuz && (
