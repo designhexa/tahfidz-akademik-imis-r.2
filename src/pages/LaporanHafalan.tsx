@@ -143,7 +143,9 @@ const LaporanHafalan = () => {
   const filteredHarian = mockLaporanHarian.filter((item) => {
     const matchSantri = harianFilterSantri === "all" || item.santri === harianFilterSantri;
     const matchStatus = harianFilterStatus === "all" || item.status === harianFilterStatus;
-    return matchSantri && matchStatus;
+    const matchHalaqoh = harianFilterHalaqoh === "all" || item.halaqoh === harianFilterHalaqoh;
+    const matchKelas = harianFilterKelas === "all" || item.kelas === harianFilterKelas;
+    return matchSantri && matchStatus && matchHalaqoh && matchKelas;
   });
 
   const filteredMingguan = mockLaporanMingguan.filter((item) => {
