@@ -13,7 +13,7 @@
    HALAMAN_PER_JILID,
    getProgressJilid
  } from "@/lib/tilawah-data";
- import { MOCK_KELAS } from "@/lib/mock-data";
+ import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 
 export default function TilawahLaporan() {
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
