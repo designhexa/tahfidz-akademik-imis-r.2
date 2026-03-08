@@ -280,6 +280,14 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/")}>
+                  <NavLink to="/">
+                    <Globe className="w-4 h-4" />
+                    <span>Landing Page</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton onClick={handleLogout}>
                   <LogOut className="w-4 h-4" />
                   <span>Keluar</span>
