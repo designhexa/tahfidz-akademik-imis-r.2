@@ -196,18 +196,18 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="border-r border-border bg-card">
+    <Sidebar className="border-r border-border/60 bg-card/95 backdrop-blur-sm">
       <SidebarContent>
         {/* Header */}
-        <div className="px-4 py-3 bg-[#015504] text-white">
+        <div className="px-4 py-4 bg-gradient-to-br from-primary to-primary/80">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center shadow-md">
+              <BookOpen className="w-6 h-6 text-primary-foreground" />
             </div>
             {open && (
               <div>
-                <h2 className="font-bold text-lg text-white">Mantaf IMIS</h2>
-                <p className="text-xs text-white/80">Manajemen Tahfidz</p>
+                <h2 className="font-bold text-lg text-primary-foreground">Mantaf IMIS</h2>
+                <p className="text-xs text-primary-foreground/70">Manajemen Tahfidz</p>
               </div>
             )}
           </div>
