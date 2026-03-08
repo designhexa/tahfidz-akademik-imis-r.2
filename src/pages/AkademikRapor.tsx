@@ -21,7 +21,7 @@ import { RaporAkademikPreview } from "@/components/rapor/RaporAkademikPreview";
 import { mockSantriAkademik, mockRaporAkademik, RaporAkademik } from "@/lib/rapor-akademik-types";
 import html2canvas from "html2canvas";
 import { useToast } from "@/hooks/use-toast";
-import { MOCK_KELAS } from "@/lib/mock-data";
+import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 
 export default function AkademikRapor() {
   const [filterKelas, setFilterKelas] = useState("all");
