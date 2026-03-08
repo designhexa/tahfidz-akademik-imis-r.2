@@ -18,6 +18,7 @@ import {
   User,
   Target,
   PenTool,
+  Globe,
 } from "lucide-react";
 import {
   Sidebar,
