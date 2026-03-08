@@ -189,9 +189,9 @@ export const TasmiCandidateCard = ({
             <h1 className="text-4xl font-bold text-green-800 mb-2" style={{ fontFamily: "serif" }}>
               Jadwal Sertifikasi Hafalan
             </h1>
-            <div className="flex items-center gap-2 text-xl text-gray-700 mb-6">
-              <Calendar className="w-5 h-5" />
-              {formattedDate}
+            <div className="flex items-center justify-center gap-2 text-xl text-gray-700 mb-6">
+              <Calendar className="w-5 h-5 flex-shrink-0" />
+              <span className="leading-none">{formattedDate}</span>
             </div>
 
             {/* Table */}
