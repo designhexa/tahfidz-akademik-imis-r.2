@@ -124,6 +124,7 @@ export default function DataSantri() {
     const { id, ...rest } = santri;
     setForm(rest);
     setTilawahJuz(santri.jilidSaatIni >= 7 ? String(santri.halamanSaatIni || 1) : "");
+    setTilawahSurah("");
     setHafalanJuz(String(santri.posisiHafalanJuz));
     setHafalanInputMode("surah");
     setHafalanSurah("");
