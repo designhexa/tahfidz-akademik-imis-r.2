@@ -111,6 +111,7 @@ interface PenilaianHalaman { halaman: number; pancingan: number; catatan: string
 interface PenilaianJuz { juz: number; halaman: PenilaianHalaman[]; catatanJuz: string; }
 
 const UjianTasmi = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isForm5JuzOpen, setIsForm5JuzOpen] = useState(false);
