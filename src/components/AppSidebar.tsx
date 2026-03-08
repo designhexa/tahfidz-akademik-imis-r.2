@@ -44,7 +44,7 @@ type MenuItem = {
 };
 
 const dashboardItems: MenuItem[] = [
-  { title: "Dashboard", url: "/", icon: BookOpen },
+  { title: "Dashboard", url: "/dashboard", icon: BookOpen },
 ];
 
 const setoranItems: MenuItem[] = [
