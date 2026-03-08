@@ -95,6 +95,12 @@ export default function DataSantri() {
     return getSurahListByJuz(Number(hafalanJuz));
   }, [hafalanJuz]);
 
+  const selectedTilawahSurah = useMemo(() => {
+    return tilawahSurahList.find(s => String(s.number) === tilawahSurah);
+  }, [tilawahSurah, tilawahSurahList]);
+
+  const tilawahMaxHalaman = tilawahJuz ? getPageCountForJuz(Number(tilawahJuz)) : 20;
+
   const selectedHafalanSurah = useMemo(() => {
     return hafalanSurahList.find(s => String(s.number) === hafalanSurah);
   }, [hafalanSurah, hafalanSurahList]);
