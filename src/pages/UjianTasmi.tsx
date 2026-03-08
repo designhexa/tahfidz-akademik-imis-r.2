@@ -590,7 +590,13 @@ const UjianTasmi = () => {
                             <TableCell className="whitespace-nowrap">
                               {new Date(ujian.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </TableCell>
-                            <TableCell className="font-medium">{ujian.santriNama}</TableCell>
+                            <TableCell
+                              className="font-medium text-primary cursor-pointer hover:underline"
+                              onClick={() => {
+                                const s = getSantriByNama(ujian.santriNama);
+                                if (s) navigate(`/santri/${s.id}`);
+                              }}
+                            >{ujian.santriNama}</TableCell>
                             <TableCell>{getJuzName(ujian.juz)}</TableCell>
                             <TableCell className="text-center font-bold">{ujian.nilaiTotal || "-"}</TableCell>
                             <TableCell className="text-center">
