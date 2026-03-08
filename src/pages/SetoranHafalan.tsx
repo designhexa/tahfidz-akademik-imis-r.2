@@ -255,10 +255,10 @@ const SetoranHafalan = () => {
       <div className="space-y-4 md:space-y-5">
         {/* Header */}
         <div>
-          <h1 className="text-xl md:text-3xl font-bold text-foreground">
+          <h1 className="text-2xl font-bold text-foreground">
             Setoran Harian
           </h1>
-          <p className="text-xs md:text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mt-1">
             Monitoring setoran hafalan, murojaah, dan tilawah
           </p>
         </div>
@@ -272,7 +272,7 @@ const SetoranHafalan = () => {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
               <div className="space-y-1">
-                <Label className="text-xs">Halaqoh</Label>
+                <Label className="text-xs md:text-sm">Halaqoh</Label>
                 <Select
                   value={selectedHalaqoh || "all"}
                   onValueChange={(v) => {
@@ -280,7 +280,7 @@ const SetoranHafalan = () => {
                     setSelectedSantri("");
                   }}
                 >
-                  <SelectTrigger className="h-9 text-xs">
+                  <SelectTrigger className="h-9 text-xs md:text-sm">
                     <SelectValue placeholder="Semua Halaqoh" />
                   </SelectTrigger>
                   <SelectContent>
@@ -295,12 +295,12 @@ const SetoranHafalan = () => {
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Santri *</Label>
+                <Label className="text-xs md:text-sm">Santri *</Label>
                 <Select
                   value={selectedSantri}
                   onValueChange={setSelectedSantri}
                 >
-                  <SelectTrigger className="h-9 text-xs">
+                  <SelectTrigger className="h-9 text-xs md:text-sm">
                     <SelectValue placeholder="Pilih Santri" />
                   </SelectTrigger>
                   <SelectContent>
@@ -314,12 +314,12 @@ const SetoranHafalan = () => {
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Bulan</Label>
+                <Label className="text-xs md:text-sm">Bulan</Label>
                 <Select
                   value={String(month)}
                   onValueChange={(v) => setMonth(Number(v))}
                 >
-                  <SelectTrigger className="h-9 text-xs">
+                  <SelectTrigger className="h-9 text-xs md:text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -333,12 +333,12 @@ const SetoranHafalan = () => {
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Tahun</Label>
+                <Label className="text-xs md:text-sm">Tahun</Label>
                 <Select
                   value={String(year)}
                   onValueChange={(v) => setYear(Number(v))}
                 >
-                  <SelectTrigger className="h-9 text-xs">
+                  <SelectTrigger className="h-9 text-xs md:text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -353,7 +353,7 @@ const SetoranHafalan = () => {
             </div>
 
             {santriData && (
-              <div className="mt-3 p-2 bg-primary/10 rounded text-xs">
+              <div className="mt-3 p-2 bg-primary/10 rounded text-xs md:text-sm">
                 <span className="font-medium">{santriData.nama}</span> •{" "}
                 NIS: {santriData.nis} •{" "}
                 {MOCK_HALAQOH.find((h) => h.id === santriData.idHalaqoh)?.nama || "-"}
@@ -374,28 +374,28 @@ const SetoranHafalan = () => {
           <TabsList className="grid w-full grid-cols-4 h-auto">
             <TabsTrigger
               value="setoran_hafalan"
-              className="text-[10px] md:text-xs py-2 gap-1"
+              className="text-[10px] md:text-sm py-2 gap-1"
             >
               <BookMarked className="w-3 h-3 hidden md:block" />
               Hafalan
             </TabsTrigger>
             <TabsTrigger
               value="murojaah"
-              className="text-[10px] md:text-xs py-2 gap-1"
+              className="text-[10px] md:text-sm py-2 gap-1"
             >
               <RefreshCw className="w-3 h-3 hidden md:block" />
               Murojaah
             </TabsTrigger>
             <TabsTrigger
               value="tilawah"
-              className="text-[10px] md:text-xs py-2 gap-1"
+              className="text-[10px] md:text-sm py-2 gap-1"
             >
               <BookOpen className="w-3 h-3 hidden md:block" />
               Tilawah
             </TabsTrigger>
             <TabsTrigger
               value="murojaah_rumah"
-              className="text-[10px] md:text-xs py-2 gap-1"
+              className="text-[10px] md:text-sm py-2 gap-1"
             >
               <Home className="w-3 h-3 hidden md:block" />
               Rumah
@@ -410,7 +410,7 @@ const SetoranHafalan = () => {
                   key={opt.value}
                   size="sm"
                   variant={subType === opt.value ? "default" : "outline"}
-                  className="h-7 text-[10px] md:text-xs"
+                  className="h-7 text-[10px] md:text-sm"
                   onClick={() => setSubType(opt.value)}
                 >
                   {opt.label}
@@ -424,7 +424,7 @@ const SetoranHafalan = () => {
             <Button variant="outline" size="icon" className="h-8 w-8" onClick={handlePrevMonth}>
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <span className="text-sm font-medium text-muted-foreground">
+            <span className="text-sm font-medium text-foreground">
               {monthOptions[month]} {year}
             </span>
             <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleNextMonth}>
@@ -467,7 +467,7 @@ const SetoranHafalan = () => {
 
           {/* Legend */}
           {selectedSantri && (
-            <div className="flex flex-wrap gap-3 mt-3 text-[10px] md:text-xs text-muted-foreground">
+            <div className="flex flex-wrap gap-3 mt-3 text-[10px] md:text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded-sm bg-[hsl(160,60%,45%)]/20 border border-[hsl(160,60%,45%)]/40" />
                 <span>Lancar / Lulus</span>
