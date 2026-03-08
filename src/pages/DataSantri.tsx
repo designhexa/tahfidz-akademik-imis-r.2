@@ -56,6 +56,8 @@ const INITIAL_FORM: Omit<MockSantri, "id"> = {
   pencapaianHafalan: "0 Juz",
 };
 
+type ModalMode = "add" | "edit";
+
 export default function DataSantri() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
