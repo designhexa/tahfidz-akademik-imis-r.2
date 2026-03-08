@@ -32,6 +32,7 @@ import {
   checkTargetStatus,
   CLASS_TARGETS,
 } from "@/lib/target-hafalan";
+import { getSantriByNama } from "@/lib/mock-data";
 
 import {
   BarChart,
