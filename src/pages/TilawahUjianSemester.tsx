@@ -83,6 +83,8 @@ export default function TilawahUjianSemester() {
   const [search, setSearch] = useState("");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
+  const [riwayatFilterHalaqoh, setRiwayatFilterHalaqoh] = useState("all");
+  const [riwayatFilterKelas, setRiwayatFilterKelas] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [ujianList, setUjianList] = useState<HasilUjianSemester[]>(MOCK_UJIAN_SEMESTER);
 
