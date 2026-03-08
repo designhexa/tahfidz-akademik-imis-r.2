@@ -199,7 +199,7 @@ export function AppSidebar() {
     <Sidebar className="border-r border-border/60 bg-card/95 backdrop-blur-sm">
       <SidebarContent>
         {/* Header */}
-        <div className="px-4 py-4 bg-gradient-to-br from-primary to-primary/80">
+        <div className="px-4 py-4" style={{ background: 'linear-gradient(135deg, #015504, #027a07)' }}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center shadow-md">
               <BookOpen className="w-6 h-6 text-primary-foreground" />
