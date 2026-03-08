@@ -20,7 +20,7 @@
    getAspekPenilaianByJilid,
    SetoranTilawah 
  } from "@/lib/tilawah-data";
- import { MOCK_KELAS } from "@/lib/mock-data";
+ import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
  import { toast } from "sonner";
 
 type TilawahAbsensiProps = {
