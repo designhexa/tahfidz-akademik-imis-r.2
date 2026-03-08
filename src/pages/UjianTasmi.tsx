@@ -118,6 +118,40 @@ const UjianTasmi = () => {
   const [selectedUjian, setSelectedUjian] = useState<typeof dummyHasilUjian[0] | null>(null);
   const [expandedRules, setExpandedRules] = useState(false);
 
+  // Registered tasmi candidates (persisted in localStorage)
+  const [registeredCandidates, setRegisteredCandidates] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem("tasmi-registered-candidates");
+      return stored ? JSON.parse(stored) : [];
+    } catch { return []; }
+  });
+
+  const saveRegistered = (ids: string[]) => {
+    setRegisteredCandidates(ids);
+    localStorage.setItem("tasmi-registered-candidates", JSON.stringify(ids));
+  };
+
+  const handleDaftarkan = (studentId: string) => {
+    if (registeredCandidates.includes(studentId)) {
+      toast.info("Santri sudah terdaftar sebagai peserta tasmi'");
+      return;
+    }
+    const updated = [...registeredCandidates, studentId];
+    saveRegistered(updated);
+    toast.success("Santri berhasil didaftarkan sebagai peserta tasmi'!");
+  };
+
+  const handleBatalkanPendaftaran = (studentId: string) => {
+    const updated = registeredCandidates.filter(id => id !== studentId);
+    saveRegistered(updated);
+    toast.success("Pendaftaran tasmi' dibatalkan");
+  };
+
+  // Filtered santri for exam forms - only registered candidates
+  const registeredSantriForExam = useMemo(() => {
+    return dummySantri.filter(s => registeredCandidates.includes(s.id));
+  }, [registeredCandidates]);
+
   // Auto-open form from calendar redirect
   useEffect(() => {
     if (searchParams.get("santri")) {
@@ -224,8 +258,8 @@ const UjianTasmi = () => {
   };
 
   const handleUjian = (santri: any) => {
-    setSelectedSantri(santri.id);
-    setIsFormOpen(true);
+    // No longer opens form - just registers
+    handleDaftarkan(santri.id);
   };
 
   const displayHasilUjian = useMemo(() => {
@@ -273,10 +307,16 @@ const UjianTasmi = () => {
                 <div className="space-y-6 py-4">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label>Santri</Label>
+                      <Label>Santri (Terdaftar)</Label>
                       <Select value={selectedSantri} onValueChange={setSelectedSantri}>
-                        <SelectTrigger><SelectValue placeholder="Pilih santri" /></SelectTrigger>
-                        <SelectContent>{dummySantri.map((s) => (<SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>))}</SelectContent>
+                        <SelectTrigger><SelectValue placeholder="Pilih santri terdaftar" /></SelectTrigger>
+                        <SelectContent>
+                          {registeredSantriForExam.length === 0 ? (
+                            <SelectItem value="__none" disabled>Belum ada santri terdaftar</SelectItem>
+                          ) : registeredSantriForExam.map((s) => (
+                            <SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>
+                          ))}
+                        </SelectContent>
                       </Select>
                     </div>
                     <JuzSelector value={selectedJuz} onValueChange={setSelectedJuz} label="Juz" required />
@@ -284,24 +324,13 @@ const UjianTasmi = () => {
                       <Label>Tanggal Ujian</Label>
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !selectedDate && "text-muted-foreground"
-                            )}
-                          >
+                          <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}>
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {selectedDate ? format(selectedDate, "PPP", { locale: id }) : <span>Pilih tanggal</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={(date) => date && setSelectedDate(date)}
-                            initialFocus
-                          />
+                          <Calendar mode="single" selected={selectedDate} onSelect={(date) => date && setSelectedDate(date)} initialFocus />
                         </PopoverContent>
                       </Popover>
                     </div>
@@ -333,34 +362,29 @@ const UjianTasmi = () => {
                 <div className="space-y-6 py-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Santri</Label>
+                      <Label>Santri (Terdaftar)</Label>
                       <Select value={selectedSantri5Juz} onValueChange={setSelectedSantri5Juz}>
-                        <SelectTrigger><SelectValue placeholder="Pilih santri" /></SelectTrigger>
-                        <SelectContent>{dummySantri.map((s) => (<SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>))}</SelectContent>
+                        <SelectTrigger><SelectValue placeholder="Pilih santri terdaftar" /></SelectTrigger>
+                        <SelectContent>
+                          {registeredSantriForExam.length === 0 ? (
+                            <SelectItem value="__none" disabled>Belum ada santri terdaftar</SelectItem>
+                          ) : registeredSantriForExam.map((s) => (
+                            <SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>
+                          ))}
+                        </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
                       <Label>Tanggal Ujian</Label>
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !selectedDate5Juz && "text-muted-foreground"
-                            )}
-                          >
+                          <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !selectedDate5Juz && "text-muted-foreground")}>
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {selectedDate5Juz ? format(selectedDate5Juz, "PPP", { locale: id }) : <span>Pilih tanggal</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={selectedDate5Juz}
-                            onSelect={(date) => date && setSelectedDate5Juz(date)}
-                            initialFocus
-                          />
+                          <Calendar mode="single" selected={selectedDate5Juz} onSelect={(date) => date && setSelectedDate5Juz(date)} initialFocus />
                         </PopoverContent>
                       </Popover>
                     </div>
@@ -460,15 +484,33 @@ const UjianTasmi = () => {
                                 )}
                               </TableCell>
                               <TableCell className="text-center">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="border-primary text-primary hover:bg-primary/10"
-                                  onClick={() => handleUjian(student)}
-                                >
-                                  <CheckCircle2 className="w-3 h-3 mr-1" />
-                                  Daftarkan
-                                </Button>
+                                {registeredCandidates.includes(student.id) ? (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <Badge className="bg-primary text-primary-foreground">
+                                      <CheckCircle2 className="w-3 h-3 mr-1" />
+                                      Terdaftar
+                                    </Badge>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                                      onClick={() => handleBatalkanPendaftaran(student.id)}
+                                      title="Batalkan pendaftaran"
+                                    >
+                                      <XCircle className="w-3.5 h-3.5" />
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-primary text-primary hover:bg-primary/10"
+                                    onClick={() => handleUjian(student)}
+                                  >
+                                    <CheckCircle2 className="w-3 h-3 mr-1" />
+                                    Daftarkan
+                                  </Button>
+                                )}
                               </TableCell>
                             </TableRow>
                           );
