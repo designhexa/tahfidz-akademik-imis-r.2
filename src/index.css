@@ -19,7 +19,7 @@ All colors MUST be HSL.
     /* Primary - Deep Islamic green #015504 */
     --primary: 121 100% 17%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 160 60% 55%;
+    --primary-glow: 121 80% 25%;
     --lime: 75 90% 50%;
     
     /* Secondary - Gold accent */
