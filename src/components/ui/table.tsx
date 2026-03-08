@@ -33,16 +33,20 @@ const TableFooter = React.forwardRef<HTMLTableSectionElement, React.HTMLAttribut
 TableFooter.displayName = "TableFooter";
 
 const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement>>(
-  ({ className, ...props }, ref) => (
-    <tr
-      ref={ref}
-      className={cn(
-        "border-b border-border/50 transition-colors hover:bg-primary/[0.04] data-[state=selected]:bg-muted odd:bg-accent/30 even:bg-card",
-        className
-      )}
-      {...props}
-    />
-  ),
+  ({ className, ...props }, ref) => {
+    // Detect if this row is inside thead by checking parent context isn't needed;
+    // thead rows get inline bg from TableHeader, tbody rows get alternating colors
+    return (
+      <tr
+        ref={ref}
+        className={cn(
+          "border-b border-border/50 transition-colors hover:bg-primary/[0.04] data-[state=selected]:bg-muted",
+          className
+        )}
+        {...props}
+      />
+    );
+  },
 );
 TableRow.displayName = "TableRow";
 
