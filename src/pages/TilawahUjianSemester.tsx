@@ -25,6 +25,7 @@ interface HasilUjianSemester {
   idSantri: string;
   namaSantri: string;
   kelas: string;
+  halaqoh: string;
   jilid: number;
   halamanTerakhir: number;
   soal: SoalUjianSemester[];
