@@ -151,8 +151,8 @@ export default function DataSantri() {
   };
 
   const handleSubmit = () => {
-    if (!form.nama || !form.nis || !form.idKelas || !form.idHalaqoh) {
-      toast.error("Mohon lengkapi data wajib (NIS, Nama, Kelas, Halaqoh)");
+    if (!form.nama) {
+      toast.error("Mohon lengkapi nama santri");
       return;
     }
     if (modalMode === "edit" && editId) {
