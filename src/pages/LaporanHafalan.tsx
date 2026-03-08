@@ -127,7 +127,8 @@ const LaporanHafalan = () => {
     const matchHalaqoh = tilawahHalaqoh === "all" || santri.halaqoh === tilawahHalaqoh;
     const matchKelas = tilawahKelas === "all" || santri.kelas === tilawahKelas;
     const matchJilid = tilawahJilid === "all" || santri.jilidSaatIni === parseInt(tilawahJilid);
-    return matchHalaqoh && matchKelas && matchJilid;
+    const matchSantri = tilawahSantri === "all" || santri.nama === tilawahSantri;
+    return matchHalaqoh && matchKelas && matchJilid && matchSantri;
   });
 
   const filteredSantri = filterHalaqoh === "all" 
