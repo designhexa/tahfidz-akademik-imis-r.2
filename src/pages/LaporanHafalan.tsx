@@ -92,8 +92,14 @@ const LaporanHafalan = () => {
   // Per-table filters
   const [harianFilterSantri, setHarianFilterSantri] = useState("all");
   const [harianFilterStatus, setHarianFilterStatus] = useState("all");
+  const [harianFilterHalaqoh, setHarianFilterHalaqoh] = useState("all");
+  const [harianFilterKelas, setHarianFilterKelas] = useState("all");
   const [mingguanFilterMinggu, setMingguanFilterMinggu] = useState("all");
+  const [mingguanFilterHalaqoh, setMingguanFilterHalaqoh] = useState("all");
+  const [mingguanFilterKelas, setMingguanFilterKelas] = useState("all");
   const [capaianFilterJuz, setCapaianFilterJuz] = useState("all");
+  const [capaianFilterHalaqoh, setCapaianFilterHalaqoh] = useState("all");
+  const [capaianFilterKelas, setCapaianFilterKelas] = useState("all");
   const [drillFilterHalaqoh, setDrillFilterHalaqoh] = useState("all");
   const [drillFilterKelas, setDrillFilterKelas] = useState("all");
   const [drillFilterStatus, setDrillFilterStatus] = useState("all");
