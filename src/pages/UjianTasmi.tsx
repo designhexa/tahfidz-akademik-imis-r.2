@@ -484,15 +484,33 @@ const UjianTasmi = () => {
                                 )}
                               </TableCell>
                               <TableCell className="text-center">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="border-primary text-primary hover:bg-primary/10"
-                                  onClick={() => handleUjian(student)}
-                                >
-                                  <CheckCircle2 className="w-3 h-3 mr-1" />
-                                  Daftarkan
-                                </Button>
+                                {registeredCandidates.includes(student.id) ? (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <Badge className="bg-primary text-primary-foreground">
+                                      <CheckCircle2 className="w-3 h-3 mr-1" />
+                                      Terdaftar
+                                    </Badge>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                                      onClick={() => handleBatalkanPendaftaran(student.id)}
+                                      title="Batalkan pendaftaran"
+                                    >
+                                      <XCircle className="w-3.5 h-3.5" />
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-primary text-primary hover:bg-primary/10"
+                                    onClick={() => handleUjian(student)}
+                                  >
+                                    <CheckCircle2 className="w-3 h-3 mr-1" />
+                                    Daftarkan
+                                  </Button>
+                                )}
                               </TableCell>
                             </TableRow>
                           );
