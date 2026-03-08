@@ -72,6 +72,7 @@ export default function DataSantri() {
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(INITIAL_FORM);
   const [tilawahJuz, setTilawahJuz] = useState("");
+  const [tilawahSurah, setTilawahSurah] = useState("");
   const [hafalanJuz, setHafalanJuz] = useState("30");
   const [hafalanInputMode, setHafalanInputMode] = useState<"surah" | "halaman">("surah");
   const [hafalanSurah, setHafalanSurah] = useState("");
@@ -108,6 +109,7 @@ export default function DataSantri() {
   const openAdd = () => {
     setForm(INITIAL_FORM);
     setTilawahJuz("");
+    setTilawahSurah("");
     setHafalanJuz("30");
     setHafalanInputMode("surah");
     setHafalanSurah("");
@@ -122,6 +124,7 @@ export default function DataSantri() {
     const { id, ...rest } = santri;
     setForm(rest);
     setTilawahJuz(santri.jilidSaatIni >= 7 ? String(santri.halamanSaatIni || 1) : "");
+    setTilawahSurah("");
     setHafalanJuz(String(santri.posisiHafalanJuz));
     setHafalanInputMode("surah");
     setHafalanSurah("");
@@ -336,18 +339,32 @@ export default function DataSantri() {
                   value={tilawahJuz}
                   onValueChange={(v) => {
                     setTilawahJuz(v);
+                    setTilawahSurah("");
                     setForm({ ...form, halamanSaatIni: 1 });
                   }}
                   label="Juz Tilawah"
                   order="asc"
                 />
                 {tilawahJuz && (
-                  <div className="space-y-2">
-                    <Label>Halaman dalam Juz (maks {getPageCountForJuz(Number(tilawahJuz))})</Label>
-                    <Input type="number" min={1} max={getPageCountForJuz(Number(tilawahJuz))}
-                      value={form.halamanSaatIni}
-                      onChange={(e) => setForm({ ...form, halamanSaatIni: Number(e.target.value) })} />
-                  </div>
+                  <>
+                    <div className="space-y-2">
+                      <Label>Surah</Label>
+                      <Select value={tilawahSurah} onValueChange={setTilawahSurah}>
+                        <SelectTrigger><SelectValue placeholder="Pilih surah" /></SelectTrigger>
+                        <SelectContent>
+                          {tilawahSurahList.map((s) => (
+                            <SelectItem key={s.number} value={String(s.number)}>{s.number}. {s.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Halaman dalam Juz (maks {getPageCountForJuz(Number(tilawahJuz))})</Label>
+                      <Input type="number" min={1} max={getPageCountForJuz(Number(tilawahJuz))}
+                        value={form.halamanSaatIni}
+                        onChange={(e) => setForm({ ...form, halamanSaatIni: Number(e.target.value) })} />
+                    </div>
+                  </>
                 )}
               </>
             )}
@@ -367,7 +384,7 @@ export default function DataSantri() {
                 setForm({ ...form, posisiHafalanJuz: Number(v), posisiHafalanSurah: "" });
               }}
               label="Juz Hafalan"
-              order="desc"
+              order="asc"
             />
 
             {hafalanJuz && (
