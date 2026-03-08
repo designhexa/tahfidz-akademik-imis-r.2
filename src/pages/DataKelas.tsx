@@ -38,10 +38,6 @@ interface Kelas {
   created_at: string;
 }
 
-interface Profile {
-  id: string;
-  nama_lengkap: string;
-}
 
 export default function DataKelas() {
   const [kelasList, setKelasList] = useState<Kelas[]>([]);
