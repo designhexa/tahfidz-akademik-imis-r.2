@@ -42,14 +42,14 @@ All colors MUST be HSL.
     --radius: 0.75rem;
     
     /* Sidebar Islamic theme */
-    --sidebar-background: 160 30% 96%;
-    --sidebar-foreground: 160 30% 15%;
-    --sidebar-primary: 160 60% 45%;
+    --sidebar-background: 121 20% 96%;
+    --sidebar-foreground: 121 30% 15%;
+    --sidebar-primary: 121 100% 17%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 160 40% 90%;
-    --sidebar-accent-foreground: 160 60% 30%;
-    --sidebar-border: 160 20% 88%;
-    --sidebar-ring: 160 60% 45%;
+    --sidebar-accent: 121 30% 92%;
+    --sidebar-accent-foreground: 121 100% 17%;
+    --sidebar-border: 121 15% 88%;
+    --sidebar-ring: 121 100% 17%;
 
     /* Bar Color */
     --chart-1: 0 84% 60%;   /* red */
