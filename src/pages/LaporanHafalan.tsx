@@ -65,7 +65,7 @@ const DrillLevelIndicator = ({ juz, currentLevel }: { juz: number; currentLevel:
           <div
             key={level}
             className={cn(
-              "w-5 h-5 md:w-6 md:h-6 rounded-sm flex items-center justify-center text-[9px] md:text-[10px] font-semibold border",
+              "w-4 h-4 md:w-6 md:h-6 rounded-sm flex items-center justify-center text-[8px] md:text-[10px] font-semibold border",
               isCurrent
                 ? "bg-primary text-primary-foreground border-primary"
                 : "bg-muted text-muted-foreground border-border"
