@@ -353,7 +353,7 @@ const SetoranHafalan = () => {
             </div>
 
             {santriData && (
-              <div className="mt-3 p-2 bg-primary/10 rounded text-xs">
+              <div className="mt-3 p-2 bg-primary/10 rounded text-xs md:text-sm">
                 <span className="font-medium">{santriData.nama}</span> •{" "}
                 NIS: {santriData.nis} •{" "}
                 {MOCK_HALAQOH.find((h) => h.id === santriData.idHalaqoh)?.nama || "-"}
