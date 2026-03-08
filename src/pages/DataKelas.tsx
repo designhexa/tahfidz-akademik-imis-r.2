@@ -69,7 +69,6 @@ export default function DataKelas() {
 
   useEffect(() => {
     fetchKelas();
-    fetchProfiles();
   }, []);
 
   const getWaliName = (id: string | null) => {
