@@ -166,6 +166,8 @@ const LaporanHafalan = () => {
   const uniqueHarianKelas = [...new Set(mockLaporanHarian.map(h => h.kelas))];
   const uniqueDrillHalaqoh = [...new Set(mockDrillHafalan.map(d => d.halaqoh))];
   const uniqueDrillKelas = [...new Set(mockDrillHafalan.map(d => d.kelas))];
+  const uniqueDrillSantri = [...new Set(mockDrillHafalan.map(d => d.santri))];
+  const uniqueTilawahSantri = [...new Set(MOCK_SANTRI_TILAWAH.map(s => s.nama))];
 
   const getStatusBadge = (status: string) => {
     if (status === "Lulus") return <Badge className="bg-green-500 hover:bg-green-600 text-white">Lulus</Badge>;
