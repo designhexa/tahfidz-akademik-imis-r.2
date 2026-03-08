@@ -180,7 +180,7 @@ export const TasmiCandidateCard = ({
                   {candidates.map((candidate, index) => (
                     <tr
                       key={candidate.no}
-                      style={{ backgroundColor: getRandomPastel(index) }}
+                      style={{ backgroundColor: getRowColor(index) }}
                     >
                       <td className="py-3 px-4 text-center border-r border-gray-200 font-medium">
                         {candidate.no}
