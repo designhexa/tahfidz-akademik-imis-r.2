@@ -467,7 +467,7 @@ const SetoranHafalan = () => {
 
           {/* Legend */}
           {selectedSantri && (
-            <div className="flex flex-wrap gap-3 mt-3 text-[10px] md:text-xs text-muted-foreground">
+            <div className="flex flex-wrap gap-3 mt-3 text-[10px] md:text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded-sm bg-[hsl(160,60%,45%)]/20 border border-[hsl(160,60%,45%)]/40" />
                 <span>Lancar / Lulus</span>
