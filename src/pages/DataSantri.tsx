@@ -97,6 +97,8 @@ export default function DataSantri() {
 
   const openAdd = () => {
     setForm(INITIAL_FORM);
+    setTilawahJuz("");
+    setHafalanJuz("30");
     setModalMode("add");
     setEditId(null);
     setShowModal(true);
@@ -105,6 +107,8 @@ export default function DataSantri() {
   const openEdit = (santri: MockSantri) => {
     const { id, ...rest } = santri;
     setForm(rest);
+    setTilawahJuz(santri.jilidSaatIni >= 7 ? String(santri.halamanSaatIni || 1) : "");
+    setHafalanJuz(String(santri.posisiHafalanJuz));
     setModalMode("edit");
     setEditId(id);
     setShowModal(true);
