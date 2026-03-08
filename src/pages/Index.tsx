@@ -86,7 +86,7 @@ const Index = () => {
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.1] tracking-tight">
-              Kelola Hafalan
+              Kelola Hafalan & Tilawah
               <br />
               <span className="text-primary">Lebih Mudah</span>
             </h1>
