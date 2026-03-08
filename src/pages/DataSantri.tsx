@@ -73,6 +73,10 @@ export default function DataSantri() {
   const [form, setForm] = useState(INITIAL_FORM);
   const [tilawahJuz, setTilawahJuz] = useState("");
   const [hafalanJuz, setHafalanJuz] = useState("30");
+  const [hafalanInputMode, setHafalanInputMode] = useState<"surah" | "halaman">("surah");
+  const [hafalanSurah, setHafalanSurah] = useState("");
+  const [hafalanAyat, setHafalanAyat] = useState("");
+  const [hafalanHalaman, setHafalanHalaman] = useState("");
   const [, forceUpdate] = useState(0);
 
   // Surah list for tilawah (Al-Qur'an level)
