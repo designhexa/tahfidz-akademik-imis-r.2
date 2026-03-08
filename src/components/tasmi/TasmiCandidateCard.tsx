@@ -201,12 +201,12 @@ export const TasmiCandidateCard = ({
             <div className="w-full max-w-4xl bg-white/80 rounded-lg overflow-hidden shadow-xl border-2 border-green-600/30">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gradient-to-r from-green-700 to-green-600 text-white">
-                    <th className="py-3 px-4 text-center font-semibold border-r border-green-500/50 w-16">No.</th>
-                    <th className="py-3 px-4 text-center font-semibold border-r border-green-500/50">Nama Lengkap</th>
-                    <th className="py-3 px-4 text-center font-semibold border-r border-green-500/50 w-20">Kelas</th>
-                    <th className="py-3 px-4 text-center font-semibold border-r border-green-500/50 w-28">Jumlah Hafalan</th>
-                    <th className="py-3 px-4 text-center font-semibold w-44">Juz yang Diujikan</th>
+                  <tr style={{ background: currentScheme.header }}>
+                    <th className="py-3 px-4 text-center font-semibold text-white w-16" style={{ borderRight: `1px solid ${currentScheme.headerBorder}` }}>No.</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white" style={{ borderRight: `1px solid ${currentScheme.headerBorder}` }}>Nama Lengkap</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white w-20" style={{ borderRight: `1px solid ${currentScheme.headerBorder}` }}>Kelas</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white w-28" style={{ borderRight: `1px solid ${currentScheme.headerBorder}` }}>Jumlah Hafalan</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white w-44">Juz yang Diujikan</th>
                   </tr>
                 </thead>
                 <tbody>
