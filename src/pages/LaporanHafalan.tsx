@@ -141,7 +141,8 @@ const LaporanHafalan = () => {
       (drillFilterStatus === "lulus" && d.tasmi === "Lulus") ||
       (drillFilterStatus === "proses" && d.tasmi !== "Lulus" && d.tasmi !== "-") ||
       (drillFilterStatus === "belum" && d.tasmi === "-");
-    return matchHalaqoh && matchKelas && matchStatus;
+    const matchSantri = drillFilterSantri === "all" || d.santri === drillFilterSantri;
+    return matchHalaqoh && matchKelas && matchStatus && matchSantri;
   });
 
   const filteredHarian = mockLaporanHarian.filter((item) => {
