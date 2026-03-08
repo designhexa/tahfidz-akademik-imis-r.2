@@ -450,6 +450,17 @@ const UjianTasmi = () => {
                 <CardDescription>
                   Santri yang telah menyelesaikan drill dan siap mengikuti ujian
                 </CardDescription>
+                <div className="pt-2">
+                  <Select value={tasmiType} onValueChange={(v) => setTasmiType(v as "1juz" | "5juz")}>
+                    <SelectTrigger className="w-full sm:w-60">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1juz">Tasmi' 1 Juz</SelectItem>
+                      <SelectItem value="5juz">Tasmi' 5 Juz</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
