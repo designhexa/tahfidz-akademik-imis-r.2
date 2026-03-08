@@ -50,6 +50,7 @@ import {
 import { Cell } from "recharts";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalSantri: 0,
     totalHalaqoh: 0,
