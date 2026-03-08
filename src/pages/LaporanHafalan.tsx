@@ -97,16 +97,20 @@ const LaporanHafalan = () => {
   const [mingguanFilterMinggu, setMingguanFilterMinggu] = useState("all");
   const [mingguanFilterHalaqoh, setMingguanFilterHalaqoh] = useState("all");
   const [mingguanFilterKelas, setMingguanFilterKelas] = useState("all");
+  const [mingguanFilterSantri, setMingguanFilterSantri] = useState("all");
   const [capaianFilterJuz, setCapaianFilterJuz] = useState("all");
   const [capaianFilterHalaqoh, setCapaianFilterHalaqoh] = useState("all");
   const [capaianFilterKelas, setCapaianFilterKelas] = useState("all");
+  const [capaianFilterSantri, setCapaianFilterSantri] = useState("all");
   const [drillFilterHalaqoh, setDrillFilterHalaqoh] = useState("all");
   const [drillFilterKelas, setDrillFilterKelas] = useState("all");
   const [drillFilterStatus, setDrillFilterStatus] = useState("all");
+  const [drillFilterSantri, setDrillFilterSantri] = useState("all");
   // Tilawah filters
   const [tilawahHalaqoh, setTilawahHalaqoh] = useState("all");
   const [tilawahKelas, setTilawahKelas] = useState("all");
   const [tilawahJilid, setTilawahJilid] = useState("all");
+  const [tilawahSantri, setTilawahSantri] = useState("all");
 
   // Tilawah stats
   const santriTilawahStats = MOCK_SANTRI_TILAWAH.map(santri => {
@@ -123,7 +127,8 @@ const LaporanHafalan = () => {
     const matchHalaqoh = tilawahHalaqoh === "all" || santri.halaqoh === tilawahHalaqoh;
     const matchKelas = tilawahKelas === "all" || santri.kelas === tilawahKelas;
     const matchJilid = tilawahJilid === "all" || santri.jilidSaatIni === parseInt(tilawahJilid);
-    return matchHalaqoh && matchKelas && matchJilid;
+    const matchSantri = tilawahSantri === "all" || santri.nama === tilawahSantri;
+    return matchHalaqoh && matchKelas && matchJilid && matchSantri;
   });
 
   const filteredSantri = filterHalaqoh === "all" 
@@ -137,7 +142,8 @@ const LaporanHafalan = () => {
       (drillFilterStatus === "lulus" && d.tasmi === "Lulus") ||
       (drillFilterStatus === "proses" && d.tasmi !== "Lulus" && d.tasmi !== "-") ||
       (drillFilterStatus === "belum" && d.tasmi === "-");
-    return matchHalaqoh && matchKelas && matchStatus;
+    const matchSantri = drillFilterSantri === "all" || d.santri === drillFilterSantri;
+    return matchHalaqoh && matchKelas && matchStatus && matchSantri;
   });
 
   const filteredHarian = mockLaporanHarian.filter((item) => {
@@ -161,6 +167,8 @@ const LaporanHafalan = () => {
   const uniqueHarianKelas = [...new Set(mockLaporanHarian.map(h => h.kelas))];
   const uniqueDrillHalaqoh = [...new Set(mockDrillHafalan.map(d => d.halaqoh))];
   const uniqueDrillKelas = [...new Set(mockDrillHafalan.map(d => d.kelas))];
+  const uniqueDrillSantri = [...new Set(mockDrillHafalan.map(d => d.santri))];
+  const uniqueTilawahSantri = [...new Set(MOCK_SANTRI_TILAWAH.map(s => s.nama))];
 
   const getStatusBadge = (status: string) => {
     if (status === "Lulus") return <Badge className="bg-green-500 hover:bg-green-600 text-white">Lulus</Badge>;
@@ -465,7 +473,7 @@ const LaporanHafalan = () => {
                 <CardDescription>Statistik setoran per minggu</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <Select value={mingguanFilterHalaqoh} onValueChange={setMingguanFilterHalaqoh}>
                     <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Halaqoh" /></SelectTrigger>
                     <SelectContent>
@@ -480,8 +488,15 @@ const LaporanHafalan = () => {
                       {uniqueHarianKelas.map(k => <SelectItem key={k} value={k}>{k}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  <Select value={mingguanFilterSantri} onValueChange={setMingguanFilterSantri}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Santri" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Santri</SelectItem>
+                      {uniqueHarianSantri.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                   <Select value={mingguanFilterMinggu} onValueChange={setMingguanFilterMinggu}>
-                    <SelectTrigger className="text-xs md:text-sm col-span-2 md:col-span-1"><SelectValue placeholder="Minggu" /></SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Minggu" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Semua Minggu</SelectItem>
                       {mockLaporanMingguan.map(m => <SelectItem key={m.minggu} value={m.minggu}>{m.minggu}</SelectItem>)}
@@ -526,7 +541,7 @@ const LaporanHafalan = () => {
                 <CardDescription>Progress penyelesaian hafalan santri per juz</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <Select value={capaianFilterHalaqoh} onValueChange={setCapaianFilterHalaqoh}>
                     <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Halaqoh" /></SelectTrigger>
                     <SelectContent>
@@ -541,8 +556,15 @@ const LaporanHafalan = () => {
                       {uniqueHarianKelas.map(k => <SelectItem key={k} value={k}>{k}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  <Select value={capaianFilterSantri} onValueChange={setCapaianFilterSantri}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Santri" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Santri</SelectItem>
+                      {uniqueHarianSantri.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                   <Select value={capaianFilterJuz} onValueChange={setCapaianFilterJuz}>
-                    <SelectTrigger className="text-xs md:text-sm col-span-2 md:col-span-1"><SelectValue placeholder="Juz" /></SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Juz" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Semua Juz</SelectItem>
                       {mockCapaianJuz.map(j => <SelectItem key={j.juz} value={String(j.juz)}>Juz {j.juz}</SelectItem>)}
@@ -575,7 +597,7 @@ const LaporanHafalan = () => {
                 <CardDescription>Progress drill hafalan per santri</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <Select value={drillFilterHalaqoh} onValueChange={setDrillFilterHalaqoh}>
                     <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Halaqoh" /></SelectTrigger>
                     <SelectContent>
@@ -590,8 +612,15 @@ const LaporanHafalan = () => {
                       {MOCK_KELAS.map(k => <SelectItem key={k.id} value={k.nama_kelas}>{k.nama_kelas}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  <Select value={drillFilterSantri} onValueChange={setDrillFilterSantri}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Santri" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Santri</SelectItem>
+                      {uniqueDrillSantri.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                   <Select value={drillFilterStatus} onValueChange={setDrillFilterStatus}>
-                    <SelectTrigger className="text-xs md:text-sm col-span-2 md:col-span-1"><SelectValue placeholder="Status" /></SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Semua Status</SelectItem>
                       <SelectItem value="lulus">Lulus Tasmi'</SelectItem>
@@ -646,9 +675,9 @@ const LaporanHafalan = () => {
                 <CardTitle>Filter Laporan Tilawah</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Select value={tilawahHalaqoh} onValueChange={setTilawahHalaqoh}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm">
                       <SelectValue placeholder="Pilih Halaqoh" />
                     </SelectTrigger>
                     <SelectContent>
@@ -660,7 +689,7 @@ const LaporanHafalan = () => {
                     </SelectContent>
                   </Select>
                   <Select value={tilawahKelas} onValueChange={setTilawahKelas}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm">
                       <SelectValue placeholder="Pilih Kelas" />
                     </SelectTrigger>
                     <SelectContent>
@@ -672,8 +701,17 @@ const LaporanHafalan = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                  <Select value={tilawahSantri} onValueChange={setTilawahSantri}>
+                    <SelectTrigger className="text-xs md:text-sm">
+                      <SelectValue placeholder="Pilih Santri" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Santri</SelectItem>
+                      {uniqueTilawahSantri.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                   <Select value={tilawahJilid} onValueChange={setTilawahJilid}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm">
                       <SelectValue placeholder="Pilih Jilid" />
                     </SelectTrigger>
                     <SelectContent>
