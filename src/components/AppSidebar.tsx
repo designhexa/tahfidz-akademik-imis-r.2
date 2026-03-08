@@ -218,8 +218,8 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive("/")}>
-                  <NavLink to="/">
+                <SidebarMenuButton asChild isActive={isActive("/dashboard")}>
+                  <NavLink to="/dashboard">
                     <BookOpen className="w-4 h-4" />
                     <span>Dashboard</span>
                   </NavLink>
