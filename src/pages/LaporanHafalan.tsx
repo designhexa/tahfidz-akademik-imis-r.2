@@ -251,7 +251,7 @@ const LaporanHafalan = () => {
           <TabsContent value="hafalan" className="space-y-4 md:space-y-6 mt-4">
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
           <Card>
             <CardContent className="p-3 md:pt-4 md:p-6">
               <div className="flex items-center gap-2 md:gap-3">
