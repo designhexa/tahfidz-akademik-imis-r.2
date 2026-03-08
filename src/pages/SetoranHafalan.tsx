@@ -272,7 +272,7 @@ const SetoranHafalan = () => {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
               <div className="space-y-1">
-                <Label className="text-xs">Halaqoh</Label>
+                <Label className="text-xs md:text-sm">Halaqoh</Label>
                 <Select
                   value={selectedHalaqoh || "all"}
                   onValueChange={(v) => {
