@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import logoImis from "@/assets/logo-imis.png";
 import html2canvas from "html2canvas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
