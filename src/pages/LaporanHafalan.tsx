@@ -477,7 +477,13 @@ const LaporanHafalan = () => {
                       {filteredHarian.map((item, index) => (
                         <TableRow key={index}>
                           <TableCell>{item.tanggal}</TableCell>
-                          <TableCell className="font-medium">{item.santri}</TableCell>
+                          <TableCell
+                            className="font-medium text-primary cursor-pointer hover:underline"
+                            onClick={() => {
+                              const s = getSantriByNama(item.santri);
+                              if (s) navigate(`/santri/${s.id}`);
+                            }}
+                          >{item.santri}</TableCell>
                           <TableCell>
                             <Badge variant="outline" className="bg-primary/10 text-primary border-primary">Juz {item.juz}</Badge>
                           </TableCell>
