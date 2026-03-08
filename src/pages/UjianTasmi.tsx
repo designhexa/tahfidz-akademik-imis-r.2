@@ -117,6 +117,7 @@ const UjianTasmi = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedUjian, setSelectedUjian] = useState<typeof dummyHasilUjian[0] | null>(null);
   const [expandedRules, setExpandedRules] = useState(false);
+  const [tasmiType, setTasmiType] = useState<"1juz" | "5juz">("1juz");
 
   // Registered tasmi candidates (persisted in localStorage)
   const [registeredCandidates, setRegisteredCandidates] = useState<string[]>(() => {
