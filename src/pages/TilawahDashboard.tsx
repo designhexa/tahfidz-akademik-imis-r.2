@@ -137,7 +137,10 @@ export default function TilawahDashboard() {
                  <TableBody>
                    {MOCK_SETORAN_TILAWAH.map((setoran) => (
                      <TableRow key={setoran.id}>
-                       <TableCell className="font-medium">{getSantriName(setoran.idSantri)}</TableCell>
+                        <TableCell
+                          className="font-medium text-primary cursor-pointer hover:underline"
+                          onClick={() => navigate(`/santri/${setoran.idSantri}`)}
+                        >{getSantriName(setoran.idSantri)}</TableCell>
                        <TableCell>{getSantriKelas(setoran.idSantri)}</TableCell>
                        <TableCell>Jilid {setoran.jilid}</TableCell>
                        <TableCell>{setoran.halamanDari} - {setoran.halamanSampai}</TableCell>
