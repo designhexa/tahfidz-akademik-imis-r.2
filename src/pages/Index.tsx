@@ -12,6 +12,11 @@ const Index = () => {
       description: "Catat dan pantau progress hafalan santri secara real-time dengan kalender interaktif",
     },
     {
+      icon: Headphones,
+      title: "Program Tilawah",
+      description: "Kelola pembelajaran tilawah, absensi, dan ujian tilawati secara terstruktur",
+    },
+    {
       icon: Users,
       title: "Multi-Role Access",
       description: "Admin, Asatidz, Wali Santri, dan Yayasan dalam satu sistem terintegrasi",
@@ -19,12 +24,17 @@ const Index = () => {
     {
       icon: ClipboardCheck,
       title: "Absensi & Penilaian",
-      description: "Kelola kehadiran dan evaluasi santri dengan mudah dan terstruktur",
+      description: "Kelola kehadiran dan evaluasi santri untuk hafalan maupun tilawah",
+    },
+    {
+      icon: FileText,
+      title: "Ujian & Sertifikasi",
+      description: "Ujian tasmi', ujian tilawati semester, dan sertifikasi hafalan dalam satu platform",
     },
     {
       icon: BarChart3,
       title: "Laporan Lengkap",
-      description: "Dashboard statistik dan laporan komprehensif untuk evaluasi berkala",
+      description: "Dashboard statistik hafalan & tilawah serta laporan komprehensif untuk evaluasi berkala",
     },
   ];
 
