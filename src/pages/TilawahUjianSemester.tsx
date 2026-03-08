@@ -64,14 +64,14 @@ const generateSoalSemester = (jilid: number, halamanTerakhir: number, jumlahSoal
 // Mock data ujian semester
 const MOCK_UJIAN_SEMESTER: HasilUjianSemester[] = [
   {
-    id: "us1", idSantri: "s1", namaSantri: "Qurrata 'Ayun", kelas: "Paket B Kelas 8",
+    id: "us1", idSantri: "s1", namaSantri: "Qurrata 'Ayun", kelas: "Paket B Kelas 8", halaqoh: "Halaqoh Akhwat A",
     jilid: 4, halamanTerakhir: 28,
     soal: [{ id: 1, jilid: 4, halaman: 5 }, { id: 2, jilid: 4, halaman: 12 }, { id: 3, jilid: 4, halaman: 18 }, { id: 4, jilid: 4, halaman: 22 }, { id: 5, jilid: 4, halaman: 27 }],
     nilaiKelancaran: 85, nilaiTartil: 80, nilaiFashohah: 82,
     nilaiTotal: 82, catatan: "Baik", tanggal: "2025-06-15", status: "Lulus",
   },
   {
-    id: "us2", idSantri: "s4", namaSantri: "Dzaki Ash Shiddiq", kelas: "Paket B Kelas 8",
+    id: "us2", idSantri: "s4", namaSantri: "Dzaki Ash Shiddiq", kelas: "Paket B Kelas 8", halaqoh: "Halaqoh Ikhwan A",
     jilid: 4, halamanTerakhir: 35,
     soal: [{ id: 1, jilid: 4, halaman: 3 }, { id: 2, jilid: 4, halaman: 10 }, { id: 3, jilid: 4, halaman: 20 }, { id: 4, jilid: 4, halaman: 28 }, { id: 5, jilid: 4, halaman: 33 }],
     nilaiKelancaran: 65, nilaiTartil: 60, nilaiFashohah: 68,
