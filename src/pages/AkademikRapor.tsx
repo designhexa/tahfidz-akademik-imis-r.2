@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 
 export default function AkademikRapor() {
+  const navigate = useNavigate();
   const [filterKelas, setFilterKelas] = useState("all");
   const [filterSemester, setFilterSemester] = useState("ganjil");
   const [selectedSantri, setSelectedSantri] = useState<typeof mockSantriAkademik[0] | null>(null);
