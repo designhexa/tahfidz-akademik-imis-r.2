@@ -499,6 +499,19 @@ const UjianTasmi = () => {
                                 )}
                               </TableCell>
                               <TableCell className="text-center">
+                                {tasmiType === "5juz" ? (
+                                  <Badge className="bg-purple-500 hover:bg-purple-600 text-white">
+                                    Juz {student.juzSelesai.slice(-5).join(", ")}
+                                  </Badge>
+                                ) : nextJuz ? (
+                                  <Badge className="bg-amber-500 hover:bg-amber-600 text-white">
+                                    Juz {nextJuz}
+                                  </Badge>
+                                ) : (
+                                  <Badge className="bg-emerald-500 text-white">Khatam!</Badge>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-center">
                                 {registeredCandidates.includes(student.id) ? (
                                   <div className="flex items-center justify-center gap-1">
                                     <Badge className="bg-primary text-primary-foreground">
