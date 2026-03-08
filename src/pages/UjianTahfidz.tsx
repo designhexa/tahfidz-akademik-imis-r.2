@@ -568,14 +568,14 @@ const UjianTahfidz = () => {
               </TableHeader>
 
               <TableBody>
-                {ujianHistory.length === 0 ? (
+                {filteredUjianHistory.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                       Belum ada riwayat ujian
                     </TableCell>
                   </TableRow>
                 ) : (
-                  ujianHistory.map((item, index) => (
+                  filteredUjianHistory.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell className="font-medium">{item.santri}</TableCell>
