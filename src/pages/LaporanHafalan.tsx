@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { LaporanCharts, CapaianKelasChart, CapaianHalaqohChart, CapaianSiswaChart } from "@/components/laporan/LaporanCharts";
 import { MOCK_KELAS } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
+import { getSantriByNama } from "@/lib/mock-data";
 import { getDrillsForJuz } from "@/lib/drill-data";
 import { 
   MOCK_SANTRI_TILAWAH, 

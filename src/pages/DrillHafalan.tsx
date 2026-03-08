@@ -75,6 +75,7 @@ const mockDrillList = [
 ];
 
 const DrillHafalan = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filterJuz, setFilterJuz] = useState("all");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
