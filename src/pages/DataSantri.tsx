@@ -73,6 +73,9 @@ export default function DataSantri() {
   const [form, setForm] = useState(INITIAL_FORM);
   const [tilawahJuz, setTilawahJuz] = useState("");
   const [tilawahSurah, setTilawahSurah] = useState("");
+  const [tilawahAyat, setTilawahAyat] = useState("");
+  const [tilawahHalaman, setTilawahHalaman] = useState("");
+  const [tilawahInputMode, setTilawahInputMode] = useState<"surah" | "halaman">("surah");
   const [hafalanJuz, setHafalanJuz] = useState("30");
   const [hafalanInputMode, setHafalanInputMode] = useState<"surah" | "halaman">("surah");
   const [hafalanSurah, setHafalanSurah] = useState("");
@@ -92,6 +95,12 @@ export default function DataSantri() {
     return getSurahListByJuz(Number(hafalanJuz));
   }, [hafalanJuz]);
 
+  const selectedTilawahSurah = useMemo(() => {
+    return tilawahSurahList.find(s => String(s.number) === tilawahSurah);
+  }, [tilawahSurah, tilawahSurahList]);
+
+  const tilawahMaxHalaman = tilawahJuz ? getPageCountForJuz(Number(tilawahJuz)) : 20;
+
   const selectedHafalanSurah = useMemo(() => {
     return hafalanSurahList.find(s => String(s.number) === hafalanSurah);
   }, [hafalanSurah, hafalanSurahList]);
@@ -110,6 +119,9 @@ export default function DataSantri() {
     setForm(INITIAL_FORM);
     setTilawahJuz("");
     setTilawahSurah("");
+    setTilawahAyat("");
+    setTilawahHalaman("");
+    setTilawahInputMode("surah");
     setHafalanJuz("30");
     setHafalanInputMode("surah");
     setHafalanSurah("");
@@ -125,6 +137,9 @@ export default function DataSantri() {
     setForm(rest);
     setTilawahJuz(santri.jilidSaatIni >= 7 ? String(santri.halamanSaatIni || 1) : "");
     setTilawahSurah("");
+    setTilawahAyat("");
+    setTilawahHalaman("");
+    setTilawahInputMode("surah");
     setHafalanJuz(String(santri.posisiHafalanJuz));
     setHafalanInputMode("surah");
     setHafalanSurah("");
@@ -340,6 +355,9 @@ export default function DataSantri() {
                   onValueChange={(v) => {
                     setTilawahJuz(v);
                     setTilawahSurah("");
+                    setTilawahAyat("");
+                    setTilawahHalaman("");
+                    setTilawahInputMode("surah");
                     setForm({ ...form, halamanSaatIni: 1 });
                   }}
                   label="Juz Tilawah"
@@ -347,23 +365,53 @@ export default function DataSantri() {
                 />
                 {tilawahJuz && (
                   <>
-                    <div className="space-y-2">
-                      <Label>Surah</Label>
-                      <Select value={tilawahSurah} onValueChange={setTilawahSurah}>
-                        <SelectTrigger><SelectValue placeholder="Pilih surah" /></SelectTrigger>
-                        <SelectContent>
-                          {tilawahSurahList.map((s) => (
-                            <SelectItem key={s.number} value={String(s.number)}>{s.number}. {s.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                    <div className="flex gap-2">
+                      <Button type="button" size="sm" variant={tilawahInputMode === "surah" ? "default" : "outline"} className="h-7 text-xs flex-1"
+                        onClick={() => { setTilawahInputMode("surah"); setTilawahHalaman(""); }}>
+                        Pilih Surah & Ayat
+                      </Button>
+                      <Button type="button" size="sm" variant={tilawahInputMode === "halaman" ? "default" : "outline"} className="h-7 text-xs flex-1"
+                        onClick={() => { setTilawahInputMode("halaman"); setTilawahSurah(""); setTilawahAyat(""); }}>
+                        Pilih Halaman
+                      </Button>
                     </div>
-                    <div className="space-y-2">
-                      <Label>Halaman dalam Juz (maks {getPageCountForJuz(Number(tilawahJuz))})</Label>
-                      <Input type="number" min={1} max={getPageCountForJuz(Number(tilawahJuz))}
-                        value={form.halamanSaatIni}
-                        onChange={(e) => setForm({ ...form, halamanSaatIni: Number(e.target.value) })} />
-                    </div>
+
+                    {tilawahInputMode === "surah" && (
+                      <>
+                        <div className="space-y-2">
+                          <Label>Surah Terakhir Dibaca</Label>
+                          <Select value={tilawahSurah} onValueChange={(v) => {
+                            setTilawahSurah(v);
+                            setTilawahAyat("1");
+                          }}>
+                            <SelectTrigger><SelectValue placeholder="Pilih surah" /></SelectTrigger>
+                            <SelectContent>
+                              {tilawahSurahList.map((s) => (
+                                <SelectItem key={s.number} value={String(s.number)}>{s.number}. {s.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {selectedTilawahSurah && (
+                          <div className="space-y-2">
+                            <Label className="text-xs">Sampai Ayat ke</Label>
+                            <Input type="number" min={1} max={selectedTilawahSurah.numberOfAyahs}
+                              value={tilawahAyat}
+                              onChange={(e) => setTilawahAyat(e.target.value)}
+                              placeholder={`1 - ${selectedTilawahSurah.numberOfAyahs}`} />
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {tilawahInputMode === "halaman" && (
+                      <div className="space-y-2">
+                        <Label>Halaman dalam Juz (maks {tilawahMaxHalaman})</Label>
+                        <Input type="number" min={1} max={tilawahMaxHalaman}
+                          value={tilawahHalaman}
+                          onChange={(e) => setTilawahHalaman(e.target.value)} />
+                      </div>
+                    )}
                   </>
                 )}
               </>
