@@ -765,12 +765,12 @@ const DrillHafalan = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-xs md:text-sm">Tanggal</TableHead>
+                    <TableHead className="text-xs md:text-sm hidden md:table-cell">Tanggal</TableHead>
                     <TableHead className="text-xs md:text-sm">Santri</TableHead>
                     <TableHead className="text-xs md:text-sm">Juz</TableHead>
-                    <TableHead className="text-xs md:text-sm">Level Drill</TableHead>
+                    <TableHead className="text-xs md:text-sm">Level</TableHead>
                     <TableHead className="text-xs md:text-sm hidden md:table-cell">Materi</TableHead>
-                    <TableHead className="text-xs md:text-sm">Nilai</TableHead>
+                    <TableHead className="text-xs md:text-sm hidden sm:table-cell">Nilai</TableHead>
                     <TableHead className="text-xs md:text-sm">Status</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -784,16 +784,16 @@ const DrillHafalan = () => {
                   ) : (
                     filteredDrill.map((item) => (
                       <TableRow key={item.id}>
-                        <TableCell className="text-xs md:text-sm">{item.tanggal}</TableCell>
-                        <TableCell className="font-medium text-xs md:text-sm">{item.santri}</TableCell>
+                        <TableCell className="text-xs md:text-sm hidden md:table-cell">{item.tanggal}</TableCell>
+                        <TableCell className="font-medium text-xs md:text-sm max-w-[80px] md:max-w-none truncate">{item.santri}</TableCell>
                         <TableCell>
-                          <Badge className="bg-primary/10 text-primary border-primary text-[10px] md:text-xs">Juz {item.juz}</Badge>
+                          <Badge className="bg-primary/10 text-primary border-primary text-[10px] md:text-xs">{item.juz}</Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="p-2 md:p-4">
                           <DrillLevelIndicator juz={item.juz} currentLevel={item.level} />
                         </TableCell>
                         <TableCell className="text-xs md:text-sm hidden md:table-cell">{item.materi}</TableCell>
-                        <TableCell className="font-semibold text-primary text-xs md:text-sm">{item.nilai}</TableCell>
+                        <TableCell className="font-semibold text-primary text-xs md:text-sm hidden sm:table-cell">{item.nilai}</TableCell>
                         <TableCell>
                           <Badge className={cn(
                             "text-[10px] md:text-xs",
