@@ -87,6 +87,14 @@ const SetoranHafalan = () => {
   const [openUjianJilid, setOpenUjianJilid] = useState(false);
   const [openHistory, setOpenHistory] = useState(false);
 
+  // Read tasmi registered candidates from localStorage
+  const registeredCandidates = useMemo(() => {
+    try {
+      const stored = localStorage.getItem("tasmi-registered-candidates");
+      return stored ? JSON.parse(stored) as string[] : [];
+    } catch { return [] as string[]; }
+  }, [openTasmi, openTasmi5Juz]);
+
   // Tasmi' component state
   const dummySantri = useMemo(() => MOCK_SANTRI.map(s => ({
     id: s.id,
