@@ -258,8 +258,8 @@ const UjianTasmi = () => {
   };
 
   const handleUjian = (santri: any) => {
-    setSelectedSantri(santri.id);
-    setIsFormOpen(true);
+    // No longer opens form - just registers
+    handleDaftarkan(santri.id);
   };
 
   const displayHasilUjian = useMemo(() => {
