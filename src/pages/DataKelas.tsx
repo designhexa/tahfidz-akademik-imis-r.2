@@ -41,7 +41,7 @@ interface Kelas {
 
 export default function DataKelas() {
   const [kelasList, setKelasList] = useState<Kelas[]>([]);
-  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const ustadzList = MOCK_USTADZ;
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
