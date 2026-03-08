@@ -136,7 +136,7 @@ export const TasmiCandidateCard = ({
                 {Object.keys(colorSchemes).map((key) => (
                   <SelectItem key={key} value={key}>
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded border" style={{ backgroundColor: colorSchemes[key][1] }} />
+                      <div className="w-4 h-4 rounded border" style={{ backgroundColor: colorSchemes[key].rows[0] }} />
                       <span className="capitalize">{key.replace("-", " ")}</span>
                     </div>
                   </SelectItem>
