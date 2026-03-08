@@ -204,9 +204,9 @@ export default function DataKelas() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">— Tidak ada —</SelectItem>
-                      {profiles.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.nama_lengkap}
+                      {ustadzList.map((u) => (
+                        <SelectItem key={u.id} value={u.id}>
+                          {u.nama}
                         </SelectItem>
                       ))}
                     </SelectContent>
