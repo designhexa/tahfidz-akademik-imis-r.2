@@ -84,6 +84,7 @@ export type Database = {
           created_at: string
           deskripsi: string | null
           id: string
+          id_wali_kelas: string | null
           nama_kelas: string
           updated_at: string
         }
@@ -91,6 +92,7 @@ export type Database = {
           created_at?: string
           deskripsi?: string | null
           id?: string
+          id_wali_kelas?: string | null
           nama_kelas: string
           updated_at?: string
         }
@@ -98,10 +100,19 @@ export type Database = {
           created_at?: string
           deskripsi?: string | null
           id?: string
+          id_wali_kelas?: string | null
           nama_kelas?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "kelas_id_wali_kelas_fkey"
+            columns: ["id_wali_kelas"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       log_aktivitas: {
         Row: {
