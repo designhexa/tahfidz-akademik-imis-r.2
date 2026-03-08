@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { MOCK_USTADZ } from "@/lib/mock-data";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,14 +38,10 @@ interface Kelas {
   created_at: string;
 }
 
-interface Profile {
-  id: string;
-  nama_lengkap: string;
-}
 
 export default function DataKelas() {
   const [kelasList, setKelasList] = useState<Kelas[]>([]);
-  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const ustadzList = MOCK_USTADZ;
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -69,27 +66,14 @@ export default function DataKelas() {
     setIsLoading(false);
   };
 
-  const fetchProfiles = async () => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("id, nama_lengkap")
-      .order("nama_lengkap");
-
-    if (error) {
-      console.error("Error fetching profiles:", error);
-    } else {
-      setProfiles(data || []);
-    }
-  };
 
   useEffect(() => {
     fetchKelas();
-    fetchProfiles();
   }, []);
 
   const getWaliName = (id: string | null) => {
     if (!id) return "-";
-    return profiles.find(p => p.id === id)?.nama_lengkap || "-";
+    return ustadzList.find(u => u.id === id)?.nama || "-";
   };
 
   const handleSubmit = async () => {
@@ -220,9 +204,9 @@ export default function DataKelas() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">— Tidak ada —</SelectItem>
-                      {profiles.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.nama_lengkap}
+                      {ustadzList.map((u) => (
+                        <SelectItem key={u.id} value={u.id}>
+                          {u.nama}
                         </SelectItem>
                       ))}
                     </SelectContent>

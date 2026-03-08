@@ -12,13 +12,15 @@ const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableE
 Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
-  ({ className, ...props }, ref) => <thead ref={ref} className={cn("[&_tr]:!bg-primary [&_tr]:border-b-0 [&_tr:hover]:!bg-primary", className)} {...props} />,
+  ({ className, style, ...props }, ref) => (
+    <thead ref={ref} className={cn("[&_tr]:border-b-0", className)} style={{ backgroundColor: '#015504', ...style }} {...props} />
+  ),
 );
 TableHeader.displayName = "TableHeader";
 
 const TableBody = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
-    <tbody ref={ref} className={cn("[&_tr:last-child]:border-0", className)} {...props} />
+    <tbody ref={ref} className={cn("[&_tr:last-child]:border-0 [&_tr:nth-child(odd)]:bg-accent/30 [&_tr:nth-child(even)]:bg-card", className)} {...props} />
   ),
 );
 TableBody.displayName = "TableBody";
@@ -31,16 +33,20 @@ const TableFooter = React.forwardRef<HTMLTableSectionElement, React.HTMLAttribut
 TableFooter.displayName = "TableFooter";
 
 const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement>>(
-  ({ className, ...props }, ref) => (
-    <tr
-      ref={ref}
-      className={cn(
-        "border-b border-border/50 transition-colors hover:bg-primary/[0.04] data-[state=selected]:bg-muted odd:bg-accent/30 even:bg-card",
-        className
-      )}
-      {...props}
-    />
-  ),
+  ({ className, ...props }, ref) => {
+    // Detect if this row is inside thead by checking parent context isn't needed;
+    // thead rows get inline bg from TableHeader, tbody rows get alternating colors
+    return (
+      <tr
+        ref={ref}
+        className={cn(
+          "border-b border-border/50 transition-colors hover:bg-primary/[0.04] data-[state=selected]:bg-muted",
+          className
+        )}
+        {...props}
+      />
+    );
+  },
 );
 TableRow.displayName = "TableRow";
 
@@ -49,9 +55,10 @@ const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<
     <th
       ref={ref}
       className={cn(
-        "h-11 px-4 text-left align-middle font-semibold text-primary-foreground text-xs uppercase tracking-wider [&:has([role=checkbox])]:pr-0",
+        "h-11 px-4 text-left align-middle font-semibold text-xs uppercase tracking-wider [&:has([role=checkbox])]:pr-0",
         className,
       )}
+      style={{ color: 'white' }}
       {...props}
     />
   ),
