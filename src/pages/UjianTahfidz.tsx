@@ -40,7 +40,7 @@ import { JuzSelector } from "@/components/JuzSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { generateExamQuestions, formatQuestionDisplay, ExamQuestion, getHalamanPerJuz } from "@/lib/quran-exam-generator";
 import { toast } from "sonner";
-import { MOCK_KELAS } from "@/lib/mock-data";
+import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 
 interface Halaqoh {
   id: string;
