@@ -233,7 +233,7 @@ const LaporanHafalan = () => {
         {/* Filters */}
         <Card>
           <CardContent className="pt-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Periode</label>
                 <Select value={filterPeriode} onValueChange={setFilterPeriode}>
