@@ -34,7 +34,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { GraduationCap, Plus, Info, RefreshCw, Shuffle } from "lucide-react";
+import { GraduationCap, Plus, Info, RefreshCw, Shuffle, Search } from "lucide-react";
 import { JuzSelector } from "@/components/JuzSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { generateExamQuestions, formatQuestionDisplay, ExamQuestion, getHalamanPerJuz } from "@/lib/quran-exam-generator";
@@ -101,6 +101,7 @@ const UjianTahfidz = () => {
   // Filter riwayat
   const [riwayatFilterHalaqoh, setRiwayatFilterHalaqoh] = useState("all");
   const [riwayatFilterKelas, setRiwayatFilterKelas] = useState("all");
+  const [riwayatSearch, setRiwayatSearch] = useState("");
 
   const ujianHistory = [
     { id: "1", santri: "Ahmad Fauzi", halaqoh: "Halaqoh A", kelas: "Paket A Kelas 6", tanggal: "2024-01-15", materi: "Juz 1-2", nilaiTotal: 85, status: "Lulus" },
@@ -108,9 +109,10 @@ const UjianTahfidz = () => {
   ];
 
   const filteredUjianHistory = ujianHistory.filter((item) => {
+    const matchSearch = item.santri.toLowerCase().includes(riwayatSearch.toLowerCase());
     const matchHalaqoh = riwayatFilterHalaqoh === "all" || item.halaqoh === riwayatFilterHalaqoh;
     const matchKelas = riwayatFilterKelas === "all" || item.kelas === riwayatFilterKelas;
-    return matchHalaqoh && matchKelas;
+    return matchSearch && matchHalaqoh && matchKelas;
   });
 
   const filteredSantriList = santriList.filter((s) => {
@@ -528,6 +530,12 @@ const UjianTahfidz = () => {
             <CardTitle>Riwayat Ujian Tahfidz</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input placeholder="Cari santri..." value={riwayatSearch} onChange={e => setRiwayatSearch(e.target.value)} className="pl-10" />
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="space-y-1">
                 <Label className="text-xs">Filter Halaqoh</Label>
