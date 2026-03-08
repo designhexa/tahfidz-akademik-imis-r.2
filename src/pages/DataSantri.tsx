@@ -43,33 +43,6 @@ import { JuzSelector } from "@/components/JuzSelector";
 import { getSurahsByJuz } from "@/lib/quran-data";
 import { getSurahListByJuz, getPageCountForJuz } from "@/lib/mushaf-madinah";
 import { toast } from "sonner";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Plus, Search, Pencil, Trash2, Eye } from "lucide-react";
-import {
-  MOCK_SANTRI,
-  MOCK_HALAQOH,
-  MOCK_KELAS,
-  MOCK_WALI,
-  getKelasNama,
-  getHalaqohNama,
-  getWaliNama,
-  MockSantri,
-} from "@/lib/mock-data";
-import { toast } from "sonner";
 
 const INITIAL_FORM: Omit<MockSantri, "id"> = {
   nis: "",
