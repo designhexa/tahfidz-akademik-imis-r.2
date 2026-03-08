@@ -168,9 +168,8 @@ const LaporanHafalan = () => {
     const matchHalaqoh = drillFilterHalaqoh === "all" || d.halaqoh.toLowerCase().includes(drillFilterHalaqoh);
     const matchKelas = drillFilterKelas === "all" || d.kelas === drillFilterKelas;
     const matchStatus = drillFilterStatus === "all" || 
-      (drillFilterStatus === "lulus" && d.tasmi === "Lulus") ||
-      (drillFilterStatus === "proses" && d.tasmi !== "Lulus" && d.tasmi !== "-") ||
-      (drillFilterStatus === "belum" && d.tasmi === "-");
+      (drillFilterStatus === "lulus" && d.status === "Lulus") ||
+      (drillFilterStatus === "mengulang" && d.status === "Mengulang");
     const matchSantri = drillFilterSantri === "all" || d.santri === drillFilterSantri;
     return matchHalaqoh && matchKelas && matchStatus && matchSantri;
   });
