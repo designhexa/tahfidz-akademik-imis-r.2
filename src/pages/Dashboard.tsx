@@ -15,7 +15,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Layout } from "@/components/Layout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Table,
