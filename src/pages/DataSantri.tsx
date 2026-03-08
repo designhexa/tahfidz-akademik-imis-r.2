@@ -219,9 +219,6 @@ export default function DataSantri() {
                       <Badge variant="outline" className="text-xs">Juz {santri.posisiHafalanJuz} - {santri.posisiHafalanSurah || "-"}</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="text-xs font-semibold">{santri.pencapaianHafalan}</Badge>
-                    </TableCell>
-                    <TableCell>
                       <Badge variant="default" className="bg-primary/10 text-primary hover:bg-primary/20">{santri.status}</Badge>
                     </TableCell>
                     <TableCell>
