@@ -305,12 +305,20 @@ const UjianTasmi = () => {
               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader><DialogTitle className="flex items-center gap-2"><Award className="w-5 h-5 text-amber-500" />Form Ujian Tasmi' (1 Juz)</DialogTitle></DialogHeader>
                 <div className="space-y-6 py-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label>Santri</Label>
+                      <Label>Santri (Terdaftar)</Label>
                       <Select value={selectedSantri} onValueChange={setSelectedSantri}>
-                        <SelectTrigger><SelectValue placeholder="Pilih santri" /></SelectTrigger>
-                        <SelectContent>{dummySantri.map((s) => (<SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>))}</SelectContent>
+                        <SelectTrigger><SelectValue placeholder="Pilih santri terdaftar" /></SelectTrigger>
+                        <SelectContent>
+                          {registeredSantriForExam.length === 0 ? (
+                            <SelectItem value="__none" disabled>Belum ada santri terdaftar</SelectItem>
+                          ) : registeredSantriForExam.map((s) => (
+                            <SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                       </Select>
                     </div>
                     <JuzSelector value={selectedJuz} onValueChange={setSelectedJuz} label="Juz" required />
