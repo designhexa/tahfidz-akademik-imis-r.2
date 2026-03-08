@@ -374,29 +374,17 @@ const UjianTasmi = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    </div>
                     <div className="space-y-2">
                       <Label>Tanggal Ujian</Label>
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !selectedDate5Juz && "text-muted-foreground"
-                            )}
-                          >
+                          <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !selectedDate5Juz && "text-muted-foreground")}>
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {selectedDate5Juz ? format(selectedDate5Juz, "PPP", { locale: id }) : <span>Pilih tanggal</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={selectedDate5Juz}
-                            onSelect={(date) => date && setSelectedDate5Juz(date)}
-                            initialFocus
-                          />
+                          <Calendar mode="single" selected={selectedDate5Juz} onSelect={(date) => date && setSelectedDate5Juz(date)} initialFocus />
                         </PopoverContent>
                       </Popover>
                     </div>
