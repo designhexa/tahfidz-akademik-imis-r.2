@@ -424,7 +424,7 @@ const SetoranHafalan = () => {
             <Button variant="outline" size="icon" className="h-8 w-8" onClick={handlePrevMonth}>
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <span className="text-sm font-medium text-muted-foreground">
+            <span className="text-sm font-medium text-foreground">
               {monthOptions[month]} {year}
             </span>
             <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleNextMonth}>
