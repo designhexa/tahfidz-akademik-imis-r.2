@@ -18,6 +18,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plus, Pencil, Trash2, GraduationCap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -26,17 +33,25 @@ interface Kelas {
   id: string;
   nama_kelas: string;
   deskripsi: string | null;
+  id_wali_kelas: string | null;
   created_at: string;
+}
+
+interface Profile {
+  id: string;
+  nama_lengkap: string;
 }
 
 export default function DataKelas() {
   const [kelasList, setKelasList] = useState<Kelas[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedKelas, setSelectedKelas] = useState<Kelas | null>(null);
   const [namaKelas, setNamaKelas] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
+  const [waliKelas, setWaliKelas] = useState("");
 
   const fetchKelas = async () => {
     setIsLoading(true);
@@ -49,14 +64,33 @@ export default function DataKelas() {
       console.error("Error fetching kelas:", error);
       toast.error("Gagal memuat data kelas");
     } else {
-      setKelasList(data || []);
+      setKelasList((data as Kelas[]) || []);
     }
     setIsLoading(false);
   };
 
+  const fetchProfiles = async () => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, nama_lengkap")
+      .order("nama_lengkap");
+
+    if (error) {
+      console.error("Error fetching profiles:", error);
+    } else {
+      setProfiles(data || []);
+    }
+  };
+
   useEffect(() => {
     fetchKelas();
+    fetchProfiles();
   }, []);
+
+  const getWaliName = (id: string | null) => {
+    if (!id) return "-";
+    return profiles.find(p => p.id === id)?.nama_lengkap || "-";
+  };
 
   const handleSubmit = async () => {
     if (!namaKelas.trim()) {
@@ -64,10 +98,16 @@ export default function DataKelas() {
       return;
     }
 
+    const payload: any = {
+      nama_kelas: namaKelas,
+      deskripsi: deskripsi || null,
+      id_wali_kelas: waliKelas || null,
+    };
+
     if (isEditMode && selectedKelas) {
       const { error } = await supabase
         .from("kelas")
-        .update({ nama_kelas: namaKelas, deskripsi: deskripsi || null })
+        .update(payload)
         .eq("id", selectedKelas.id);
 
       if (error) {
@@ -80,7 +120,7 @@ export default function DataKelas() {
     } else {
       const { error } = await supabase
         .from("kelas")
-        .insert({ nama_kelas: namaKelas, deskripsi: deskripsi || null });
+        .insert(payload);
 
       if (error) {
         console.error("Error creating kelas:", error);
@@ -99,6 +139,7 @@ export default function DataKelas() {
     setSelectedKelas(kelas);
     setNamaKelas(kelas.nama_kelas);
     setDeskripsi(kelas.deskripsi || "");
+    setWaliKelas(kelas.id_wali_kelas || "");
     setIsEditMode(true);
     setIsDialogOpen(true);
   };
@@ -120,6 +161,7 @@ export default function DataKelas() {
   const resetForm = () => {
     setNamaKelas("");
     setDeskripsi("");
+    setWaliKelas("");
     setSelectedKelas(null);
     setIsEditMode(false);
   };
@@ -142,7 +184,7 @@ export default function DataKelas() {
             if (!open) resetForm();
           }}>
             <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-primary/90">
+              <Button>
                 <Plus className="w-4 h-4 mr-2" />
                 Tambah Kelas
               </Button>
@@ -170,6 +212,22 @@ export default function DataKelas() {
                     onChange={(e) => setDeskripsi(e.target.value)}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label>Wali Kelas</Label>
+                  <Select value={waliKelas} onValueChange={setWaliKelas}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih wali kelas (opsional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">— Tidak ada —</SelectItem>
+                      {profiles.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.nama_lengkap}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Batal
@@ -196,10 +254,11 @@ export default function DataKelas() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-muted-foreground">No</TableHead>
-                  <TableHead className="text-muted-foreground">Nama Kelas</TableHead>
-                  <TableHead className="text-muted-foreground">Deskripsi</TableHead>
-                  <TableHead className="text-muted-foreground">Aksi</TableHead>
+                  <TableHead>No</TableHead>
+                  <TableHead>Nama Kelas</TableHead>
+                  <TableHead>Deskripsi</TableHead>
+                  <TableHead>Wali Kelas</TableHead>
+                  <TableHead>Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -210,6 +269,7 @@ export default function DataKelas() {
                     <TableCell className="text-muted-foreground">
                       {kelas.deskripsi || "-"}
                     </TableCell>
+                    <TableCell>{getWaliName(kelas.id_wali_kelas)}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
                         <Button
