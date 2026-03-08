@@ -41,6 +41,7 @@ const mockSantriRapor = mockSantriProgress.map((santri, index) => ({
 }));
 
 const RaporSemester = () => {
+  const navigate = useNavigate();
   const [filterKelas, setFilterKelas] = useState("all");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterSemester, setFilterSemester] = useState("ganjil");
