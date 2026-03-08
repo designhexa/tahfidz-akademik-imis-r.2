@@ -255,10 +255,10 @@ const SetoranHafalan = () => {
       <div className="space-y-4 md:space-y-5">
         {/* Header */}
         <div>
-          <h1 className="text-xl md:text-3xl font-bold text-foreground">
+          <h1 className="text-2xl font-bold text-foreground">
             Setoran Harian
           </h1>
-          <p className="text-xs md:text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mt-1">
             Monitoring setoran hafalan, murojaah, dan tilawah
           </p>
         </div>
