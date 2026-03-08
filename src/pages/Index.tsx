@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Users, ClipboardCheck, BarChart3, Star, ChevronRight, Sparkles } from "lucide-react";
+import { BookOpen, Users, ClipboardCheck, BarChart3, Star, ChevronRight, Sparkles, Headphones, FileText } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -12,6 +12,11 @@ const Index = () => {
       description: "Catat dan pantau progress hafalan santri secara real-time dengan kalender interaktif",
     },
     {
+      icon: Headphones,
+      title: "Program Tilawah",
+      description: "Kelola pembelajaran tilawah, absensi, dan ujian tilawati secara terstruktur",
+    },
+    {
       icon: Users,
       title: "Multi-Role Access",
       description: "Admin, Asatidz, Wali Santri, dan Yayasan dalam satu sistem terintegrasi",
@@ -19,12 +24,17 @@ const Index = () => {
     {
       icon: ClipboardCheck,
       title: "Absensi & Penilaian",
-      description: "Kelola kehadiran dan evaluasi santri dengan mudah dan terstruktur",
+      description: "Kelola kehadiran dan evaluasi santri untuk hafalan maupun tilawah",
+    },
+    {
+      icon: FileText,
+      title: "Ujian & Sertifikasi",
+      description: "Ujian tasmi', ujian tilawati semester, dan sertifikasi hafalan dalam satu platform",
     },
     {
       icon: BarChart3,
       title: "Laporan Lengkap",
-      description: "Dashboard statistik dan laporan komprehensif untuk evaluasi berkala",
+      description: "Dashboard statistik hafalan & tilawah serta laporan komprehensif untuk evaluasi berkala",
     },
   ];
 
@@ -72,17 +82,17 @@ const Index = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent border border-border text-sm text-accent-foreground">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Sistem Manajemen Tahfidz Modern</span>
+              <span>Sistem Manajemen Tahfidz & Tilawah Modern</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.1] tracking-tight">
-              Kelola Hafalan
+              Kelola Hafalan & Tilawah
               <br />
               <span className="text-primary">Lebih Mudah</span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              Platform digital untuk pencatatan setoran, drill hafalan, ujian tasmi', dan laporan progress santri yang terintegrasi.
+              Platform digital untuk pencatatan setoran hafalan, program tilawah, drill, ujian tasmi', dan laporan progress santri yang terintegrasi.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
@@ -100,14 +110,14 @@ const Index = () => {
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="w-4 h-4 fill-secondary text-secondary" />
               ))}
-              <span className="text-sm text-muted-foreground ml-2">Dipercaya oleh lembaga tahfidz</span>
+              <span className="text-sm text-muted-foreground ml-2">Dipercaya oleh lembaga tahfidz & tilawah</span>
             </div>
           </div>
         </section>
 
         {/* Features */}
         <section className="container mx-auto px-4 pb-24">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
             {features.map((feature, index) => (
               <div
                 key={feature.title}
@@ -145,7 +155,7 @@ const Index = () => {
         {/* Footer */}
         <footer className="border-t border-border py-8">
           <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Mantaf IMIS — Manajemen Tahfidz Terintegrasi
+            © {new Date().getFullYear()} Mantaf IMIS — Manajemen Tahfidz & Tilawah Terintegrasi
           </div>
         </footer>
       </div>
