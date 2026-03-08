@@ -40,14 +40,14 @@ export const TasmiCandidateCard = ({
     "\"Sesungguhnya Allah mengangkat dengan kitab Al-Qur'an ini beberapa kaum dan juga dengan kitab Al-Qur'an ini Allah merendahkan yang lainnya.\"\n\n(HR. Muslim)"
   );
 
-  const colorSchemes: Record<string, [string, string]> = {
-    "hijau": ["#FFFFFF", "#F0FDF4"],
-    "biru": ["#FFFFFF", "#F0F9FF"],
-    "kuning": ["#FFFFFF", "#FFFBEB"],
-    "ungu": ["#FFFFFF", "#FAF5FF"],
-    "merah-muda": ["#FFFFFF", "#FDF2F8"],
-    "oranye": ["#FFFFFF", "#FFF7ED"],
-    "abu-abu": ["#FFFFFF", "#F3F4F6"],
+  const colorSchemes: Record<string, { rows: [string, string]; header: string; headerBorder: string }> = {
+    "hijau": { rows: ["#DCFCE7", "#F0FDF4"], header: "linear-gradient(to right, #15803d, #16a34a)", headerBorder: "rgba(34,197,94,0.5)" },
+    "biru": { rows: ["#DBEAFE", "#EFF6FF"], header: "linear-gradient(to right, #1d4ed8, #2563eb)", headerBorder: "rgba(59,130,246,0.5)" },
+    "kuning": { rows: ["#FEF3C7", "#FFFBEB"], header: "linear-gradient(to right, #a16207, #ca8a04)", headerBorder: "rgba(234,179,8,0.5)" },
+    "ungu": { rows: ["#E9D5FF", "#FAF5FF"], header: "linear-gradient(to right, #7e22ce, #9333ea)", headerBorder: "rgba(168,85,247,0.5)" },
+    "merah-muda": { rows: ["#FBCFE8", "#FDF2F8"], header: "linear-gradient(to right, #be185d, #db2777)", headerBorder: "rgba(236,72,153,0.5)" },
+    "oranye": { rows: ["#FED7AA", "#FFF7ED"], header: "linear-gradient(to right, #c2410c, #ea580c)", headerBorder: "rgba(249,115,22,0.5)" },
+    "abu-abu": { rows: ["#E5E7EB", "#F3F4F6"], header: "linear-gradient(to right, #374151, #4b5563)", headerBorder: "rgba(107,114,128,0.5)" },
   };
 
   const [selectedColor, setSelectedColor] = useState("hijau");
