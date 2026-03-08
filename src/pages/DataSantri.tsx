@@ -119,6 +119,9 @@ export default function DataSantri() {
     setForm(INITIAL_FORM);
     setTilawahJuz("");
     setTilawahSurah("");
+    setTilawahAyat("");
+    setTilawahHalaman("");
+    setTilawahInputMode("surah");
     setHafalanJuz("30");
     setHafalanInputMode("surah");
     setHafalanSurah("");
