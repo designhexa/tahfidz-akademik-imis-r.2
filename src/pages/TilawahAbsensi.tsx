@@ -36,6 +36,7 @@ export default function TilawahAbsensi({
   initialSantriId,
   initialTanggal,
 }: TilawahAbsensiProps = {}) {
+  const navigate = useNavigate();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
   const onOpenChange = externalOnOpenChange ?? setInternalOpen;
