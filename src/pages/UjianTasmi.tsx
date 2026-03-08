@@ -612,9 +612,20 @@ const UjianTasmi = () => {
 
           {/* Generate Gambar */}
           <TabsContent value="generate" className="mt-4">
+            <div className="mb-4">
+              <Select value={tasmiType} onValueChange={(v) => setTasmiType(v as "1juz" | "5juz")}>
+                <SelectTrigger className="w-full sm:w-60">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1juz">Tasmi' 1 Juz</SelectItem>
+                  <SelectItem value="5juz">Tasmi' 5 Juz</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <TasmiCandidateCard
               candidates={mockSantriProgress
-                .filter(s => s.eligibleForTasmi)
+                .filter(s => tasmiType === "5juz" ? s.jumlahJuzHafal >= 5 : s.eligibleForTasmi)
                 .map((s, i) => {
                   const nextJuz = getNextTasmiJuz(s.juzSelesai);
                   return {
@@ -622,11 +633,11 @@ const UjianTasmi = () => {
                     nama: s.nama,
                     kelas: s.kelasNumber,
                     jumlahHafalan: `${s.jumlahJuzHafal} Juz`,
-                    juzDiujikan: nextJuz 
-                      ? s.juzSelesai.length >= 5 
-                        ? `Juz ${s.juzSelesai.slice(-5).join('-')}`
-                        : `Juz ${nextJuz}`
-                      : "Khatam"
+                    juzDiujikan: tasmiType === "5juz"
+                      ? `Juz ${s.juzSelesai.slice(-5).join(", ")}`
+                      : nextJuz 
+                        ? `Juz ${nextJuz}`
+                        : "Khatam"
                   };
                 })}
             />
