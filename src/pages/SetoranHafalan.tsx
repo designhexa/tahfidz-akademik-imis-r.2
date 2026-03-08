@@ -333,7 +333,7 @@ const SetoranHafalan = () => {
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Tahun</Label>
+                <Label className="text-xs md:text-sm">Tahun</Label>
                 <Select
                   value={String(year)}
                   onValueChange={(v) => setYear(Number(v))}
