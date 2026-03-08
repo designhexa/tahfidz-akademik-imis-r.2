@@ -614,10 +614,37 @@ const UjianTasmi = () => {
               <User className="w-5 h-5" />
               Progress Tasmi' Per Santri
             </CardTitle>
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <Select value={filterHalaqoh} onValueChange={setFilterHalaqoh}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter Halaqoh" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Halaqoh</SelectItem>
+                  {MOCK_HALAQOH.map((h) => (
+                    <SelectItem key={h.id} value={h.id}>{h.nama}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={filterKelas} onValueChange={setFilterKelas}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter Kelas" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Kelas</SelectItem>
+                  {MOCK_KELAS.map((k) => (
+                    <SelectItem key={k.id} value={k.id}>{k.nama_kelas}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {dummySantri.map((santri) => (
+              {dummySantri
+                .filter(s => filterHalaqoh === "all" || s.halaqoh === getHalaqohNama(filterHalaqoh))
+                .filter(s => filterKelas === "all" || s.kelas === getKelasNama(filterKelas))
+                .map((santri) => (
                 <Card key={santri.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-3">
