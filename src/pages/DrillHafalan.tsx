@@ -638,7 +638,7 @@ const DrillHafalan = () => {
 
                   {/* Actions */}
                   <div className="grid grid-cols-3 gap-2 pt-4">
-                    <Button variant="outline" onClick={handleSaveDrill}><Save className="w-4 h-4 mr-1" /> Simpan</Button>
+                    <Button variant="outline" onClick={() => handleSaveDrill("Mengulang")}><Save className="w-4 h-4 mr-1" /> Simpan</Button>
                     <Button className="bg-green-600 hover:bg-green-700 disabled:opacity-50" disabled={drillNilaiKelancaran < BATAS_LULUS_DRILL || !isManualInputComplete} onClick={handleLulusDrill}><Trophy className="w-4 h-4 mr-1" /> Lulus</Button>
                     <Button variant="destructive" onClick={handleUlangiDrill}><RotateCcw className="w-4 h-4 mr-1" /> Ulangi</Button>
                   </div>

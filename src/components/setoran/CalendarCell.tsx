@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Star, Home } from "lucide-react";
 
 export interface CalendarEntry {
+  id?: string;
   tanggal: Date;
   santriId: string;
   jenis:

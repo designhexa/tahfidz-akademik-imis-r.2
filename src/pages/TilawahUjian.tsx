@@ -272,8 +272,7 @@ export default function TilawahUjian() {
         tanggal: e.tanggal instanceof Date ? e.tanggal.toISOString() : e.tanggal
       }));
 
-    const combined = [...ujianData, ...persistedUjian];
-    // Filter out potential duplicates if they have the same ID (unlikely with this logic but good practice)
+    const combined = [...ujianData.map(u => ({ ...u, tanggal: '' })), ...persistedUjian];
     return combined.sort((a, b) => {
       const dateA = a.tanggal ? new Date(a.tanggal).getTime() : 0;
       const dateB = b.tanggal ? new Date(b.tanggal).getTime() : 0;
