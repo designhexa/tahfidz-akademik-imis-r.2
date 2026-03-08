@@ -20,13 +20,6 @@ import {
   HALAMAN_PER_JILID,
   getProgressJilid
 } from "@/lib/tilawah-data";
-import { 
-  MOCK_SANTRI_TILAWAH, 
-  MOCK_SETORAN_TILAWAH,
-  TILAWATI_JILID,
-  HALAMAN_PER_JILID,
-  getProgressJilid
-} from "@/lib/tilawah-data";
 
 // Mock data
 const mockLaporanHarian = [
