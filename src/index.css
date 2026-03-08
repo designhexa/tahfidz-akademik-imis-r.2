@@ -30,9 +30,9 @@ All colors MUST be HSL.
     --muted: 48 30% 92%;
     --muted-foreground: 160 20% 40%;
     
-    /* Accent - Light emerald */
-    --accent: 160 40% 90%;
-    --accent-foreground: 160 60% 30%;
+    /* Accent - Light green */
+    --accent: 121 30% 92%;
+    --accent-foreground: 121 100% 17%;
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
