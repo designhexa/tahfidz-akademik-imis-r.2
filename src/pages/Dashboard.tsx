@@ -274,7 +274,13 @@ export default function Dashboard() {
                     const target = CLASS_TARGETS[student.kelasNumber];
                     return (
                       <TableRow key={student.id}>
-                        <TableCell>{student.nama}</TableCell>
+                        <TableCell
+                          className="text-primary font-medium cursor-pointer hover:underline"
+                          onClick={() => {
+                            const s = getSantriByNama(student.nama);
+                            if (s) navigate(`/santri/${s.id}`);
+                          }}
+                        >{student.nama}</TableCell>
                         <TableCell>{student.kelas}</TableCell>
                         <TableCell>
                           Juz {target?.targetJuz}
