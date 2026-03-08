@@ -118,6 +118,40 @@ const UjianTasmi = () => {
   const [selectedUjian, setSelectedUjian] = useState<typeof dummyHasilUjian[0] | null>(null);
   const [expandedRules, setExpandedRules] = useState(false);
 
+  // Registered tasmi candidates (persisted in localStorage)
+  const [registeredCandidates, setRegisteredCandidates] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem("tasmi-registered-candidates");
+      return stored ? JSON.parse(stored) : [];
+    } catch { return []; }
+  });
+
+  const saveRegistered = (ids: string[]) => {
+    setRegisteredCandidates(ids);
+    localStorage.setItem("tasmi-registered-candidates", JSON.stringify(ids));
+  };
+
+  const handleDaftarkan = (studentId: string) => {
+    if (registeredCandidates.includes(studentId)) {
+      toast.info("Santri sudah terdaftar sebagai peserta tasmi'");
+      return;
+    }
+    const updated = [...registeredCandidates, studentId];
+    saveRegistered(updated);
+    toast.success("Santri berhasil didaftarkan sebagai peserta tasmi'!");
+  };
+
+  const handleBatalkanPendaftaran = (studentId: string) => {
+    const updated = registeredCandidates.filter(id => id !== studentId);
+    saveRegistered(updated);
+    toast.success("Pendaftaran tasmi' dibatalkan");
+  };
+
+  // Filtered santri for exam forms - only registered candidates
+  const registeredSantriForExam = useMemo(() => {
+    return dummySantri.filter(s => registeredCandidates.includes(s.id));
+  }, [registeredCandidates]);
+
   // Auto-open form from calendar redirect
   useEffect(() => {
     if (searchParams.get("santri")) {
