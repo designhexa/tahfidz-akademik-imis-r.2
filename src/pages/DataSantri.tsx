@@ -88,8 +88,14 @@ export default function DataSantri() {
   // Surah list for hafalan
   const hafalanSurahList = useMemo(() => {
     if (!hafalanJuz) return [];
-    return getSurahsByJuz(Number(hafalanJuz));
+    return getSurahListByJuz(Number(hafalanJuz));
   }, [hafalanJuz]);
+
+  const selectedHafalanSurah = useMemo(() => {
+    return hafalanSurahList.find(s => String(s.number) === hafalanSurah);
+  }, [hafalanSurah, hafalanSurahList]);
+
+  const hafalanMaxHalaman = hafalanJuz ? getPageCountForJuz(Number(hafalanJuz)) : 20;
 
   const filteredSantri = MOCK_SANTRI.filter((santri) => {
     const matchSearch = santri.nama.toLowerCase().includes(search.toLowerCase()) ||
