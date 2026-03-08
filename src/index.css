@@ -86,14 +86,14 @@ All colors MUST be HSL.
     --ring: 121 80% 30%;
     
     /* Sidebar dark mode */
-    --sidebar-background: 160 30% 10%;
+    --sidebar-background: 121 25% 10%;
     --sidebar-foreground: 48 20% 95%;
-    --sidebar-primary: 160 55% 50%;
-    --sidebar-primary-foreground: 160 30% 8%;
-    --sidebar-accent: 160 40% 20%;
-    --sidebar-accent-foreground: 160 55% 85%;
-    --sidebar-border: 160 20% 22%;
-    --sidebar-ring: 160 55% 50%;
+    --sidebar-primary: 121 80% 30%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 121 30% 20%;
+    --sidebar-accent-foreground: 121 60% 85%;
+    --sidebar-border: 121 15% 22%;
+    --sidebar-ring: 121 80% 30%;
   }
 }
 
