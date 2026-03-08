@@ -233,9 +233,9 @@ const LaporanHafalan = () => {
         {/* Filters */}
         <Card>
           <CardContent className="pt-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Periode</label>
+                <label className="text-xs md:text-sm font-medium">Periode</label>
                 <Select value={filterPeriode} onValueChange={setFilterPeriode}>
                   <SelectTrigger>
                     <SelectValue />
@@ -248,7 +248,7 @@ const LaporanHafalan = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Bulan</label>
+                <label className="text-xs md:text-sm font-medium">Bulan</label>
                 <Select value={filterBulan} onValueChange={setFilterBulan}>
                   <SelectTrigger>
                     <SelectValue />
@@ -261,7 +261,7 @@ const LaporanHafalan = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Halaqoh</label>
+                <label className="text-xs md:text-sm font-medium">Halaqoh</label>
                 <Select value={filterHalaqoh} onValueChange={(v) => { setFilterHalaqoh(v); setFilterSantri("all"); }}>
                   <SelectTrigger>
                     <SelectValue />
@@ -275,7 +275,7 @@ const LaporanHafalan = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Kelas</label>
+                <label className="text-xs md:text-sm font-medium">Kelas</label>
                 <Select value={filterKelas} onValueChange={setFilterKelas}>
                   <SelectTrigger>
                     <SelectValue />
@@ -290,8 +290,8 @@ const LaporanHafalan = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Santri</label>
+              <div className="space-y-2 col-span-2 md:col-span-1">
+                <label className="text-xs md:text-sm font-medium">Santri</label>
                 <Select value={filterSantri} onValueChange={setFilterSantri}>
                   <SelectTrigger>
                     <SelectValue />
@@ -323,22 +323,22 @@ const LaporanHafalan = () => {
 
         {/* Tabs Content */}
         <Tabs defaultValue="harian" className="space-y-4">
-          <TabsList className="w-full overflow-x-auto flex-nowrap">
-            <TabsTrigger value="harian" className="flex items-center gap-2 whitespace-nowrap">
-              <Calendar className="w-4 h-4" />
-              Rekap Harian
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="harian" className="text-[10px] md:text-sm px-1 md:px-3">
+              <Calendar className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-2 shrink-0" />
+              <span className="hidden sm:inline">Rekap </span>Harian
             </TabsTrigger>
-            <TabsTrigger value="mingguan" className="flex items-center gap-2 whitespace-nowrap">
-              <BarChart3 className="w-4 h-4" />
-              Rekap Mingguan
+            <TabsTrigger value="mingguan" className="text-[10px] md:text-sm px-1 md:px-3">
+              <BarChart3 className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-2 shrink-0" />
+              <span className="hidden sm:inline">Rekap </span>Mingguan
             </TabsTrigger>
-            <TabsTrigger value="capaian" className="flex items-center gap-2 whitespace-nowrap">
-              <TrendingUp className="w-4 h-4" />
-              Capaian per Juz
+            <TabsTrigger value="capaian" className="text-[10px] md:text-sm px-1 md:px-3">
+              <TrendingUp className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-2 shrink-0" />
+              <span className="hidden sm:inline">Capaian </span>Juz
             </TabsTrigger>
-            <TabsTrigger value="drill" className="flex items-center gap-2 whitespace-nowrap">
-              <Target className="w-4 h-4" />
-              Rekap Drill Hafalan
+            <TabsTrigger value="drill" className="text-[10px] md:text-sm px-1 md:px-3">
+              <Target className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-2 shrink-0" />
+              <span className="hidden sm:inline">Rekap </span>Drill
             </TabsTrigger>
           </TabsList>
 
