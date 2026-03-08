@@ -4,7 +4,8 @@
  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
  import { Badge } from "@/components/ui/badge";
  import { Progress } from "@/components/ui/progress";
- import { useState } from "react";
+  import { useState } from "react";
+  import { useNavigate } from "react-router-dom";
  import { 
    MOCK_SANTRI_TILAWAH, 
    MOCK_SETORAN_TILAWAH,

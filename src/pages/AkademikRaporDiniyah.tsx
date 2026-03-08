@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Search, FileText, Download, Printer, Eye } from "lucide-react";
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { mockSantriAkademik } from "@/lib/rapor-akademik-types";
 import { MOCK_KELAS } from "@/lib/mock-data";
 import { RaporDiniyahPreview } from "@/components/rapor/RaporDiniyahPreview";

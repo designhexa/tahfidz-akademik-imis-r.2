@@ -588,7 +588,13 @@ const UjianTahfidz = () => {
                   filteredUjianHistory.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell className="font-medium">{item.santri}</TableCell>
+                      <TableCell
+                        className="font-medium text-primary cursor-pointer hover:underline"
+                        onClick={() => {
+                          const s = getSantriByNama(item.santri);
+                          if (s) navigate(`/santri/${s.id}`);
+                        }}
+                      >{item.santri}</TableCell>
                       <TableCell>{item.tanggal}</TableCell>
                       <TableCell>{item.materi}</TableCell>
                       <TableCell className="text-center font-semibold">
