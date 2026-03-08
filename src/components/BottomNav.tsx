@@ -125,6 +125,7 @@ export function BottomNav() {
           active={isLaporanActive}
           items={[
             { title: "Laporan Harian", url: "/laporan", icon: ClipboardList },
+            { title: "Riwayat Drill", url: "/drill", icon: Target },
             { title: "Rapor Tahfidz", url: "/rapor", icon: Award },
           ]}
         />
