@@ -651,9 +651,8 @@ const LaporanHafalan = () => {
                     <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Semua Status</SelectItem>
-                      <SelectItem value="lulus">Lulus Tasmi'</SelectItem>
-                      <SelectItem value="proses">Proses</SelectItem>
-                      <SelectItem value="belum">Belum Tasmi'</SelectItem>
+                      <SelectItem value="lulus">Lulus</SelectItem>
+                      <SelectItem value="mengulang">Mengulang</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
