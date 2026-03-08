@@ -163,3 +163,6 @@ export const getSantriByHalaqoh = (halaqohId: string) =>
 
 export const getUstadzHalaqoh = (ustadzId: string) =>
   MOCK_HALAQOH.filter(h => h.idUstadz === ustadzId);
+
+export const getSantriByNama = (nama: string) =>
+  MOCK_SANTRI.find(s => s.nama.toLowerCase() === nama.toLowerCase());
