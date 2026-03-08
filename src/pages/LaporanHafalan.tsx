@@ -125,10 +125,31 @@ const LaporanHafalan = () => {
     : mockSantri.filter(s => s.halaqoh === filterHalaqoh);
 
   const filteredDrill = mockDrillHafalan.filter((d) => {
-    const matchHalaqoh = filterHalaqoh === "all" || d.halaqoh.toLowerCase().includes(filterHalaqoh);
-    const matchKelas = filterKelas === "all" || d.kelas === filterKelas;
-    return matchHalaqoh && matchKelas;
+    const matchHalaqoh = drillFilterHalaqoh === "all" || d.halaqoh.toLowerCase().includes(drillFilterHalaqoh);
+    const matchKelas = drillFilterKelas === "all" || d.kelas === drillFilterKelas;
+    const matchStatus = drillFilterStatus === "all" || 
+      (drillFilterStatus === "lulus" && d.tasmi === "Lulus") ||
+      (drillFilterStatus === "proses" && d.tasmi !== "Lulus" && d.tasmi !== "-") ||
+      (drillFilterStatus === "belum" && d.tasmi === "-");
+    return matchHalaqoh && matchKelas && matchStatus;
   });
+
+  const filteredHarian = mockLaporanHarian.filter((item) => {
+    const matchSantri = harianFilterSantri === "all" || item.santri === harianFilterSantri;
+    const matchStatus = harianFilterStatus === "all" || item.status === harianFilterStatus;
+    return matchSantri && matchStatus;
+  });
+
+  const filteredMingguan = mockLaporanMingguan.filter((item) => {
+    return mingguanFilterMinggu === "all" || item.minggu === mingguanFilterMinggu;
+  });
+
+  const filteredCapaian = mockCapaianJuz.filter((item) => {
+    return capaianFilterJuz === "all" || item.juz === Number(capaianFilterJuz);
+  });
+
+  const uniqueHarianSantri = [...new Set(mockLaporanHarian.map(h => h.santri))];
+  const uniqueDrillHalaqoh = [...new Set(mockDrillHafalan.map(d => d.halaqoh))];
 
   const getStatusBadge = (status: string) => {
     if (status === "Lulus") return <Badge className="bg-green-500 hover:bg-green-600 text-white">Lulus</Badge>;
