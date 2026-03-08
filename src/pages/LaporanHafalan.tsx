@@ -89,6 +89,14 @@ const LaporanHafalan = () => {
   const [filterBulan, setFilterBulan] = useState("januari");
   const [filterSantri, setFilterSantri] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
+  // Per-table filters
+  const [harianFilterSantri, setHarianFilterSantri] = useState("all");
+  const [harianFilterStatus, setHarianFilterStatus] = useState("all");
+  const [mingguanFilterMinggu, setMingguanFilterMinggu] = useState("all");
+  const [capaianFilterJuz, setCapaianFilterJuz] = useState("all");
+  const [drillFilterHalaqoh, setDrillFilterHalaqoh] = useState("all");
+  const [drillFilterKelas, setDrillFilterKelas] = useState("all");
+  const [drillFilterStatus, setDrillFilterStatus] = useState("all");
   // Tilawah filters
   const [tilawahHalaqoh, setTilawahHalaqoh] = useState("all");
   const [tilawahKelas, setTilawahKelas] = useState("all");
@@ -117,10 +125,31 @@ const LaporanHafalan = () => {
     : mockSantri.filter(s => s.halaqoh === filterHalaqoh);
 
   const filteredDrill = mockDrillHafalan.filter((d) => {
-    const matchHalaqoh = filterHalaqoh === "all" || d.halaqoh.toLowerCase().includes(filterHalaqoh);
-    const matchKelas = filterKelas === "all" || d.kelas === filterKelas;
-    return matchHalaqoh && matchKelas;
+    const matchHalaqoh = drillFilterHalaqoh === "all" || d.halaqoh.toLowerCase().includes(drillFilterHalaqoh);
+    const matchKelas = drillFilterKelas === "all" || d.kelas === drillFilterKelas;
+    const matchStatus = drillFilterStatus === "all" || 
+      (drillFilterStatus === "lulus" && d.tasmi === "Lulus") ||
+      (drillFilterStatus === "proses" && d.tasmi !== "Lulus" && d.tasmi !== "-") ||
+      (drillFilterStatus === "belum" && d.tasmi === "-");
+    return matchHalaqoh && matchKelas && matchStatus;
   });
+
+  const filteredHarian = mockLaporanHarian.filter((item) => {
+    const matchSantri = harianFilterSantri === "all" || item.santri === harianFilterSantri;
+    const matchStatus = harianFilterStatus === "all" || item.status === harianFilterStatus;
+    return matchSantri && matchStatus;
+  });
+
+  const filteredMingguan = mockLaporanMingguan.filter((item) => {
+    return mingguanFilterMinggu === "all" || item.minggu === mingguanFilterMinggu;
+  });
+
+  const filteredCapaian = mockCapaianJuz.filter((item) => {
+    return capaianFilterJuz === "all" || item.juz === Number(capaianFilterJuz);
+  });
+
+  const uniqueHarianSantri = [...new Set(mockLaporanHarian.map(h => h.santri))];
+  const uniqueDrillHalaqoh = [...new Set(mockDrillHafalan.map(d => d.halaqoh))];
 
   const getStatusBadge = (status: string) => {
     if (status === "Lulus") return <Badge className="bg-green-500 hover:bg-green-600 text-white">Lulus</Badge>;
@@ -323,22 +352,22 @@ const LaporanHafalan = () => {
 
         {/* Tabs Content */}
         <Tabs defaultValue="harian" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="harian" className="text-[10px] md:text-sm px-1 md:px-3">
-              <Calendar className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-2 shrink-0" />
-              <span className="hidden sm:inline">Rekap </span>Harian
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
+            <TabsTrigger value="harian" className="text-xs md:text-sm px-2 py-2">
+              <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
+              Rekap Harian
             </TabsTrigger>
-            <TabsTrigger value="mingguan" className="text-[10px] md:text-sm px-1 md:px-3">
-              <BarChart3 className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-2 shrink-0" />
-              <span className="hidden sm:inline">Rekap </span>Mingguan
+            <TabsTrigger value="mingguan" className="text-xs md:text-sm px-2 py-2">
+              <BarChart3 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
+              Rekap Mingguan
             </TabsTrigger>
-            <TabsTrigger value="capaian" className="text-[10px] md:text-sm px-1 md:px-3">
-              <TrendingUp className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-2 shrink-0" />
-              <span className="hidden sm:inline">Capaian </span>Juz
+            <TabsTrigger value="capaian" className="text-xs md:text-sm px-2 py-2">
+              <TrendingUp className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
+              Capaian Juz
             </TabsTrigger>
-            <TabsTrigger value="drill" className="text-[10px] md:text-sm px-1 md:px-3">
-              <Target className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-2 shrink-0" />
-              <span className="hidden sm:inline">Rekap </span>Drill
+            <TabsTrigger value="drill" className="text-xs md:text-sm px-2 py-2">
+              <Target className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
+              Rekap Drill
             </TabsTrigger>
           </TabsList>
 
@@ -349,7 +378,24 @@ const LaporanHafalan = () => {
                 <CardTitle>Rekap Setoran Harian</CardTitle>
                 <CardDescription>Daftar setoran hafalan harian santri</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <Select value={harianFilterSantri} onValueChange={setHarianFilterSantri}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Santri" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Santri</SelectItem>
+                      {uniqueHarianSantri.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Select value={harianFilterStatus} onValueChange={setHarianFilterStatus}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Status</SelectItem>
+                      <SelectItem value="Lancar">Lancar</SelectItem>
+                      <SelectItem value="Mengulang">Mengulang</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="rounded-md border">
                   <Table>
                     <TableHeader>
@@ -364,14 +410,12 @@ const LaporanHafalan = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {mockLaporanHarian.map((item, index) => (
+                      {filteredHarian.map((item, index) => (
                         <TableRow key={index}>
                           <TableCell>{item.tanggal}</TableCell>
                           <TableCell className="font-medium">{item.santri}</TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary">
-                              Juz {item.juz}
-                            </Badge>
+                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary">Juz {item.juz}</Badge>
                           </TableCell>
                           <TableCell>{item.halaman}</TableCell>
                           <TableCell>{item.ayat} ayat</TableCell>
@@ -395,7 +439,16 @@ const LaporanHafalan = () => {
                 <CardTitle>Rekap Mingguan</CardTitle>
                 <CardDescription>Statistik setoran per minggu</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <Select value={mingguanFilterMinggu} onValueChange={setMingguanFilterMinggu}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Minggu" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Minggu</SelectItem>
+                      {mockLaporanMingguan.map(m => <SelectItem key={m.minggu} value={m.minggu}>{m.minggu}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="rounded-md border">
                   <Table>
                     <TableHeader>
@@ -408,7 +461,7 @@ const LaporanHafalan = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {mockLaporanMingguan.map((item, index) => (
+                      {filteredMingguan.map((item, index) => (
                         <TableRow key={index}>
                           <TableCell className="font-medium">{item.minggu}</TableCell>
                           <TableCell className="text-center">
@@ -433,18 +486,23 @@ const LaporanHafalan = () => {
                 <CardTitle>Capaian Hafalan per Juz</CardTitle>
                 <CardDescription>Progress penyelesaian hafalan santri per juz</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <Select value={capaianFilterJuz} onValueChange={setCapaianFilterJuz}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Juz" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Juz</SelectItem>
+                      {mockCapaianJuz.map(j => <SelectItem key={j.juz} value={String(j.juz)}>Juz {j.juz}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="space-y-4">
-                  {mockCapaianJuz.map((item) => (
+                  {filteredCapaian.map((item) => (
                     <div key={item.juz} className="space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="bg-primary/10 text-primary border-primary">
-                            Juz {item.juz}
-                          </Badge>
-                          <span className="text-sm text-muted-foreground">
-                            {item.santriSelesai} dari {item.totalSantri} santri
-                          </span>
+                          <Badge variant="outline" className="bg-primary/10 text-primary border-primary">Juz {item.juz}</Badge>
+                          <span className="text-sm text-muted-foreground">{item.santriSelesai} dari {item.totalSantri} santri</span>
                         </div>
                         <span className="font-semibold text-primary">{item.persentase}%</span>
                       </div>
@@ -461,9 +519,34 @@ const LaporanHafalan = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Rekap Drill Hafalan</CardTitle>
-                <CardDescription>Progress drill hafalan per santri (Drill 1, Drill 2, ½ Juz, 1 Juz, Tasmi')</CardDescription>
+                <CardDescription>Progress drill hafalan per santri</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <Select value={drillFilterHalaqoh} onValueChange={setDrillFilterHalaqoh}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Halaqoh" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Halaqoh</SelectItem>
+                      {uniqueDrillHalaqoh.map(h => <SelectItem key={h} value={h.toLowerCase().replace("halaqoh ", "").replace("al-", "")}>{h}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Select value={drillFilterKelas} onValueChange={setDrillFilterKelas}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Kelas" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Kelas</SelectItem>
+                      {MOCK_KELAS.map(k => <SelectItem key={k.id} value={k.nama_kelas}>{k.nama_kelas}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Select value={drillFilterStatus} onValueChange={setDrillFilterStatus}>
+                    <SelectTrigger className="text-xs md:text-sm col-span-2 md:col-span-1"><SelectValue placeholder="Status" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Status</SelectItem>
+                      <SelectItem value="lulus">Lulus Tasmi'</SelectItem>
+                      <SelectItem value="proses">Proses</SelectItem>
+                      <SelectItem value="belum">Belum Tasmi'</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="rounded-md border overflow-x-auto">
                   <Table>
                     <TableHeader>
