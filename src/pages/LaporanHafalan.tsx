@@ -11,6 +11,8 @@ import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { LaporanCharts, CapaianKelasChart, CapaianHalaqohChart, CapaianSiswaChart } from "@/components/laporan/LaporanCharts";
 import { MOCK_KELAS } from "@/lib/mock-data";
+import { cn } from "@/lib/utils";
+import { getDrillsForJuz } from "@/lib/drill-data";
 import { 
   MOCK_SANTRI_TILAWAH, 
   MOCK_SETORAN_TILAWAH,
@@ -44,12 +46,39 @@ const mockCapaianJuz = [
 ];
 
 const mockDrillHafalan = [
-  { santri: "Muhammad Faiz", halaqoh: "Al-Azhary", kelas: "Paket A Kelas 6", drill1: "Lulus", drill2: "Lulus", drill12Juz: "Proses", drill1Juz: "-", tasmi: "-", nilaiTerakhir: 92 },
-  { santri: "Fatimah Zahra", halaqoh: "Al-Azhary", kelas: "KBTK A", drill1: "Lulus", drill2: "Lulus", drill12Juz: "Lulus", drill1Juz: "Proses", tasmi: "-", nilaiTerakhir: 88 },
-  { santri: "Aisyah Nur", halaqoh: "Al-Furqon", kelas: "Paket B Kelas 8", drill1: "Lulus", drill2: "Proses", drill12Juz: "-", drill1Juz: "-", tasmi: "-", nilaiTerakhir: 90 },
-  { santri: "Ahmad Rasyid", halaqoh: "Al-Furqon", kelas: "Paket A Kelas 6", drill1: "Lulus", drill2: "Lulus", drill12Juz: "Lulus", drill1Juz: "Lulus", tasmi: "Lulus", nilaiTerakhir: 95 },
-  { santri: "Umar Faruq", halaqoh: "Al-Hidayah", kelas: "KBTK B", drill1: "Proses", drill2: "-", drill12Juz: "-", drill1Juz: "-", tasmi: "-", nilaiTerakhir: 85 },
+  { id: 1, tanggal: "15/01/2025", santri: "Muhammad Faiz", halaqoh: "Al-Azhary", kelas: "Paket A Kelas 6", juz: 30, level: 3, materi: "Drill 3 - Al-Buruj s.d Al-Fajr", nilai: 92, status: "Lulus" },
+  { id: 2, tanggal: "14/01/2025", santri: "Fatimah Zahra", halaqoh: "Al-Azhary", kelas: "KBTK A", juz: 30, level: 5, materi: "Drill 5 - Az-Zalzalah s.d An-Nas", nilai: 88, status: "Lulus" },
+  { id: 3, tanggal: "13/01/2025", santri: "Aisyah Nur", halaqoh: "Al-Furqon", kelas: "Paket B Kelas 8", juz: 29, level: 2, materi: "Drill 2 - Al-Haqqah & Al-Ma'arij", nilai: 75, status: "Mengulang" },
+  { id: 4, tanggal: "12/01/2025", santri: "Ahmad Rasyid", halaqoh: "Al-Furqon", kelas: "Paket A Kelas 6", juz: 1, level: 4, materi: "Drill 4 - Halaman 16-20", nilai: 95, status: "Lulus" },
+  { id: 5, tanggal: "11/01/2025", santri: "Umar Faruq", halaqoh: "Al-Hidayah", kelas: "KBTK B", juz: 30, level: 1, materi: "Drill 1 - An-Naba s.d Abasa", nilai: 85, status: "Mengulang" },
 ];
+
+// Drill Level Indicator for Laporan
+const DrillLevelIndicator = ({ juz, currentLevel }: { juz: number; currentLevel: number }) => {
+  const totalLevels = getDrillsForJuz(juz).length || 7;
+  return (
+    <div className="flex flex-wrap gap-0.5">
+      {Array.from({ length: totalLevels }, (_, i) => {
+        const level = i + 1;
+        const isCurrent = level === currentLevel;
+        return (
+          <div
+            key={level}
+            className={cn(
+              "w-5 h-5 md:w-6 md:h-6 rounded-sm flex items-center justify-center text-[9px] md:text-[10px] font-semibold border",
+              isCurrent
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-muted text-muted-foreground border-border"
+            )}
+            title={`Level ${level}`}
+          >
+            {level}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 // Chart data
 const mockCapaianKelas = [
@@ -139,9 +168,8 @@ const LaporanHafalan = () => {
     const matchHalaqoh = drillFilterHalaqoh === "all" || d.halaqoh.toLowerCase().includes(drillFilterHalaqoh);
     const matchKelas = drillFilterKelas === "all" || d.kelas === drillFilterKelas;
     const matchStatus = drillFilterStatus === "all" || 
-      (drillFilterStatus === "lulus" && d.tasmi === "Lulus") ||
-      (drillFilterStatus === "proses" && d.tasmi !== "Lulus" && d.tasmi !== "-") ||
-      (drillFilterStatus === "belum" && d.tasmi === "-");
+      (drillFilterStatus === "lulus" && d.status === "Lulus") ||
+      (drillFilterStatus === "mengulang" && d.status === "Mengulang");
     const matchSantri = drillFilterSantri === "all" || d.santri === drillFilterSantri;
     return matchHalaqoh && matchKelas && matchStatus && matchSantri;
   });
@@ -223,7 +251,7 @@ const LaporanHafalan = () => {
           <TabsContent value="hafalan" className="space-y-4 md:space-y-6 mt-4">
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
           <Card>
             <CardContent className="p-3 md:pt-4 md:p-6">
               <div className="flex items-center gap-2 md:gap-3">
@@ -623,9 +651,8 @@ const LaporanHafalan = () => {
                     <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Semua Status</SelectItem>
-                      <SelectItem value="lulus">Lulus Tasmi'</SelectItem>
-                      <SelectItem value="proses">Proses</SelectItem>
-                      <SelectItem value="belum">Belum Tasmi'</SelectItem>
+                      <SelectItem value="lulus">Lulus</SelectItem>
+                      <SelectItem value="mengulang">Mengulang</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -633,29 +660,34 @@ const LaporanHafalan = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Santri</TableHead>
-                        <TableHead>Halaqoh</TableHead>
-                        <TableHead>Kelas</TableHead>
-                        <TableHead className="text-center">Drill 1</TableHead>
-                        <TableHead className="text-center">Drill 2</TableHead>
-                        <TableHead className="text-center">½ Juz</TableHead>
-                        <TableHead className="text-center">1 Juz</TableHead>
-                        <TableHead className="text-center">Tasmi'</TableHead>
-                        <TableHead className="text-center">Nilai</TableHead>
+                        <TableHead className="text-xs md:text-sm">Tanggal</TableHead>
+                        <TableHead className="text-xs md:text-sm">Santri</TableHead>
+                        <TableHead className="text-xs md:text-sm">Juz</TableHead>
+                        <TableHead className="text-xs md:text-sm">Level Drill</TableHead>
+                        <TableHead className="text-xs md:text-sm hidden md:table-cell">Materi</TableHead>
+                        <TableHead className="text-xs md:text-sm">Nilai</TableHead>
+                        <TableHead className="text-xs md:text-sm">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredDrill.map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{item.santri}</TableCell>
-                          <TableCell>{item.halaqoh}</TableCell>
-                          <TableCell>{item.kelas}</TableCell>
-                          <TableCell className="text-center">{getStatusBadge(item.drill1)}</TableCell>
-                          <TableCell className="text-center">{getStatusBadge(item.drill2)}</TableCell>
-                          <TableCell className="text-center">{getStatusBadge(item.drill12Juz)}</TableCell>
-                          <TableCell className="text-center">{getStatusBadge(item.drill1Juz)}</TableCell>
-                          <TableCell className="text-center">{getStatusBadge(item.tasmi)}</TableCell>
-                          <TableCell className="text-center font-semibold text-primary">{item.nilaiTerakhir}</TableCell>
+                      {filteredDrill.map((item) => (
+                        <TableRow key={item.id}>
+                          <TableCell className="text-xs md:text-sm">{item.tanggal}</TableCell>
+                          <TableCell className="font-medium text-xs md:text-sm">{item.santri}</TableCell>
+                          <TableCell>
+                            <Badge className="bg-primary/10 text-primary border-primary text-[10px] md:text-xs">Juz {item.juz}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <DrillLevelIndicator juz={item.juz} currentLevel={item.level} />
+                          </TableCell>
+                          <TableCell className="text-xs md:text-sm hidden md:table-cell">{item.materi}</TableCell>
+                          <TableCell className="font-semibold text-primary text-xs md:text-sm">{item.nilai}</TableCell>
+                          <TableCell>
+                            <Badge className={cn(
+                              "text-[10px] md:text-xs",
+                              item.status === "Lulus" ? "bg-primary text-primary-foreground" : "bg-destructive text-destructive-foreground"
+                            )}>{item.status}</Badge>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
