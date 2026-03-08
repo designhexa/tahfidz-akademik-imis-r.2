@@ -16,6 +16,7 @@ import html2canvas from "html2canvas";
 import { toast } from "sonner";
 
 export default function AkademikRaporDiniyah() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filterKelas, setFilterKelas] = useState("all");
   const [filterSemester, setFilterSemester] = useState("1");
