@@ -110,7 +110,7 @@ const Index = () => {
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="w-4 h-4 fill-secondary text-secondary" />
               ))}
-              <span className="text-sm text-muted-foreground ml-2">Dipercaya oleh lembaga tahfidz</span>
+              <span className="text-sm text-muted-foreground ml-2">Dipercaya oleh lembaga tahfidz & tilawah</span>
             </div>
           </div>
         </section>
