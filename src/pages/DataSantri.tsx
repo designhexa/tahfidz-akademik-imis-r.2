@@ -339,18 +339,32 @@ export default function DataSantri() {
                   value={tilawahJuz}
                   onValueChange={(v) => {
                     setTilawahJuz(v);
+                    setTilawahSurah("");
                     setForm({ ...form, halamanSaatIni: 1 });
                   }}
                   label="Juz Tilawah"
                   order="asc"
                 />
                 {tilawahJuz && (
-                  <div className="space-y-2">
-                    <Label>Halaman dalam Juz (maks {getPageCountForJuz(Number(tilawahJuz))})</Label>
-                    <Input type="number" min={1} max={getPageCountForJuz(Number(tilawahJuz))}
-                      value={form.halamanSaatIni}
-                      onChange={(e) => setForm({ ...form, halamanSaatIni: Number(e.target.value) })} />
-                  </div>
+                  <>
+                    <div className="space-y-2">
+                      <Label>Surah</Label>
+                      <Select value={tilawahSurah} onValueChange={setTilawahSurah}>
+                        <SelectTrigger><SelectValue placeholder="Pilih surah" /></SelectTrigger>
+                        <SelectContent>
+                          {tilawahSurahList.map((s) => (
+                            <SelectItem key={s.number} value={String(s.number)}>{s.number}. {s.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Halaman dalam Juz (maks {getPageCountForJuz(Number(tilawahJuz))})</Label>
+                      <Input type="number" min={1} max={getPageCountForJuz(Number(tilawahJuz))}
+                        value={form.halamanSaatIni}
+                        onChange={(e) => setForm({ ...form, halamanSaatIni: Number(e.target.value) })} />
+                    </div>
+                  </>
                 )}
               </>
             )}
