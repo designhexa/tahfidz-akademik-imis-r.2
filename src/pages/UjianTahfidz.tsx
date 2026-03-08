@@ -53,6 +53,7 @@ interface Kelas {
 }
 
 const UjianTahfidz = () => {
+  const navigate = useNavigate();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedSantri, setSelectedSantri] = useState("");
   const [selectedAsatidz, setSelectedAsatidz] = useState("");
