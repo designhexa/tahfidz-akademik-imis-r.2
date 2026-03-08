@@ -15,7 +15,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Layout } from "@/components/Layout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -32,6 +32,7 @@ import {
   checkTargetStatus,
   CLASS_TARGETS,
 } from "@/lib/target-hafalan";
+import { getSantriByNama } from "@/lib/mock-data";
 
 import {
   BarChart,
@@ -49,6 +50,7 @@ import {
 import { Cell } from "recharts";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalSantri: 0,
     totalHalaqoh: 0,
@@ -272,7 +274,13 @@ export default function Dashboard() {
                     const target = CLASS_TARGETS[student.kelasNumber];
                     return (
                       <TableRow key={student.id}>
-                        <TableCell>{student.nama}</TableCell>
+                        <TableCell
+                          className="text-primary font-medium cursor-pointer hover:underline"
+                          onClick={() => {
+                            const s = getSantriByNama(student.nama);
+                            if (s) navigate(`/santri/${s.id}`);
+                          }}
+                        >{student.nama}</TableCell>
                         <TableCell>{student.kelas}</TableCell>
                         <TableCell>
                           Juz {target?.targetJuz}
@@ -307,7 +315,13 @@ export default function Dashboard() {
                 <TableBody>
                   {eligibleForTasmi.map((student) => (
                     <TableRow key={student.id}>
-                      <TableCell>{student.nama}</TableCell>
+                      <TableCell
+                        className="text-primary font-medium cursor-pointer hover:underline"
+                        onClick={() => {
+                          const s = getSantriByNama(student.nama);
+                          if (s) navigate(`/santri/${s.id}`);
+                        }}
+                      >{student.nama}</TableCell>
                       <TableCell>{student.kelas}</TableCell>
                       <TableCell>
                         <Badge>{student.jumlahJuzHafal} Juz</Badge>

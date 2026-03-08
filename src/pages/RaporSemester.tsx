@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ import {
 import { RaporTahfidzPreview } from "@/components/rapor/RaporTahfidzPreview";
 import { getMockRaporData, RaporTahfidz, getPredikat } from "@/lib/rapor-tahfidz-types";
 import { mockSantriProgress } from "@/lib/target-hafalan";
-import { MOCK_KELAS } from "@/lib/mock-data";
+import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 import html2canvas from "html2canvas";
 import { useToast } from "@/hooks/use-toast";
 
@@ -40,6 +41,7 @@ const mockSantriRapor = mockSantriProgress.map((santri, index) => ({
 }));
 
 const RaporSemester = () => {
+  const navigate = useNavigate();
   const [filterKelas, setFilterKelas] = useState("all");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterSemester, setFilterSemester] = useState("ganjil");
@@ -206,7 +208,13 @@ const RaporSemester = () => {
                       <TableRow key={santri.id}>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell className="font-mono text-xs">{santri.nis}</TableCell>
-                        <TableCell className="font-medium">{santri.nama}</TableCell>
+                        <TableCell
+                          className="font-medium text-primary cursor-pointer hover:underline"
+                          onClick={() => {
+                            const s = getSantriByNama(santri.nama);
+                            if (s) navigate(`/santri/${s.id}`);
+                          }}
+                        >{santri.nama}</TableCell>
                         <TableCell>{santri.kelas}</TableCell>
                         <TableCell>{santri.halaqoh}</TableCell>
                         <TableCell className="text-center">

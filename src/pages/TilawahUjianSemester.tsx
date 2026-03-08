@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Search, Plus, BookOpenCheck, RefreshCw, Shuffle } from "lucide-react";
 import { toast } from "sonner";
 import { MOCK_SANTRI_TILAWAH, TILAWATI_JILID, HALAMAN_PER_JILID } from "@/lib/tilawah-data";
-import { MOCK_HALAQOH, MOCK_KELAS } from "@/lib/mock-data";
+import { MOCK_HALAQOH, MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 
 interface SoalUjianSemester {
   id: number;
@@ -80,6 +81,7 @@ const MOCK_UJIAN_SEMESTER: HasilUjianSemester[] = [
 ];
 
 export default function TilawahUjianSemester() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
@@ -412,7 +414,13 @@ export default function TilawahUjianSemester() {
                 ) : filteredUjian.map((u, idx) => (
                   <TableRow key={u.id}>
                     <TableCell className="text-center">{idx + 1}</TableCell>
-                    <TableCell className="font-medium">{u.namaSantri}</TableCell>
+                    <TableCell
+                      className="font-medium text-primary cursor-pointer hover:underline"
+                      onClick={() => {
+                        const s = getSantriByNama(u.namaSantri);
+                        if (s) navigate(`/santri/${s.id}`);
+                      }}
+                    >{u.namaSantri}</TableCell>
                     <TableCell>{u.kelas}</TableCell>
                     <TableCell>Jilid {u.jilid}</TableCell>
                     <TableCell className="text-center">{u.nilaiKelancaran}</TableCell>

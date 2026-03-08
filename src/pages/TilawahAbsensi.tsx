@@ -1,3 +1,4 @@
+ import { useNavigate } from "react-router-dom";
  import { Layout } from "@/components/Layout";
  import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
  import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@
    getAspekPenilaianByJilid,
    SetoranTilawah 
  } from "@/lib/tilawah-data";
- import { MOCK_KELAS } from "@/lib/mock-data";
+ import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
  import { toast } from "sonner";
 
 type TilawahAbsensiProps = {
@@ -35,6 +36,7 @@ export default function TilawahAbsensi({
   initialSantriId,
   initialTanggal,
 }: TilawahAbsensiProps = {}) {
+  const navigate = useNavigate();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
   const onOpenChange = externalOnOpenChange ?? setInternalOpen;
@@ -381,7 +383,14 @@ export default function TilawahAbsensi({
                    filteredSetoran.map((setoran, index) => (
                      <TableRow key={setoran.id}>
                        <TableCell>{index + 1}</TableCell>
-                       <TableCell className="font-medium">{getSantriName(setoran.idSantri)}</TableCell>
+                       <TableCell
+                         className="font-medium text-primary cursor-pointer hover:underline"
+                         onClick={() => {
+                           const santriName = getSantriName(setoran.idSantri);
+                           const s = getSantriByNama(santriName);
+                           if (s) navigate(`/santri/${s.id}`);
+                         }}
+                       >{getSantriName(setoran.idSantri)}</TableCell>
                        <TableCell>{getSantriKelas(setoran.idSantri)}</TableCell>
                        <TableCell>{getSantriHalaqoh(setoran.idSantri)}</TableCell>
                        <TableCell>Jilid {setoran.jilid}</TableCell>

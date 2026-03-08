@@ -8,13 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Search, FileText, Download, Printer, Eye } from "lucide-react";
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { mockSantriAkademik } from "@/lib/rapor-akademik-types";
-import { MOCK_KELAS } from "@/lib/mock-data";
+import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 import { RaporDiniyahPreview } from "@/components/rapor/RaporDiniyahPreview";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
 
 export default function AkademikRaporDiniyah() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filterKelas, setFilterKelas] = useState("all");
   const [filterSemester, setFilterSemester] = useState("1");
@@ -129,7 +131,13 @@ export default function AkademikRaporDiniyah() {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell className="font-mono">{santri.nis}</TableCell>
                     <TableCell className="font-mono">{santri.nisn}</TableCell>
-                    <TableCell className="font-medium">{santri.nama}</TableCell>
+                    <TableCell
+                      className="font-medium text-primary cursor-pointer hover:underline"
+                      onClick={() => {
+                        const s = getSantriByNama(santri.nama);
+                        if (s) navigate(`/santri/${s.id}`);
+                      }}
+                    >{santri.nama}</TableCell>
                     <TableCell>{santri.kelas}</TableCell>
                     <TableCell>
                       <Badge 

@@ -4,7 +4,8 @@
  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
  import { Badge } from "@/components/ui/badge";
  import { Progress } from "@/components/ui/progress";
- import { useState } from "react";
+  import { useState } from "react";
+  import { useNavigate } from "react-router-dom";
  import { 
    MOCK_SANTRI_TILAWAH, 
    MOCK_SETORAN_TILAWAH,
@@ -12,9 +13,10 @@
    HALAMAN_PER_JILID,
    getProgressJilid
  } from "@/lib/tilawah-data";
- import { MOCK_KELAS } from "@/lib/mock-data";
+ import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 
 export default function TilawahLaporan() {
+  const navigate = useNavigate();
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
   const [filterPeriod, setFilterPeriod] = useState("bulan-ini");
@@ -135,7 +137,13 @@ export default function TilawahLaporan() {
                    filteredSantri.map((santri, index) => (
                      <TableRow key={santri.id}>
                        <TableCell>{index + 1}</TableCell>
-                       <TableCell className="font-medium">{santri.nama}</TableCell>
+                       <TableCell
+                         className="font-medium text-primary cursor-pointer hover:underline"
+                         onClick={() => {
+                           const s = getSantriByNama(santri.nama);
+                           if (s) navigate(`/santri/${s.id}`);
+                         }}
+                       >{santri.nama}</TableCell>
                        <TableCell>{santri.kelas}</TableCell>
                        <TableCell>{santri.halaqoh}</TableCell>
                        <TableCell>

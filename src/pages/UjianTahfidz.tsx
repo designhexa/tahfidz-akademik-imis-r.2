@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,7 +40,7 @@ import { JuzSelector } from "@/components/JuzSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { generateExamQuestions, formatQuestionDisplay, ExamQuestion, getHalamanPerJuz } from "@/lib/quran-exam-generator";
 import { toast } from "sonner";
-import { MOCK_KELAS } from "@/lib/mock-data";
+import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 
 interface Halaqoh {
   id: string;
@@ -52,6 +53,7 @@ interface Kelas {
 }
 
 const UjianTahfidz = () => {
+  const navigate = useNavigate();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedSantri, setSelectedSantri] = useState("");
   const [selectedAsatidz, setSelectedAsatidz] = useState("");
@@ -586,7 +588,13 @@ const UjianTahfidz = () => {
                   filteredUjianHistory.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell className="font-medium">{item.santri}</TableCell>
+                      <TableCell
+                        className="font-medium text-primary cursor-pointer hover:underline"
+                        onClick={() => {
+                          const s = getSantriByNama(item.santri);
+                          if (s) navigate(`/santri/${s.id}`);
+                        }}
+                      >{item.santri}</TableCell>
                       <TableCell>{item.tanggal}</TableCell>
                       <TableCell>{item.materi}</TableCell>
                       <TableCell className="text-center font-semibold">

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { type CalendarEntry } from "@/components/setoran/CalendarCell";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -67,7 +67,7 @@ import { TasmiForm1Juz } from "@/components/tasmi/TasmiForm1Juz";
 import { mockSantriProgress, getNextTasmiJuz } from "@/lib/target-hafalan";
 import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
 import { toast } from "sonner";
-import { MOCK_SANTRI, MOCK_HALAQOH, MOCK_KELAS, getHalaqohNama, getKelasNama } from "@/lib/mock-data";
+import { MOCK_SANTRI, MOCK_HALAQOH, MOCK_KELAS, getHalaqohNama, getKelasNama, getSantriByNama } from "@/lib/mock-data";
 
 const JUZ_ORDER = [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
 
@@ -111,6 +111,7 @@ interface PenilaianHalaman { halaman: number; pancingan: number; catatan: string
 interface PenilaianJuz { juz: number; halaman: PenilaianHalaman[]; catatanJuz: string; }
 
 const UjianTasmi = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isForm5JuzOpen, setIsForm5JuzOpen] = useState(false);
@@ -484,7 +485,13 @@ const UjianTasmi = () => {
                           return (
                             <TableRow key={student.id}>
                               <TableCell className="font-medium">{index + 1}</TableCell>
-                              <TableCell className="font-medium">{student.nama}</TableCell>
+                              <TableCell
+                                className="font-medium text-primary cursor-pointer hover:underline"
+                                onClick={() => {
+                                  const s = getSantriByNama(student.nama);
+                                  if (s) navigate(`/santri/${s.id}`);
+                                }}
+                              >{student.nama}</TableCell>
                               <TableCell>{student.kelas}</TableCell>
                               <TableCell className="text-center">
                                 <Badge variant="secondary">{student.jumlahJuzHafal} Juz</Badge>
@@ -583,7 +590,13 @@ const UjianTasmi = () => {
                             <TableCell className="whitespace-nowrap">
                               {new Date(ujian.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </TableCell>
-                            <TableCell className="font-medium">{ujian.santriNama}</TableCell>
+                            <TableCell
+                              className="font-medium text-primary cursor-pointer hover:underline"
+                              onClick={() => {
+                                const s = getSantriByNama(ujian.santriNama);
+                                if (s) navigate(`/santri/${s.id}`);
+                              }}
+                            >{ujian.santriNama}</TableCell>
                             <TableCell>{getJuzName(ujian.juz)}</TableCell>
                             <TableCell className="text-center font-bold">{ujian.nilaiTotal || "-"}</TableCell>
                             <TableCell className="text-center">

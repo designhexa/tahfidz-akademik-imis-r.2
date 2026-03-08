@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { LaporanCharts, CapaianKelasChart, CapaianHalaqohChart, CapaianSiswaChart } from "@/components/laporan/LaporanCharts";
 import { MOCK_KELAS } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
+import { getSantriByNama } from "@/lib/mock-data";
 import { getDrillsForJuz } from "@/lib/drill-data";
 import { 
   MOCK_SANTRI_TILAWAH, 
@@ -112,6 +114,7 @@ const mockSantri = [
 ];
 
 const LaporanHafalan = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("hafalan");
   const [filterPeriode, setFilterPeriode] = useState("bulanan");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
@@ -474,7 +477,13 @@ const LaporanHafalan = () => {
                       {filteredHarian.map((item, index) => (
                         <TableRow key={index}>
                           <TableCell>{item.tanggal}</TableCell>
-                          <TableCell className="font-medium">{item.santri}</TableCell>
+                          <TableCell
+                            className="font-medium text-primary cursor-pointer hover:underline"
+                            onClick={() => {
+                              const s = getSantriByNama(item.santri);
+                              if (s) navigate(`/santri/${s.id}`);
+                            }}
+                          >{item.santri}</TableCell>
                           <TableCell>
                             <Badge variant="outline" className="bg-primary/10 text-primary border-primary">Juz {item.juz}</Badge>
                           </TableCell>
@@ -673,7 +682,13 @@ const LaporanHafalan = () => {
                       {filteredDrill.map((item) => (
                         <TableRow key={item.id}>
                           <TableCell className="text-xs md:text-sm">{item.tanggal}</TableCell>
-                          <TableCell className="font-medium text-xs md:text-sm">{item.santri}</TableCell>
+                          <TableCell
+                            className="font-medium text-primary text-xs md:text-sm cursor-pointer hover:underline"
+                            onClick={() => {
+                              const s = getSantriByNama(item.santri);
+                              if (s) navigate(`/santri/${s.id}`);
+                            }}
+                          >{item.santri}</TableCell>
                           <TableCell>
                             <Badge className="bg-primary/10 text-primary border-primary text-[10px] md:text-xs">Juz {item.juz}</Badge>
                           </TableCell>
@@ -785,7 +800,13 @@ const LaporanHafalan = () => {
                       filteredTilawahSantri.map((santri, index) => (
                         <TableRow key={santri.id}>
                           <TableCell>{index + 1}</TableCell>
-                          <TableCell className="font-medium">{santri.nama}</TableCell>
+                          <TableCell
+                            className="font-medium text-primary cursor-pointer hover:underline"
+                            onClick={() => {
+                              const s = getSantriByNama(santri.nama);
+                              if (s) navigate(`/santri/${s.id}`);
+                            }}
+                          >{santri.nama}</TableCell>
                           <TableCell>{santri.kelas}</TableCell>
                           <TableCell>{santri.halaqoh}</TableCell>
                           <TableCell>

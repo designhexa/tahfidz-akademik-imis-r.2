@@ -1,3 +1,4 @@
+ import { useNavigate } from "react-router-dom";
  import { Layout } from "@/components/Layout";
  import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -6,6 +7,7 @@
  import { getDashboardStats, MOCK_SETORAN_TILAWAH, MOCK_SANTRI_TILAWAH, TILAWATI_JILID } from "@/lib/tilawah-data";
 
 export default function TilawahDashboard() {
+   const navigate = useNavigate();
    const stats = getDashboardStats();
  
    // Get santri name by id
@@ -135,7 +137,10 @@ export default function TilawahDashboard() {
                  <TableBody>
                    {MOCK_SETORAN_TILAWAH.map((setoran) => (
                      <TableRow key={setoran.id}>
-                       <TableCell className="font-medium">{getSantriName(setoran.idSantri)}</TableCell>
+                        <TableCell
+                          className="font-medium text-primary cursor-pointer hover:underline"
+                          onClick={() => navigate(`/santri/${setoran.idSantri}`)}
+                        >{getSantriName(setoran.idSantri)}</TableCell>
                        <TableCell>{getSantriKelas(setoran.idSantri)}</TableCell>
                        <TableCell>Jilid {setoran.jilid}</TableCell>
                        <TableCell>{setoran.halamanDari} - {setoran.halamanSampai}</TableCell>

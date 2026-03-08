@@ -157,31 +157,6 @@ export default function DetailSantri() {
           </Card>
         </div>
 
-        {/* Progress Tilawah */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Progres Tilawah Keseluruhan</CardTitle>
-            <CardDescription>Jilid {santri.jilidSaatIni} dari 6 • Halaman {totalHalamanSelesai} dari {totalHalamanAll}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Progress value={progressTilawah} className="h-3" />
-            <div className="flex justify-between mt-2">
-              {TILAWATI_JILID.map(j => (
-                <div key={j.jilid} className="text-center">
-                  <div className={`text-xs font-medium ${j.jilid <= santri.jilidSaatIni ? "text-primary" : "text-muted-foreground"}`}>
-                    J{j.jilid}
-                  </div>
-                  <div className={`w-3 h-3 rounded-full mx-auto mt-1 ${
-                    j.jilid < santri.jilidSaatIni ? "bg-primary" :
-                    j.jilid === santri.jilidSaatIni ? "bg-primary/50" :
-                    "bg-muted"
-                  }`} />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Tabs */}
         <Tabs defaultValue="tahfidz" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
@@ -249,6 +224,30 @@ export default function DetailSantri() {
 
           {/* Setoran Tilawah */}
           <TabsContent value="tilawah" className="space-y-4">
+            {/* Progress Tilawah */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">Progres Tilawah Keseluruhan</CardTitle>
+                <CardDescription>Jilid {santri.jilidSaatIni} dari 6 • Halaman {totalHalamanSelesai} dari {totalHalamanAll}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Progress value={progressTilawah} className="h-3" />
+                <div className="flex justify-between mt-2">
+                  {TILAWATI_JILID.map(j => (
+                    <div key={j.jilid} className="text-center">
+                      <div className={`text-xs font-medium ${j.jilid <= santri.jilidSaatIni ? "text-primary" : "text-muted-foreground"}`}>
+                        J{j.jilid}
+                      </div>
+                      <div className={`w-3 h-3 rounded-full mx-auto mt-1 ${
+                        j.jilid < santri.jilidSaatIni ? "bg-primary" :
+                        j.jilid === santri.jilidSaatIni ? "bg-primary/50" :
+                        "bg-muted"
+                      }`} />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
             <Card>
               <CardContent className="pt-4">
                 <Table>

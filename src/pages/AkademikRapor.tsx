@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,9 +21,10 @@ import { RaporAkademikPreview } from "@/components/rapor/RaporAkademikPreview";
 import { mockSantriAkademik, mockRaporAkademik, RaporAkademik } from "@/lib/rapor-akademik-types";
 import html2canvas from "html2canvas";
 import { useToast } from "@/hooks/use-toast";
-import { MOCK_KELAS } from "@/lib/mock-data";
+import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 
 export default function AkademikRapor() {
+  const navigate = useNavigate();
   const [filterKelas, setFilterKelas] = useState("all");
   const [filterSemester, setFilterSemester] = useState("ganjil");
   const [selectedSantri, setSelectedSantri] = useState<typeof mockSantriAkademik[0] | null>(null);
@@ -191,7 +193,13 @@ export default function AkademikRapor() {
                         <TableCell>{index + 1}</TableCell>
                         <TableCell className="font-mono text-xs">{santri.nis}</TableCell>
                         <TableCell className="font-mono text-xs">{santri.nisn}</TableCell>
-                        <TableCell className="font-medium">{santri.nama}</TableCell>
+                        <TableCell
+                          className="font-medium text-primary cursor-pointer hover:underline"
+                          onClick={() => {
+                            const s = getSantriByNama(santri.nama);
+                            if (s) navigate(`/santri/${s.id}`);
+                          }}
+                        >{santri.nama}</TableCell>
                         <TableCell>{santri.kelas}</TableCell>
                         <TableCell className="text-center">
                           {getStatusBadge(santri.statusNilai)}

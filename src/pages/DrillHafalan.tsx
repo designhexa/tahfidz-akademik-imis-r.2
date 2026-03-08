@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { JuzSelector } from "@/components/JuzSelector";
 import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
-import { MOCK_SANTRI, MOCK_HALAQOH } from "@/lib/mock-data";
+import { MOCK_SANTRI, MOCK_HALAQOH, getSantriByNama } from "@/lib/mock-data";
 import {
   getDrillsForJuz,
   DrillDefinition,
@@ -74,6 +75,7 @@ const mockDrillList = [
 ];
 
 const DrillHafalan = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filterJuz, setFilterJuz] = useState("all");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
@@ -785,7 +787,13 @@ const DrillHafalan = () => {
                     filteredDrill.map((item) => (
                       <TableRow key={item.id}>
                         <TableCell className="text-xs md:text-sm hidden md:table-cell">{item.tanggal}</TableCell>
-                        <TableCell className="font-medium text-xs md:text-sm max-w-[80px] md:max-w-none truncate">{item.santri}</TableCell>
+                        <TableCell
+                          className="font-medium text-primary text-xs md:text-sm max-w-[80px] md:max-w-none truncate cursor-pointer hover:underline"
+                          onClick={() => {
+                            const s = getSantriByNama(item.santri);
+                            if (s) navigate(`/santri/${s.id}`);
+                          }}
+                        >{item.santri}</TableCell>
                         <TableCell>
                           <Badge className="bg-primary/10 text-primary border-primary text-[10px] md:text-xs">{item.juz}</Badge>
                         </TableCell>
