@@ -73,7 +73,7 @@ export default function DataKelas() {
 
   const getWaliName = (id: string | null) => {
     if (!id) return "-";
-    return profiles.find(p => p.id === id)?.nama_lengkap || "-";
+    return ustadzList.find(u => u.id === id)?.nama || "-";
   };
 
   const handleSubmit = async () => {
