@@ -69,6 +69,10 @@ export interface MockSantri {
   // Tilawah
   jilidSaatIni: number;
   halamanSaatIni: number;
+  // Hafalan
+  posisiHafalanJuz: number;
+  posisiHafalanSurah: string;
+  pencapaianHafalan: string; // e.g. "1 Juz" or "2.5 Juz"
 }
 
 export const MOCK_SANTRI: MockSantri[] = [
