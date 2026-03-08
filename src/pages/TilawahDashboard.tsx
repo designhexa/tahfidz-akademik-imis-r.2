@@ -7,6 +7,7 @@
  import { getDashboardStats, MOCK_SETORAN_TILAWAH, MOCK_SANTRI_TILAWAH, TILAWATI_JILID } from "@/lib/tilawah-data";
 
 export default function TilawahDashboard() {
+   const navigate = useNavigate();
    const stats = getDashboardStats();
  
    // Get santri name by id
