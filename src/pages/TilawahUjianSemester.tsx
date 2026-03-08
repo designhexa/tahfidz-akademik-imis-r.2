@@ -414,7 +414,13 @@ export default function TilawahUjianSemester() {
                 ) : filteredUjian.map((u, idx) => (
                   <TableRow key={u.id}>
                     <TableCell className="text-center">{idx + 1}</TableCell>
-                    <TableCell className="font-medium">{u.namaSantri}</TableCell>
+                    <TableCell
+                      className="font-medium text-primary cursor-pointer hover:underline"
+                      onClick={() => {
+                        const s = getSantriByNama(u.namaSantri);
+                        if (s) navigate(`/santri/${s.id}`);
+                      }}
+                    >{u.namaSantri}</TableCell>
                     <TableCell>{u.kelas}</TableCell>
                     <TableCell>Jilid {u.jilid}</TableCell>
                     <TableCell className="text-center">{u.nilaiKelancaran}</TableCell>
