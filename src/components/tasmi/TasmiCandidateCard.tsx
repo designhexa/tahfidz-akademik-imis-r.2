@@ -40,10 +40,21 @@ export const TasmiCandidateCard = ({
     "\"Sesungguhnya Allah mengangkat dengan kitab Al-Qur'an ini beberapa kaum dan juga dengan kitab Al-Qur'an ini Allah merendahkan yang lainnya.\"\n\n(HR. Muslim)"
   );
 
-  const zebraColors = ["#FFFFFF", "#F0FDF4"];
+  const colorSchemes: Record<string, [string, string]> = {
+    "hijau": ["#FFFFFF", "#F0FDF4"],
+    "biru": ["#FFFFFF", "#F0F9FF"],
+    "kuning": ["#FFFFFF", "#FFFBEB"],
+    "ungu": ["#FFFFFF", "#FAF5FF"],
+    "merah-muda": ["#FFFFFF", "#FDF2F8"],
+    "oranye": ["#FFFFFF", "#FFF7ED"],
+    "abu-abu": ["#FFFFFF", "#F3F4F6"],
+  };
+
+  const [selectedColor, setSelectedColor] = useState("hijau");
 
   const getRowColor = (index: number) => {
-    return zebraColors[index % 2];
+    const scheme = colorSchemes[selectedColor] || colorSchemes["hijau"];
+    return scheme[index % 2];
   };
 
   const handleDownloadImage = async () => {
