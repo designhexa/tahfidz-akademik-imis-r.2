@@ -101,6 +101,7 @@ const UjianTahfidz = () => {
   // Filter riwayat
   const [riwayatFilterHalaqoh, setRiwayatFilterHalaqoh] = useState("all");
   const [riwayatFilterKelas, setRiwayatFilterKelas] = useState("all");
+  const [riwayatSearch, setRiwayatSearch] = useState("");
 
   const ujianHistory = [
     { id: "1", santri: "Ahmad Fauzi", halaqoh: "Halaqoh A", kelas: "Paket A Kelas 6", tanggal: "2024-01-15", materi: "Juz 1-2", nilaiTotal: 85, status: "Lulus" },
@@ -108,9 +109,10 @@ const UjianTahfidz = () => {
   ];
 
   const filteredUjianHistory = ujianHistory.filter((item) => {
+    const matchSearch = item.santri.toLowerCase().includes(riwayatSearch.toLowerCase());
     const matchHalaqoh = riwayatFilterHalaqoh === "all" || item.halaqoh === riwayatFilterHalaqoh;
     const matchKelas = riwayatFilterKelas === "all" || item.kelas === riwayatFilterKelas;
-    return matchHalaqoh && matchKelas;
+    return matchSearch && matchHalaqoh && matchKelas;
   });
 
   const filteredSantriList = santriList.filter((s) => {
