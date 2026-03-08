@@ -57,7 +57,7 @@ const mockDrillHafalan = [
 const DrillLevelIndicator = ({ juz, currentLevel }: { juz: number; currentLevel: number }) => {
   const totalLevels = getDrillsForJuz(juz).length || 7;
   return (
-    <div className="flex flex-wrap gap-0.5">
+    <div className="grid grid-cols-4 gap-0.5 w-fit">
       {Array.from({ length: totalLevels }, (_, i) => {
         const level = i + 1;
         const isCurrent = level === currentLevel;
