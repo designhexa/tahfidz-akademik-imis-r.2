@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Users, ClipboardCheck, BarChart3, Star, ChevronRight, Sparkles } from "lucide-react";
+import { BookOpen, Users, ClipboardCheck, BarChart3, Star, ChevronRight, Sparkles, Headphones, FileText } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
