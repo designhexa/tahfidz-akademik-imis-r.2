@@ -98,10 +98,20 @@ const UjianTahfidz = () => {
     { id: "3", nama: "Ustadzah Fatimah" },
   ];
 
+  // Filter riwayat
+  const [riwayatFilterHalaqoh, setRiwayatFilterHalaqoh] = useState("all");
+  const [riwayatFilterKelas, setRiwayatFilterKelas] = useState("all");
+
   const ujianHistory = [
-    { id: "1", santri: "Ahmad Fauzi", tanggal: "2024-01-15", materi: "Juz 1-2", nilaiTotal: 85, status: "Lulus" },
-    { id: "2", santri: "Muhammad Rizki", tanggal: "2024-01-14", materi: "Juz 1-2", nilaiTotal: 65, status: "Mengulang" },
+    { id: "1", santri: "Ahmad Fauzi", halaqoh: "Halaqoh A", kelas: "Paket A Kelas 6", tanggal: "2024-01-15", materi: "Juz 1-2", nilaiTotal: 85, status: "Lulus" },
+    { id: "2", santri: "Muhammad Rizki", halaqoh: "Halaqoh A", kelas: "Paket A Kelas 6", tanggal: "2024-01-14", materi: "Juz 1-2", nilaiTotal: 65, status: "Mengulang" },
   ];
+
+  const filteredUjianHistory = ujianHistory.filter((item) => {
+    const matchHalaqoh = riwayatFilterHalaqoh === "all" || item.halaqoh === riwayatFilterHalaqoh;
+    const matchKelas = riwayatFilterKelas === "all" || item.kelas === riwayatFilterKelas;
+    return matchHalaqoh && matchKelas;
+  });
 
   const filteredSantriList = santriList.filter((s) => {
     const matchHalaqoh = filterHalaqoh === "all" || s.halaqoh === filterHalaqoh;
