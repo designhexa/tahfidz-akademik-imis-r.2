@@ -682,7 +682,13 @@ const LaporanHafalan = () => {
                       {filteredDrill.map((item) => (
                         <TableRow key={item.id}>
                           <TableCell className="text-xs md:text-sm">{item.tanggal}</TableCell>
-                          <TableCell className="font-medium text-xs md:text-sm">{item.santri}</TableCell>
+                          <TableCell
+                            className="font-medium text-primary text-xs md:text-sm cursor-pointer hover:underline"
+                            onClick={() => {
+                              const s = getSantriByNama(item.santri);
+                              if (s) navigate(`/santri/${s.id}`);
+                            }}
+                          >{item.santri}</TableCell>
                           <TableCell>
                             <Badge className="bg-primary/10 text-primary border-primary text-[10px] md:text-xs">Juz {item.juz}</Badge>
                           </TableCell>
