@@ -597,7 +597,7 @@ const LaporanHafalan = () => {
                 <CardDescription>Progress drill hafalan per santri</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <Select value={drillFilterHalaqoh} onValueChange={setDrillFilterHalaqoh}>
                     <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Halaqoh" /></SelectTrigger>
                     <SelectContent>
@@ -612,8 +612,15 @@ const LaporanHafalan = () => {
                       {MOCK_KELAS.map(k => <SelectItem key={k.id} value={k.nama_kelas}>{k.nama_kelas}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  <Select value={drillFilterSantri} onValueChange={setDrillFilterSantri}>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Santri" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Santri</SelectItem>
+                      {uniqueDrillSantri.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                   <Select value={drillFilterStatus} onValueChange={setDrillFilterStatus}>
-                    <SelectTrigger className="text-xs md:text-sm col-span-2 md:col-span-1"><SelectValue placeholder="Status" /></SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Semua Status</SelectItem>
                       <SelectItem value="lulus">Lulus Tasmi'</SelectItem>
