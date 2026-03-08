@@ -230,6 +230,7 @@ export const TilawahSetoranForm = ({
                     setSurah(""); setAyatDari(""); setAyatSampai("");
                     setHalamanDari(""); setHalamanSampai(""); setInputMode("surah");
                   }}
+                  order="asc"
                   required
                 />
 
