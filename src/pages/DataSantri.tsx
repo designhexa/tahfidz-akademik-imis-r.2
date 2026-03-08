@@ -200,7 +200,7 @@ export default function DataSantri() {
                   <TableHead className="text-muted-foreground">Kelas</TableHead>
                   <TableHead className="text-muted-foreground">Posisi Tilawah</TableHead>
                   <TableHead className="text-muted-foreground">Posisi Hafalan</TableHead>
-                  <TableHead className="text-muted-foreground">Pencapaian</TableHead>
+                  
                   <TableHead className="text-muted-foreground">Status</TableHead>
                   <TableHead className="text-muted-foreground">Aksi</TableHead>
                 </TableRow>
