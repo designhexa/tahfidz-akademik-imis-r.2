@@ -22,7 +22,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { JuzSelector } from "@/components/JuzSelector";
 import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
-import { MOCK_SANTRI, MOCK_HALAQOH } from "@/lib/mock-data";
+import { MOCK_SANTRI, MOCK_HALAQOH, getSantriByNama } from "@/lib/mock-data";
 import {
   getDrillsForJuz,
   DrillDefinition,
