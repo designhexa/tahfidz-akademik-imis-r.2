@@ -82,7 +82,7 @@ const Index = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent border border-border text-sm text-accent-foreground">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Sistem Manajemen Tahfidz Modern</span>
+              <span>Sistem Manajemen Tahfidz & Tilawah Modern</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.1] tracking-tight">
