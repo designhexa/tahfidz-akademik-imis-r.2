@@ -18,6 +18,7 @@ import {
   User,
   Target,
   PenTool,
+  Globe,
 } from "lucide-react";
 import {
   Sidebar,
@@ -44,7 +45,7 @@ type MenuItem = {
 };
 
 const dashboardItems: MenuItem[] = [
-  { title: "Dashboard", url: "/", icon: BookOpen },
+  { title: "Dashboard", url: "/dashboard", icon: BookOpen },
 ];
 
 const setoranItems: MenuItem[] = [
@@ -218,8 +219,8 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive("/")}>
-                  <NavLink to="/">
+                <SidebarMenuButton asChild isActive={isActive("/dashboard")}>
+                  <NavLink to="/dashboard">
                     <BookOpen className="w-4 h-4" />
                     <span>Dashboard</span>
                   </NavLink>
@@ -275,6 +276,14 @@ export function AppSidebar() {
                   <NavLink to="/pengaturan">
                     <Settings className="w-4 h-4" />
                     <span>Pengaturan</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive("/")}>
+                  <NavLink to="/">
+                    <Globe className="w-4 h-4" />
+                    <span>Landing Page</span>
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
