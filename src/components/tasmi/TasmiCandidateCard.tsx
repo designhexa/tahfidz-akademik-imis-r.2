@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Download, Image, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -39,10 +40,21 @@ export const TasmiCandidateCard = ({
     "\"Sesungguhnya Allah mengangkat dengan kitab Al-Qur'an ini beberapa kaum dan juga dengan kitab Al-Qur'an ini Allah merendahkan yang lainnya.\"\n\n(HR. Muslim)"
   );
 
-  const zebraColors = ["#FFFFFF", "#F0FDF4"];
+  const colorSchemes: Record<string, [string, string]> = {
+    "hijau": ["#FFFFFF", "#F0FDF4"],
+    "biru": ["#FFFFFF", "#F0F9FF"],
+    "kuning": ["#FFFFFF", "#FFFBEB"],
+    "ungu": ["#FFFFFF", "#FAF5FF"],
+    "merah-muda": ["#FFFFFF", "#FDF2F8"],
+    "oranye": ["#FFFFFF", "#FFF7ED"],
+    "abu-abu": ["#FFFFFF", "#F3F4F6"],
+  };
+
+  const [selectedColor, setSelectedColor] = useState("hijau");
 
   const getRowColor = (index: number) => {
-    return zebraColors[index % 2];
+    const scheme = colorSchemes[selectedColor] || colorSchemes["hijau"];
+    return scheme[index % 2];
   };
 
   const handleDownloadImage = async () => {
@@ -110,6 +122,25 @@ export const TasmiCandidateCard = ({
               placeholder="Masukkan caption atau quote hafalan..."
               rows={4}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Warna Baris Tabel</Label>
+            <Select value={selectedColor} onValueChange={setSelectedColor}>
+              <SelectTrigger>
+                <SelectValue placeholder="Pilih warna" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.keys(colorSchemes).map((key) => (
+                  <SelectItem key={key} value={key}>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded border" style={{ backgroundColor: colorSchemes[key][1] }} />
+                      <span className="capitalize">{key.replace("-", " ")}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <Button
