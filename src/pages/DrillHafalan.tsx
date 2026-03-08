@@ -741,7 +741,7 @@ const DrillHafalan = () => {
                     <TableHead className="text-xs md:text-sm">Tanggal</TableHead>
                     <TableHead className="text-xs md:text-sm">Santri</TableHead>
                     <TableHead className="text-xs md:text-sm">Juz</TableHead>
-                    <TableHead className="text-xs md:text-sm">Level</TableHead>
+                    <TableHead className="text-xs md:text-sm">Level Drill</TableHead>
                     <TableHead className="text-xs md:text-sm hidden md:table-cell">Materi</TableHead>
                     <TableHead className="text-xs md:text-sm">Nilai</TableHead>
                     <TableHead className="text-xs md:text-sm">Status</TableHead>
