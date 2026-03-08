@@ -143,6 +143,7 @@ export default function TilawahUjianSemester() {
       idSantri: selectedSantri,
       namaSantri: selectedSantriData?.nama || "",
       kelas: selectedSantriData?.kelas || "",
+      halaqoh: selectedSantriData?.halaqoh || "",
       jilid: selectedSantriData?.jilidSaatIni || 1,
       halamanTerakhir: selectedSantriData?.halamanSaatIni || 1,
       soal: generatedSoal,
