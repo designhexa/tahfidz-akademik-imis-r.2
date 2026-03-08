@@ -194,8 +194,16 @@ const SetoranHafalan = () => {
         if (subType === "drill") {
           setOpenDrill(true);
         } else if (subType === "tasmi") {
+          if (!registeredCandidates.includes(selectedSantri)) {
+            toast.warning("Santri belum terdaftar sebagai peserta Tasmi'. Daftarkan terlebih dahulu di halaman Ujian Tasmi'.");
+            return;
+          }
           setOpenTasmi(true);
         } else if (subType === "tasmi5juz") {
+          if (!registeredCandidates.includes(selectedSantri)) {
+            toast.warning("Santri belum terdaftar sebagai peserta Tasmi'. Daftarkan terlebih dahulu di halaman Ujian Tasmi'.");
+            return;
+          }
           setOpenTasmi5Juz(true);
         } else {
           setOpenEntry(true);
