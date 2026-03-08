@@ -73,6 +73,10 @@ export default function DataSantri() {
   const [form, setForm] = useState(INITIAL_FORM);
   const [tilawahJuz, setTilawahJuz] = useState("");
   const [hafalanJuz, setHafalanJuz] = useState("30");
+  const [hafalanInputMode, setHafalanInputMode] = useState<"surah" | "halaman">("surah");
+  const [hafalanSurah, setHafalanSurah] = useState("");
+  const [hafalanAyat, setHafalanAyat] = useState("");
+  const [hafalanHalaman, setHafalanHalaman] = useState("");
   const [, forceUpdate] = useState(0);
 
   // Surah list for tilawah (Al-Qur'an level)
@@ -84,8 +88,14 @@ export default function DataSantri() {
   // Surah list for hafalan
   const hafalanSurahList = useMemo(() => {
     if (!hafalanJuz) return [];
-    return getSurahsByJuz(Number(hafalanJuz));
+    return getSurahListByJuz(Number(hafalanJuz));
   }, [hafalanJuz]);
+
+  const selectedHafalanSurah = useMemo(() => {
+    return hafalanSurahList.find(s => String(s.number) === hafalanSurah);
+  }, [hafalanSurah, hafalanSurahList]);
+
+  const hafalanMaxHalaman = hafalanJuz ? getPageCountForJuz(Number(hafalanJuz)) : 20;
 
   const filteredSantri = MOCK_SANTRI.filter((santri) => {
     const matchSearch = santri.nama.toLowerCase().includes(search.toLowerCase()) ||
@@ -99,6 +109,10 @@ export default function DataSantri() {
     setForm(INITIAL_FORM);
     setTilawahJuz("");
     setHafalanJuz("30");
+    setHafalanInputMode("surah");
+    setHafalanSurah("");
+    setHafalanAyat("");
+    setHafalanHalaman("");
     setModalMode("add");
     setEditId(null);
     setShowModal(true);
@@ -109,6 +123,10 @@ export default function DataSantri() {
     setForm(rest);
     setTilawahJuz(santri.jilidSaatIni >= 7 ? String(santri.halamanSaatIni || 1) : "");
     setHafalanJuz(String(santri.posisiHafalanJuz));
+    setHafalanInputMode("surah");
+    setHafalanSurah("");
+    setHafalanAyat("");
+    setHafalanHalaman("");
     setModalMode("edit");
     setEditId(id);
     setShowModal(true);
@@ -182,7 +200,7 @@ export default function DataSantri() {
                   <TableHead className="text-muted-foreground">Kelas</TableHead>
                   <TableHead className="text-muted-foreground">Posisi Tilawah</TableHead>
                   <TableHead className="text-muted-foreground">Posisi Hafalan</TableHead>
-                  <TableHead className="text-muted-foreground">Pencapaian</TableHead>
+                  
                   <TableHead className="text-muted-foreground">Status</TableHead>
                   <TableHead className="text-muted-foreground">Aksi</TableHead>
                 </TableRow>
@@ -199,9 +217,6 @@ export default function DataSantri() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs">Juz {santri.posisiHafalanJuz} - {santri.posisiHafalanSurah || "-"}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary" className="text-xs font-semibold">{santri.pencapaianHafalan}</Badge>
                     </TableCell>
                     <TableCell>
                       <Badge variant="default" className="bg-primary/10 text-primary hover:bg-primary/20">{santri.status}</Badge>
@@ -345,28 +360,71 @@ export default function DataSantri() {
               value={hafalanJuz}
               onValueChange={(v) => {
                 setHafalanJuz(v);
+                setHafalanSurah("");
+                setHafalanAyat("");
+                setHafalanHalaman("");
+                setHafalanInputMode("surah");
                 setForm({ ...form, posisiHafalanJuz: Number(v), posisiHafalanSurah: "" });
               }}
               label="Juz Hafalan"
               order="desc"
             />
+
             {hafalanJuz && (
-              <div className="space-y-2">
-                <Label>Surah Terakhir Dihafal</Label>
-                <Select value={form.posisiHafalanSurah} onValueChange={(v) => setForm({ ...form, posisiHafalanSurah: v })}>
-                  <SelectTrigger><SelectValue placeholder="Pilih surah" /></SelectTrigger>
-                  <SelectContent>
-                    {hafalanSurahList.map((s) => (
-                      <SelectItem key={s.number} value={s.name}>{s.number}. {s.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <>
+                <div className="flex gap-2">
+                  <Button type="button" size="sm" variant={hafalanInputMode === "surah" ? "default" : "outline"} className="h-7 text-xs flex-1"
+                    onClick={() => { setHafalanInputMode("surah"); setHafalanHalaman(""); }}>
+                    Pilih Surah & Ayat
+                  </Button>
+                  <Button type="button" size="sm" variant={hafalanInputMode === "halaman" ? "default" : "outline"} className="h-7 text-xs flex-1"
+                    onClick={() => { setHafalanInputMode("halaman"); setHafalanSurah(""); setHafalanAyat(""); }}>
+                    Pilih Halaman
+                  </Button>
+                </div>
+
+                {/* Mode Surah */}
+                {hafalanInputMode === "surah" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label>Surah Terakhir Dihafal</Label>
+                      <Select value={hafalanSurah} onValueChange={(v) => {
+                        setHafalanSurah(v);
+                        setHafalanAyat("1");
+                        const s = hafalanSurahList.find(s => String(s.number) === v);
+                        setForm({ ...form, posisiHafalanSurah: s?.name || "" });
+                      }}>
+                        <SelectTrigger><SelectValue placeholder="Pilih surah" /></SelectTrigger>
+                        <SelectContent>
+                          {hafalanSurahList.map((s) => (
+                            <SelectItem key={s.number} value={String(s.number)}>{s.number}. {s.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {selectedHafalanSurah && (
+                      <div className="space-y-2">
+                        <Label className="text-xs">Sampai Ayat ke</Label>
+                        <Input type="number" min={1} max={selectedHafalanSurah.numberOfAyahs}
+                          value={hafalanAyat}
+                          onChange={(e) => setHafalanAyat(e.target.value)}
+                          placeholder={`1 - ${selectedHafalanSurah.numberOfAyahs}`} />
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Mode Halaman */}
+                {hafalanInputMode === "halaman" && (
+                  <div className="space-y-2">
+                    <Label>Halaman dalam Juz (maks {hafalanMaxHalaman})</Label>
+                    <Input type="number" min={1} max={hafalanMaxHalaman}
+                      value={hafalanHalaman}
+                      onChange={(e) => setHafalanHalaman(e.target.value)} />
+                  </div>
+                )}
+              </>
             )}
-            <div className="space-y-2">
-              <Label>Pencapaian Hafalan</Label>
-              <Input value={form.pencapaianHafalan} onChange={(e) => setForm({ ...form, pencapaianHafalan: e.target.value })} placeholder="cth: 1.5 Juz" />
-            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowModal(false)}>Batal</Button>
