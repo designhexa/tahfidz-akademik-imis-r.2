@@ -8,6 +8,7 @@ import {
   User,
   ClipboardList,
   Award,
+  Target,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
