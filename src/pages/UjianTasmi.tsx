@@ -374,11 +374,18 @@ const UjianTasmi = () => {
                 <div className="space-y-6 py-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Santri</Label>
+                      <Label>Santri (Terdaftar)</Label>
                       <Select value={selectedSantri5Juz} onValueChange={setSelectedSantri5Juz}>
-                        <SelectTrigger><SelectValue placeholder="Pilih santri" /></SelectTrigger>
-                        <SelectContent>{dummySantri.map((s) => (<SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>))}</SelectContent>
+                        <SelectTrigger><SelectValue placeholder="Pilih santri terdaftar" /></SelectTrigger>
+                        <SelectContent>
+                          {registeredSantriForExam.length === 0 ? (
+                            <SelectItem value="__none" disabled>Belum ada santri terdaftar</SelectItem>
+                          ) : registeredSantriForExam.map((s) => (
+                            <SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>
+                          ))}
+                        </SelectContent>
                       </Select>
+                    </div>
                     </div>
                     <div className="space-y-2">
                       <Label>Tanggal Ujian</Label>
