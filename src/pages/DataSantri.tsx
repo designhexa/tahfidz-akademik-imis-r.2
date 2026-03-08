@@ -267,9 +267,13 @@ export default function DataSantri() {
             <DialogTitle>{modalMode === "edit" ? "Edit Data Santri" : "Tambah Santri Baru"}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label>Nama Santri *</Label>
+              <Input value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} placeholder="Nama lengkap santri" />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>NIS *</Label>
+                <Label>NIS</Label>
                 <Input value={form.nis} onChange={(e) => setForm({ ...form, nis: e.target.value })} placeholder="Masukkan NIS" />
               </div>
               <div className="space-y-2">
@@ -277,13 +281,9 @@ export default function DataSantri() {
                 <Input value={form.nisn} onChange={(e) => setForm({ ...form, nisn: e.target.value })} placeholder="Masukkan NISN" />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label>Nama Santri *</Label>
-              <Input value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} placeholder="Nama lengkap santri" />
-            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Kelas *</Label>
+                <Label>Kelas</Label>
                 <Select value={form.idKelas} onValueChange={(v) => setForm({ ...form, idKelas: v })}>
                   <SelectTrigger><SelectValue placeholder="Pilih Kelas" /></SelectTrigger>
                   <SelectContent>
@@ -292,7 +292,7 @@ export default function DataSantri() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Halaqoh *</Label>
+                <Label>Halaqoh</Label>
                 <Select value={form.idHalaqoh} onValueChange={(v) => setForm({ ...form, idHalaqoh: v })}>
                   <SelectTrigger><SelectValue placeholder="Pilih Halaqoh" /></SelectTrigger>
                   <SelectContent>
