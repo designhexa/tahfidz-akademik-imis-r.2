@@ -39,19 +39,10 @@ export const TasmiCandidateCard = ({
     "\"Sesungguhnya Allah mengangkat dengan kitab Al-Qur'an ini beberapa kaum dan juga dengan kitab Al-Qur'an ini Allah merendahkan yang lainnya.\"\n\n(HR. Muslim)"
   );
 
-  const pastelColors = [
-    "#F0F9FF", // Blue
-    "#F0FDF4", // Green
-    "#FFF7ED", // Orange
-    "#FEF2F2", // Red
-    "#FAF5FF", // Purple
-    "#FFFBEB", // Amber
-    "#F5F3FF", // Violet
-    "#FDF2F8", // Pink
-  ];
+  const zebraColors = ["#FFFFFF", "#F0FDF4"];
 
-  const getRandomPastel = (index: number) => {
-    return pastelColors[index % pastelColors.length];
+  const getRowColor = (index: number) => {
+    return zebraColors[index % 2];
   };
 
   const handleDownloadImage = async () => {
