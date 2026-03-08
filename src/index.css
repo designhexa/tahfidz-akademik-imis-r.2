@@ -36,9 +36,9 @@ All colors MUST be HSL.
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 160 20% 88%;
-    --input: 160 20% 88%;
-    --ring: 160 60% 45%;
+    --border: 121 15% 88%;
+    --input: 121 15% 88%;
+    --ring: 121 100% 17%;
     --radius: 0.75rem;
     
     /* Sidebar Islamic theme */
