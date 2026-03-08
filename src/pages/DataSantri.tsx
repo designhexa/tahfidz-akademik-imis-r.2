@@ -71,7 +71,21 @@ export default function DataSantri() {
   const [modalMode, setModalMode] = useState<ModalMode>("add");
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(INITIAL_FORM);
+  const [tilawahJuz, setTilawahJuz] = useState("");
+  const [hafalanJuz, setHafalanJuz] = useState("30");
   const [, forceUpdate] = useState(0);
+
+  // Surah list for tilawah (Al-Qur'an level)
+  const tilawahSurahList = useMemo(() => {
+    if (!tilawahJuz) return [];
+    return getSurahListByJuz(Number(tilawahJuz));
+  }, [tilawahJuz]);
+
+  // Surah list for hafalan
+  const hafalanSurahList = useMemo(() => {
+    if (!hafalanJuz) return [];
+    return getSurahsByJuz(Number(hafalanJuz));
+  }, [hafalanJuz]);
 
   const filteredSantri = MOCK_SANTRI.filter((santri) => {
     const matchSearch = santri.nama.toLowerCase().includes(search.toLowerCase()) ||
