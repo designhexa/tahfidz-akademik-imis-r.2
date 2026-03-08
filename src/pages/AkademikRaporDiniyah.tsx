@@ -10,7 +10,7 @@ import { Search, FileText, Download, Printer, Eye } from "lucide-react";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { mockSantriAkademik } from "@/lib/rapor-akademik-types";
-import { MOCK_KELAS } from "@/lib/mock-data";
+import { MOCK_KELAS, getSantriByNama } from "@/lib/mock-data";
 import { RaporDiniyahPreview } from "@/components/rapor/RaporDiniyahPreview";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
