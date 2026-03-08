@@ -54,8 +54,10 @@ export const TasmiCandidateCard = ({
 
   const getRowColor = (index: number) => {
     const scheme = colorSchemes[selectedColor] || colorSchemes["hijau"];
-    return scheme[index % 2];
+    return scheme.rows[index % 2];
   };
+
+  const currentScheme = colorSchemes[selectedColor] || colorSchemes["hijau"];
 
   const handleDownloadImage = async () => {
     if (!printRef.current) return;
