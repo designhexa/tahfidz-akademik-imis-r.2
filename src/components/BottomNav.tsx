@@ -27,7 +27,7 @@ export function BottomNav() {
   const [pengaturanOpen, setPengaturanOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
-  const isLaporanActive = location.pathname === "/laporan" || location.pathname === "/rapor";
+  const isLaporanActive = location.pathname === "/laporan" || location.pathname === "/rapor" || location.pathname === "/drill";
   const isUjianActive = ["/ujian-tasmi", "/ujian-tahfidz", "/tilawah/ujian", "/tilawah/ujian-semester"].some(
     (p) => location.pathname.startsWith(p)
   );
