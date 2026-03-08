@@ -98,10 +98,20 @@ const UjianTahfidz = () => {
     { id: "3", nama: "Ustadzah Fatimah" },
   ];
 
+  // Filter riwayat
+  const [riwayatFilterHalaqoh, setRiwayatFilterHalaqoh] = useState("all");
+  const [riwayatFilterKelas, setRiwayatFilterKelas] = useState("all");
+
   const ujianHistory = [
-    { id: "1", santri: "Ahmad Fauzi", tanggal: "2024-01-15", materi: "Juz 1-2", nilaiTotal: 85, status: "Lulus" },
-    { id: "2", santri: "Muhammad Rizki", tanggal: "2024-01-14", materi: "Juz 1-2", nilaiTotal: 65, status: "Mengulang" },
+    { id: "1", santri: "Ahmad Fauzi", halaqoh: "Halaqoh A", kelas: "Paket A Kelas 6", tanggal: "2024-01-15", materi: "Juz 1-2", nilaiTotal: 85, status: "Lulus" },
+    { id: "2", santri: "Muhammad Rizki", halaqoh: "Halaqoh A", kelas: "Paket A Kelas 6", tanggal: "2024-01-14", materi: "Juz 1-2", nilaiTotal: 65, status: "Mengulang" },
   ];
+
+  const filteredUjianHistory = ujianHistory.filter((item) => {
+    const matchHalaqoh = riwayatFilterHalaqoh === "all" || item.halaqoh === riwayatFilterHalaqoh;
+    const matchKelas = riwayatFilterKelas === "all" || item.kelas === riwayatFilterKelas;
+    return matchHalaqoh && matchKelas;
+  });
 
   const filteredSantriList = santriList.filter((s) => {
     const matchHalaqoh = filterHalaqoh === "all" || s.halaqoh === filterHalaqoh;
@@ -518,6 +528,32 @@ const UjianTahfidz = () => {
             <CardTitle>Riwayat Ujian Tahfidz</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="space-y-1">
+                <Label className="text-xs">Filter Halaqoh</Label>
+                <Select value={riwayatFilterHalaqoh} onValueChange={setRiwayatFilterHalaqoh}>
+                  <SelectTrigger><SelectValue placeholder="Semua Halaqoh" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Halaqoh</SelectItem>
+                    {halaqohList.map((h) => (
+                      <SelectItem key={h.id} value={h.nama_halaqoh}>{h.nama_halaqoh}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Filter Kelas</Label>
+                <Select value={riwayatFilterKelas} onValueChange={setRiwayatFilterKelas}>
+                  <SelectTrigger><SelectValue placeholder="Semua Kelas" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Kelas</SelectItem>
+                    {kelasList.map((k) => (
+                      <SelectItem key={k.id} value={k.nama_kelas}>{k.nama_kelas}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <div className="rounded-md border">
               <Table>
               <TableHeader>
@@ -532,14 +568,14 @@ const UjianTahfidz = () => {
               </TableHeader>
 
               <TableBody>
-                {ujianHistory.length === 0 ? (
+                {filteredUjianHistory.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                       Belum ada riwayat ujian
                     </TableCell>
                   </TableRow>
                 ) : (
-                  ujianHistory.map((item, index) => (
+                  filteredUjianHistory.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell className="font-medium">{item.santri}</TableCell>

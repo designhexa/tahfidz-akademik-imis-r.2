@@ -25,6 +25,7 @@ interface HasilUjianSemester {
   idSantri: string;
   namaSantri: string;
   kelas: string;
+  halaqoh: string;
   jilid: number;
   halamanTerakhir: number;
   soal: SoalUjianSemester[];
@@ -63,14 +64,14 @@ const generateSoalSemester = (jilid: number, halamanTerakhir: number, jumlahSoal
 // Mock data ujian semester
 const MOCK_UJIAN_SEMESTER: HasilUjianSemester[] = [
   {
-    id: "us1", idSantri: "s1", namaSantri: "Qurrata 'Ayun", kelas: "Paket B Kelas 8",
+    id: "us1", idSantri: "s1", namaSantri: "Qurrata 'Ayun", kelas: "Paket B Kelas 8", halaqoh: "Halaqoh Akhwat A",
     jilid: 4, halamanTerakhir: 28,
     soal: [{ id: 1, jilid: 4, halaman: 5 }, { id: 2, jilid: 4, halaman: 12 }, { id: 3, jilid: 4, halaman: 18 }, { id: 4, jilid: 4, halaman: 22 }, { id: 5, jilid: 4, halaman: 27 }],
     nilaiKelancaran: 85, nilaiTartil: 80, nilaiFashohah: 82,
     nilaiTotal: 82, catatan: "Baik", tanggal: "2025-06-15", status: "Lulus",
   },
   {
-    id: "us2", idSantri: "s4", namaSantri: "Dzaki Ash Shiddiq", kelas: "Paket B Kelas 8",
+    id: "us2", idSantri: "s4", namaSantri: "Dzaki Ash Shiddiq", kelas: "Paket B Kelas 8", halaqoh: "Halaqoh Ikhwan A",
     jilid: 4, halamanTerakhir: 35,
     soal: [{ id: 1, jilid: 4, halaman: 3 }, { id: 2, jilid: 4, halaman: 10 }, { id: 3, jilid: 4, halaman: 20 }, { id: 4, jilid: 4, halaman: 28 }, { id: 5, jilid: 4, halaman: 33 }],
     nilaiKelancaran: 65, nilaiTartil: 60, nilaiFashohah: 68,
@@ -82,6 +83,8 @@ export default function TilawahUjianSemester() {
   const [search, setSearch] = useState("");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
+  const [riwayatFilterHalaqoh, setRiwayatFilterHalaqoh] = useState("all");
+  const [riwayatFilterKelas, setRiwayatFilterKelas] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [ujianList, setUjianList] = useState<HasilUjianSemester[]>(MOCK_UJIAN_SEMESTER);
 
@@ -140,6 +143,7 @@ export default function TilawahUjianSemester() {
       idSantri: selectedSantri,
       namaSantri: selectedSantriData?.nama || "",
       kelas: selectedSantriData?.kelas || "",
+      halaqoh: selectedSantriData?.halaqoh || "",
       jilid: selectedSantriData?.jilidSaatIni || 1,
       halamanTerakhir: selectedSantriData?.halamanSaatIni || 1,
       soal: generatedSoal,
@@ -169,7 +173,9 @@ export default function TilawahUjianSemester() {
 
   const filteredUjian = ujianList.filter(u => {
     const matchSearch = u.namaSantri.toLowerCase().includes(search.toLowerCase());
-    return matchSearch;
+    const matchHalaqoh = riwayatFilterHalaqoh === "all" || u.halaqoh === riwayatFilterHalaqoh;
+    const matchKelas = riwayatFilterKelas === "all" || u.kelas === riwayatFilterKelas;
+    return matchSearch && matchHalaqoh && matchKelas;
   });
 
   return (
@@ -359,11 +365,29 @@ export default function TilawahUjianSemester() {
             <CardTitle>Daftar Ujian Semester</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-4 mb-6">
-              <div className="relative flex-1">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input placeholder="Cari santri..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
               </div>
+              <Select value={riwayatFilterHalaqoh} onValueChange={setRiwayatFilterHalaqoh}>
+                <SelectTrigger><SelectValue placeholder="Semua Halaqoh" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Halaqoh</SelectItem>
+                  {MOCK_HALAQOH.map((h) => (
+                    <SelectItem key={h.id} value={h.nama}>{h.nama}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={riwayatFilterKelas} onValueChange={setRiwayatFilterKelas}>
+                <SelectTrigger><SelectValue placeholder="Semua Kelas" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Kelas</SelectItem>
+                  {MOCK_KELAS.map((k) => (
+                    <SelectItem key={k.id} value={k.nama_kelas}>{k.nama_kelas}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <Table>
