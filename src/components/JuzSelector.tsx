@@ -10,9 +10,11 @@ interface JuzSelectorProps {
   onValueChange: (value: string) => void;
   label?: string;
   required?: boolean;
+  /** "asc" = 1→30, "desc" = 30→1. Default: "desc" (for hafalan) */
+  order?: "asc" | "desc";
 }
 
-export const JuzSelector = ({ value, onValueChange, label = "Juz", required = false }: JuzSelectorProps) => {
+export const JuzSelector = ({ value, onValueChange, label = "Juz", required = false, order = "desc" }: JuzSelectorProps) => {
   const [open, setOpen] = useState(false);
 
   const handleSelect = (juz: string) => {
@@ -37,7 +39,10 @@ export const JuzSelector = ({ value, onValueChange, label = "Juz", required = fa
         </PopoverTrigger>
         <PopoverContent className="w-[300px] p-2" align="start">
           <div className="grid grid-cols-6 gap-1">
-            {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
+            {(order === "desc"
+              ? Array.from({ length: 30 }, (_, i) => 30 - i)
+              : Array.from({ length: 30 }, (_, i) => i + 1)
+            ).map((juz) => (
               <Button
                 key={juz}
                 variant="ghost"
