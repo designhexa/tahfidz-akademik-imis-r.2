@@ -365,11 +365,29 @@ export default function TilawahUjianSemester() {
             <CardTitle>Daftar Ujian Semester</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-4 mb-6">
-              <div className="relative flex-1">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input placeholder="Cari santri..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
               </div>
+              <Select value={riwayatFilterHalaqoh} onValueChange={setRiwayatFilterHalaqoh}>
+                <SelectTrigger><SelectValue placeholder="Semua Halaqoh" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Halaqoh</SelectItem>
+                  {MOCK_HALAQOH.map((h) => (
+                    <SelectItem key={h.id} value={h.nama}>{h.nama}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={riwayatFilterKelas} onValueChange={setRiwayatFilterKelas}>
+                <SelectTrigger><SelectValue placeholder="Semua Kelas" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Kelas</SelectItem>
+                  {MOCK_KELAS.map((k) => (
+                    <SelectItem key={k.id} value={k.nama_kelas}>{k.nama_kelas}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <Table>
