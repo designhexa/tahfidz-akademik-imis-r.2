@@ -661,29 +661,34 @@ const LaporanHafalan = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Santri</TableHead>
-                        <TableHead>Halaqoh</TableHead>
-                        <TableHead>Kelas</TableHead>
-                        <TableHead className="text-center">Drill 1</TableHead>
-                        <TableHead className="text-center">Drill 2</TableHead>
-                        <TableHead className="text-center">½ Juz</TableHead>
-                        <TableHead className="text-center">1 Juz</TableHead>
-                        <TableHead className="text-center">Tasmi'</TableHead>
-                        <TableHead className="text-center">Nilai</TableHead>
+                        <TableHead className="text-xs md:text-sm">Tanggal</TableHead>
+                        <TableHead className="text-xs md:text-sm">Santri</TableHead>
+                        <TableHead className="text-xs md:text-sm">Juz</TableHead>
+                        <TableHead className="text-xs md:text-sm">Level Drill</TableHead>
+                        <TableHead className="text-xs md:text-sm hidden md:table-cell">Materi</TableHead>
+                        <TableHead className="text-xs md:text-sm">Nilai</TableHead>
+                        <TableHead className="text-xs md:text-sm">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredDrill.map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{item.santri}</TableCell>
-                          <TableCell>{item.halaqoh}</TableCell>
-                          <TableCell>{item.kelas}</TableCell>
-                          <TableCell className="text-center">{getStatusBadge(item.drill1)}</TableCell>
-                          <TableCell className="text-center">{getStatusBadge(item.drill2)}</TableCell>
-                          <TableCell className="text-center">{getStatusBadge(item.drill12Juz)}</TableCell>
-                          <TableCell className="text-center">{getStatusBadge(item.drill1Juz)}</TableCell>
-                          <TableCell className="text-center">{getStatusBadge(item.tasmi)}</TableCell>
-                          <TableCell className="text-center font-semibold text-primary">{item.nilaiTerakhir}</TableCell>
+                      {filteredDrill.map((item) => (
+                        <TableRow key={item.id}>
+                          <TableCell className="text-xs md:text-sm">{item.tanggal}</TableCell>
+                          <TableCell className="font-medium text-xs md:text-sm">{item.santri}</TableCell>
+                          <TableCell>
+                            <Badge className="bg-primary/10 text-primary border-primary text-[10px] md:text-xs">Juz {item.juz}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <DrillLevelIndicator juz={item.juz} currentLevel={item.level} />
+                          </TableCell>
+                          <TableCell className="text-xs md:text-sm hidden md:table-cell">{item.materi}</TableCell>
+                          <TableCell className="font-semibold text-primary text-xs md:text-sm">{item.nilai}</TableCell>
+                          <TableCell>
+                            <Badge className={cn(
+                              "text-[10px] md:text-xs",
+                              item.status === "Lulus" ? "bg-primary text-primary-foreground" : "bg-destructive text-destructive-foreground"
+                            )}>{item.status}</Badge>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
