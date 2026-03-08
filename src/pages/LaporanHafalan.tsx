@@ -89,6 +89,14 @@ const LaporanHafalan = () => {
   const [filterBulan, setFilterBulan] = useState("januari");
   const [filterSantri, setFilterSantri] = useState("all");
   const [filterKelas, setFilterKelas] = useState("all");
+  // Per-table filters
+  const [harianFilterSantri, setHarianFilterSantri] = useState("all");
+  const [harianFilterStatus, setHarianFilterStatus] = useState("all");
+  const [mingguanFilterMinggu, setMingguanFilterMinggu] = useState("all");
+  const [capaianFilterJuz, setCapaianFilterJuz] = useState("all");
+  const [drillFilterHalaqoh, setDrillFilterHalaqoh] = useState("all");
+  const [drillFilterKelas, setDrillFilterKelas] = useState("all");
+  const [drillFilterStatus, setDrillFilterStatus] = useState("all");
   // Tilawah filters
   const [tilawahHalaqoh, setTilawahHalaqoh] = useState("all");
   const [tilawahKelas, setTilawahKelas] = useState("all");
