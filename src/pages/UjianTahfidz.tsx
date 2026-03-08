@@ -528,6 +528,32 @@ const UjianTahfidz = () => {
             <CardTitle>Riwayat Ujian Tahfidz</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="space-y-1">
+                <Label className="text-xs">Filter Halaqoh</Label>
+                <Select value={riwayatFilterHalaqoh} onValueChange={setRiwayatFilterHalaqoh}>
+                  <SelectTrigger><SelectValue placeholder="Semua Halaqoh" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Halaqoh</SelectItem>
+                    {halaqohList.map((h) => (
+                      <SelectItem key={h.id} value={h.nama_halaqoh}>{h.nama_halaqoh}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Filter Kelas</Label>
+                <Select value={riwayatFilterKelas} onValueChange={setRiwayatFilterKelas}>
+                  <SelectTrigger><SelectValue placeholder="Semua Kelas" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Kelas</SelectItem>
+                    {kelasList.map((k) => (
+                      <SelectItem key={k.id} value={k.nama_kelas}>{k.nama_kelas}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <div className="rounded-md border">
               <Table>
               <TableHeader>
