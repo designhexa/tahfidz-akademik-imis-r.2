@@ -315,7 +315,13 @@ export default function Dashboard() {
                 <TableBody>
                   {eligibleForTasmi.map((student) => (
                     <TableRow key={student.id}>
-                      <TableCell>{student.nama}</TableCell>
+                      <TableCell
+                        className="text-primary font-medium cursor-pointer hover:underline"
+                        onClick={() => {
+                          const s = getSantriByNama(student.nama);
+                          if (s) navigate(`/santri/${s.id}`);
+                        }}
+                      >{student.nama}</TableCell>
                       <TableCell>{student.kelas}</TableCell>
                       <TableCell>
                         <Badge>{student.jumlahJuzHafal} Juz</Badge>
