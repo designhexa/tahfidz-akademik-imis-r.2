@@ -410,7 +410,7 @@ const SetoranHafalan = () => {
                   key={opt.value}
                   size="sm"
                   variant={subType === opt.value ? "default" : "outline"}
-                  className="h-7 text-[10px] md:text-xs"
+                  className="h-7 text-[10px] md:text-sm"
                   onClick={() => setSubType(opt.value)}
                 >
                   {opt.label}
