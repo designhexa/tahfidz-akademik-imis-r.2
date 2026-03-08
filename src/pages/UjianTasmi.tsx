@@ -319,7 +319,6 @@ const UjianTasmi = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                      </Select>
                     </div>
                     <JuzSelector value={selectedJuz} onValueChange={setSelectedJuz} label="Juz" required />
                     <div className="space-y-2">
