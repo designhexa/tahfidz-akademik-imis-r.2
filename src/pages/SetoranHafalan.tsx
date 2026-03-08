@@ -280,7 +280,7 @@ const SetoranHafalan = () => {
                     setSelectedSantri("");
                   }}
                 >
-                  <SelectTrigger className="h-9 text-xs">
+                  <SelectTrigger className="h-9 text-xs md:text-sm">
                     <SelectValue placeholder="Semua Halaqoh" />
                   </SelectTrigger>
                   <SelectContent>
