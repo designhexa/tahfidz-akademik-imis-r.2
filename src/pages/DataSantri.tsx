@@ -72,6 +72,7 @@ export default function DataSantri() {
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(INITIAL_FORM);
   const [tilawahJuz, setTilawahJuz] = useState("");
+  const [tilawahSurah, setTilawahSurah] = useState("");
   const [hafalanJuz, setHafalanJuz] = useState("30");
   const [hafalanInputMode, setHafalanInputMode] = useState<"surah" | "halaman">("surah");
   const [hafalanSurah, setHafalanSurah] = useState("");
