@@ -261,7 +261,7 @@ const LaporanHafalan = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Halaqoh</label>
+                <label className="text-xs md:text-sm font-medium">Halaqoh</label>
                 <Select value={filterHalaqoh} onValueChange={(v) => { setFilterHalaqoh(v); setFilterSantri("all"); }}>
                   <SelectTrigger>
                     <SelectValue />
