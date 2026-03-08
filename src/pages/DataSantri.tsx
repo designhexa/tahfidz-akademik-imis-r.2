@@ -73,6 +73,9 @@ export default function DataSantri() {
   const [form, setForm] = useState(INITIAL_FORM);
   const [tilawahJuz, setTilawahJuz] = useState("");
   const [tilawahSurah, setTilawahSurah] = useState("");
+  const [tilawahAyat, setTilawahAyat] = useState("");
+  const [tilawahHalaman, setTilawahHalaman] = useState("");
+  const [tilawahInputMode, setTilawahInputMode] = useState<"surah" | "halaman">("surah");
   const [hafalanJuz, setHafalanJuz] = useState("30");
   const [hafalanInputMode, setHafalanInputMode] = useState<"surah" | "halaman">("surah");
   const [hafalanSurah, setHafalanSurah] = useState("");
