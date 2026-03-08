@@ -92,7 +92,7 @@ const Index = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              Platform digital untuk pencatatan setoran, drill hafalan, ujian tasmi', dan laporan progress santri yang terintegrasi.
+              Platform digital untuk pencatatan setoran hafalan, program tilawah, drill, ujian tasmi', dan laporan progress santri yang terintegrasi.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
