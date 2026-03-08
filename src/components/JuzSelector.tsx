@@ -10,9 +10,11 @@ interface JuzSelectorProps {
   onValueChange: (value: string) => void;
   label?: string;
   required?: boolean;
+  /** "asc" = 1→30, "desc" = 30→1. Default: "desc" (for hafalan) */
+  order?: "asc" | "desc";
 }
 
-export const JuzSelector = ({ value, onValueChange, label = "Juz", required = false }: JuzSelectorProps) => {
+export const JuzSelector = ({ value, onValueChange, label = "Juz", required = false, order = "desc" }: JuzSelectorProps) => {
   const [open, setOpen] = useState(false);
 
   const handleSelect = (juz: string) => {
