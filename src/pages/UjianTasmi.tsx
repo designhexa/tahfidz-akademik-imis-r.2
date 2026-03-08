@@ -117,6 +117,7 @@ const UjianTasmi = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedUjian, setSelectedUjian] = useState<typeof dummyHasilUjian[0] | null>(null);
   const [expandedRules, setExpandedRules] = useState(false);
+  const [tasmiType, setTasmiType] = useState<"1juz" | "5juz">("1juz");
 
   // Registered tasmi candidates (persisted in localStorage)
   const [registeredCandidates, setRegisteredCandidates] = useState<string[]>(() => {
@@ -449,6 +450,17 @@ const UjianTasmi = () => {
                 <CardDescription>
                   Santri yang telah menyelesaikan drill dan siap mengikuti ujian
                 </CardDescription>
+                <div className="pt-2">
+                  <Select value={tasmiType} onValueChange={(v) => setTasmiType(v as "1juz" | "5juz")}>
+                    <SelectTrigger className="w-full sm:w-60">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1juz">Tasmi' 1 Juz</SelectItem>
+                      <SelectItem value="5juz">Tasmi' 5 Juz</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -459,13 +471,14 @@ const UjianTasmi = () => {
                         <TableHead>Nama Lengkap</TableHead>
                         <TableHead>Kelas</TableHead>
                         <TableHead className="text-center">Jumlah Hafalan</TableHead>
-                        <TableHead className="text-center">Juz Berikutnya</TableHead>
+                         <TableHead className="text-center">Juz Berikutnya</TableHead>
+                         <TableHead className="text-center">Juz Diujikan</TableHead>
                         <TableHead className="text-center">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {mockSantriProgress
-                        .filter(s => s.eligibleForTasmi)
+                        .filter(s => tasmiType === "5juz" ? s.jumlahJuzHafal >= 5 : s.eligibleForTasmi)
                         .map((student, index) => {
                           const nextJuz = getNextTasmiJuz(student.juzSelesai);
                           return (
@@ -478,6 +491,19 @@ const UjianTasmi = () => {
                               </TableCell>
                               <TableCell className="text-center">
                                 {nextJuz ? (
+                                  <Badge className="bg-amber-500 hover:bg-amber-600 text-white">
+                                    Juz {nextJuz}
+                                  </Badge>
+                                ) : (
+                                  <Badge className="bg-emerald-500 text-white">Khatam!</Badge>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-center">
+                                {tasmiType === "5juz" ? (
+                                  <Badge className="bg-purple-500 hover:bg-purple-600 text-white">
+                                    Juz {student.juzSelesai.slice(-5).join(", ")}
+                                  </Badge>
+                                ) : nextJuz ? (
                                   <Badge className="bg-amber-500 hover:bg-amber-600 text-white">
                                     Juz {nextJuz}
                                   </Badge>
@@ -586,9 +612,20 @@ const UjianTasmi = () => {
 
           {/* Generate Gambar */}
           <TabsContent value="generate" className="mt-4">
+            <div className="mb-4">
+              <Select value={tasmiType} onValueChange={(v) => setTasmiType(v as "1juz" | "5juz")}>
+                <SelectTrigger className="w-full sm:w-60">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1juz">Tasmi' 1 Juz</SelectItem>
+                  <SelectItem value="5juz">Tasmi' 5 Juz</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <TasmiCandidateCard
               candidates={mockSantriProgress
-                .filter(s => s.eligibleForTasmi)
+                .filter(s => tasmiType === "5juz" ? s.jumlahJuzHafal >= 5 : s.eligibleForTasmi)
                 .map((s, i) => {
                   const nextJuz = getNextTasmiJuz(s.juzSelesai);
                   return {
@@ -596,11 +633,11 @@ const UjianTasmi = () => {
                     nama: s.nama,
                     kelas: s.kelasNumber,
                     jumlahHafalan: `${s.jumlahJuzHafal} Juz`,
-                    juzDiujikan: nextJuz 
-                      ? s.juzSelesai.length >= 5 
-                        ? `Juz ${s.juzSelesai.slice(-5).join('-')}`
-                        : `Juz ${nextJuz}`
-                      : "Khatam"
+                    juzDiujikan: tasmiType === "5juz"
+                      ? `Juz ${s.juzSelesai.slice(-5).join(", ")}`
+                      : nextJuz 
+                        ? `Juz ${nextJuz}`
+                        : "Khatam"
                   };
                 })}
             />
