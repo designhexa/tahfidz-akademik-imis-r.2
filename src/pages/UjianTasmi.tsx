@@ -478,7 +478,7 @@ const UjianTasmi = () => {
                     </TableHeader>
                     <TableBody>
                       {mockSantriProgress
-                        .filter(s => s.eligibleForTasmi)
+                        .filter(s => tasmiType === "5juz" ? s.jumlahJuzHafal >= 5 : s.eligibleForTasmi)
                         .map((student, index) => {
                           const nextJuz = getNextTasmiJuz(student.juzSelesai);
                           return (
