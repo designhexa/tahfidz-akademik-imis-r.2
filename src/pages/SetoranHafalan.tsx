@@ -338,7 +338,7 @@ const SetoranHafalan = () => {
                   value={String(year)}
                   onValueChange={(v) => setYear(Number(v))}
                 >
-                  <SelectTrigger className="h-9 text-xs">
+                  <SelectTrigger className="h-9 text-xs md:text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
