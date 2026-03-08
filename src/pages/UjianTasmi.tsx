@@ -485,7 +485,13 @@ const UjianTasmi = () => {
                           return (
                             <TableRow key={student.id}>
                               <TableCell className="font-medium">{index + 1}</TableCell>
-                              <TableCell className="font-medium">{student.nama}</TableCell>
+                              <TableCell
+                                className="font-medium text-primary cursor-pointer hover:underline"
+                                onClick={() => {
+                                  const s = getSantriByNama(student.nama);
+                                  if (s) navigate(`/santri/${s.id}`);
+                                }}
+                              >{student.nama}</TableCell>
                               <TableCell>{student.kelas}</TableCell>
                               <TableCell className="text-center">
                                 <Badge variant="secondary">{student.jumlahJuzHafal} Juz</Badge>
