@@ -2,7 +2,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { BottomNav } from "./BottomNav";
 import { useTheme } from "next-themes";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, BookOpen } from "lucide-react";
 import { Button } from "./ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
