@@ -162,6 +162,8 @@ const UjianTasmi = () => {
   const [selectedSantri, setSelectedSantri] = useState("");
   const [selectedJuz, setSelectedJuz] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [filterHalaqoh, setFilterHalaqoh] = useState("all");
+  const [filterKelas, setFilterKelas] = useState("all");
 
   useEffect(() => {
     if (!selectedJuz) return;
