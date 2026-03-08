@@ -305,7 +305,7 @@ const UjianTasmi = () => {
               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader><DialogTitle className="flex items-center gap-2"><Award className="w-5 h-5 text-amber-500" />Form Ujian Tasmi' (1 Juz)</DialogTitle></DialogHeader>
                 <div className="space-y-6 py-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label>Santri (Terdaftar)</Label>
                       <Select value={selectedSantri} onValueChange={setSelectedSantri}>
@@ -319,30 +319,18 @@ const UjianTasmi = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    </div>
                     <JuzSelector value={selectedJuz} onValueChange={setSelectedJuz} label="Juz" required />
                     <div className="space-y-2">
                       <Label>Tanggal Ujian</Label>
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !selectedDate && "text-muted-foreground"
-                            )}
-                          >
+                          <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}>
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {selectedDate ? format(selectedDate, "PPP", { locale: id }) : <span>Pilih tanggal</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={(date) => date && setSelectedDate(date)}
-                            initialFocus
-                          />
+                          <Calendar mode="single" selected={selectedDate} onSelect={(date) => date && setSelectedDate(date)} initialFocus />
                         </PopoverContent>
                       </Popover>
                     </div>
