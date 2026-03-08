@@ -114,6 +114,7 @@ const mockSantri = [
 ];
 
 const LaporanHafalan = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("hafalan");
   const [filterPeriode, setFilterPeriode] = useState("bulanan");
   const [filterHalaqoh, setFilterHalaqoh] = useState("all");
