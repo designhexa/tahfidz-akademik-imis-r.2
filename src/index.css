@@ -64,10 +64,10 @@ All colors MUST be HSL.
     --popover: 160 25% 12%;
     --popover-foreground: 48 20% 95%;
     
-    /* Primary - Brighter emerald for dark mode */
-    --primary: 160 55% 50%;
-    --primary-foreground: 160 30% 8%;
-    --primary-glow: 160 55% 60%;
+    /* Primary - Brighter green for dark mode */
+    --primary: 121 80% 30%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 121 70% 40%;
     --lime: 75 85% 55%;
     
     /* Secondary - Gold */
