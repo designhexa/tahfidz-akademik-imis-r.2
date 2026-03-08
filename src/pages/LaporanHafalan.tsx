@@ -290,7 +290,7 @@ const LaporanHafalan = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 col-span-2 md:col-span-1">
                 <label className="text-xs md:text-sm font-medium">Santri</label>
                 <Select value={filterSantri} onValueChange={setFilterSantri}>
                   <SelectTrigger>
