@@ -263,7 +263,7 @@ export const TasmiCandidateCard = ({
                   <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
                     <Facebook className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <span className="font-semibold text-gray-700 text-base">imammuslimislamicschool</span>
+                  <span className="font-semibold text-gray-700 text-xl">imammuslimislamicschool</span>
                 </div>
               </div>
             </div>
