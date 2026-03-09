@@ -203,11 +203,11 @@ export const TasmiCandidateCard = ({
               <table className="w-full" style={{ borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ background: currentScheme.header }}>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-base w-16" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>No.</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-base" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Nama Lengkap</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-base w-20" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Kelas</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-base w-28" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Jumlah Hafalan</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-base w-44" style={{ borderBottom: "2px solid #374151" }}>Juz yang Diujikan</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-xl w-16" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>No.</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-xl" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Nama Lengkap</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-xl w-20" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Kelas</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-xl w-28" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Jumlah Hafalan</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-xl w-44" style={{ borderBottom: "2px solid #374151" }}>Juz yang Diujikan</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -216,19 +216,19 @@ export const TasmiCandidateCard = ({
                       key={candidate.no}
                       style={{ backgroundColor: getRowColor(index) }}
                     >
-                      <td className="py-3 px-4 text-center font-medium text-base" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center font-medium text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.no}
                       </td>
-                      <td className="py-3 px-4 font-medium text-gray-800 text-base" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 font-medium text-gray-800 text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.nama}
                       </td>
-                      <td className="py-3 px-4 text-center text-base" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.kelas}
                       </td>
-                      <td className="py-3 px-4 text-center text-base" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.jumlahHafalan}
                       </td>
-                      <td className="py-3 px-4 text-center font-medium text-green-700 text-base" style={{ borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center font-medium text-green-700 text-lg" style={{ borderBottom: "1px solid #6B7280" }}>
                         {candidate.juzDiujikan}
                       </td>
                     </tr>
@@ -251,9 +251,8 @@ export const TasmiCandidateCard = ({
                   <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
                     <Globe className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <span className="font-semibold text-gray-700 text-sm">www.imis.sch.id</span>
+                  <span className="font-semibold text-gray-700 text-base">www.imis.sch.id</span>
                 </div>
-                <div className="w-px h-6 bg-gray-400" />
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
                     <Youtube className="w-4 h-4 text-gray-700" strokeWidth={2} />
@@ -264,7 +263,7 @@ export const TasmiCandidateCard = ({
                   <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
                     <Facebook className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
+                  <span className="font-semibold text-gray-700 text-base">imammuslimislamicschool</span>
                 </div>
               </div>
             </div>
