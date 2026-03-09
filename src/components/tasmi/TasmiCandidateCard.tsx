@@ -216,19 +216,19 @@ export const TasmiCandidateCard = ({
                       key={candidate.no}
                       style={{ backgroundColor: getRowColor(index) }}
                     >
-                      <td className="py-3 px-4 text-center font-medium text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center font-medium text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
                         {candidate.no}
                       </td>
-                      <td className="py-3 px-4 font-medium text-gray-800 text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 font-medium text-gray-800 text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
                         {candidate.nama}
                       </td>
-                      <td className="py-3 px-4 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
                         {candidate.kelas}
                       </td>
-                      <td className="py-3 px-4 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
                         {candidate.jumlahHafalan}
                       </td>
-                      <td className="py-3 px-4 text-center font-medium text-green-700 text-lg" style={{ borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center font-medium text-green-700 text-lg" style={{ borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
                         {candidate.juzDiujikan}
                       </td>
                     </tr>
