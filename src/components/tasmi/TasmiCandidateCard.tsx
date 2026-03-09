@@ -216,19 +216,19 @@ export const TasmiCandidateCard = ({
                       key={candidate.no}
                       style={{ backgroundColor: getRowColor(index) }}
                     >
-                      <td className="py-3 px-4 text-center font-medium" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center font-medium text-base" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.no}
                       </td>
-                      <td className="py-3 px-4 font-medium text-gray-800" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 font-medium text-gray-800 text-base" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.nama}
                       </td>
-                      <td className="py-3 px-4 text-center" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center text-base" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.kelas}
                       </td>
-                      <td className="py-3 px-4 text-center" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center text-base" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.jumlahHafalan}
                       </td>
-                      <td className="py-3 px-4 text-center font-medium text-green-700" style={{ borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center font-medium text-green-700 text-base" style={{ borderBottom: "1px solid #6B7280" }}>
                         {candidate.juzDiujikan}
                       </td>
                     </tr>
