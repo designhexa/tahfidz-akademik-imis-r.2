@@ -52,26 +52,31 @@ export const TasmiCandidateCard = ({
     setIsGenerating(true);
 
     try {
-      await document.fonts.ready;
+
+      await new Promise((r) => setTimeout(r, 200));
 
       const canvas = await html2canvas(printRef.current, {
         scale: 2,
         useCORS: true,
-        backgroundColor: null,
-        letterRendering: true
+        backgroundColor: "#ffffff",
+        logging: false
       });
 
+      const image = canvas.toDataURL("image/png");
+
       const link = document.createElement("a");
-      link.download = `jadwal-tasmi-${format(new Date(customDate),"yyyy-MM-dd")}.png`;
-      link.href = canvas.toDataURL("image/png");
+      link.href = image;
+      link.download = "jadwal-tasmi.png";
       link.click();
 
-      toast.success("Gambar berhasil diunduh!");
+      toast.success("Gambar berhasil diunduh");
+
     } catch (error) {
+      console.error(error);
       toast.error("Gagal generate gambar");
-    } finally {
-      setIsGenerating(false);
     }
+
+    setIsGenerating(false);
   };
 
   const formattedDate = format(
