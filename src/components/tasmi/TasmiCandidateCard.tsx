@@ -167,11 +167,14 @@ export const TasmiCandidateCard = ({
             background: "linear-gradient(135deg, #e8f5e9 0%, #f5f5f5 50%, #e3f2fd 100%)",
           }}
         >
-          {/* Background Pattern */}
+          {/* Background Image */}
           <div
-            className="absolute inset-0 opacity-10"
+            className="absolute inset-0"
             style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23166534' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              backgroundImage: `url(${gedungImis})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              opacity: 0.08,
             }}
           />
 
@@ -190,21 +193,20 @@ export const TasmiCandidateCard = ({
             <h1 className="text-4xl font-bold text-green-800 mb-2" style={{ fontFamily: "serif" }}>
               Jadwal Sertifikasi Hafalan
             </h1>
-            <div className="flex items-center justify-center gap-2 text-xl text-gray-700 mb-6">
-              <Calendar className="w-5 h-5 flex-shrink-0" />
-              <span className="leading-none">{formattedDate}</span>
+            <div className="text-xl text-gray-700 mb-6 text-center">
+              <span>{formattedDate}</span>
             </div>
 
             {/* Table */}
-            <div className="w-full max-w-4xl bg-white/80 rounded-lg overflow-hidden shadow-xl border-2 border-green-600/30">
-              <table className="w-full">
+            <div className="w-full max-w-4xl bg-white/90 rounded-lg overflow-hidden shadow-xl" style={{ border: "2px solid #374151" }}>
+              <table className="w-full" style={{ borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ background: currentScheme.header }}>
-                    <th className="py-3 px-4 text-center font-semibold text-white w-16" style={{ borderRight: `1px solid ${currentScheme.headerBorder}` }}>No.</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white" style={{ borderRight: `1px solid ${currentScheme.headerBorder}` }}>Nama Lengkap</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white w-20" style={{ borderRight: `1px solid ${currentScheme.headerBorder}` }}>Kelas</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white w-28" style={{ borderRight: `1px solid ${currentScheme.headerBorder}` }}>Jumlah Hafalan</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white w-44">Juz yang Diujikan</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white w-16" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>No.</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Nama Lengkap</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white w-20" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Kelas</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white w-28" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Jumlah Hafalan</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white w-44" style={{ borderBottom: "2px solid #374151" }}>Juz yang Diujikan</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -213,19 +215,19 @@ export const TasmiCandidateCard = ({
                       key={candidate.no}
                       style={{ backgroundColor: getRowColor(index) }}
                     >
-                      <td className="py-3 px-4 text-center border-r border-gray-200 font-medium">
+                      <td className="py-3 px-4 text-center font-medium" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.no}
                       </td>
-                      <td className="py-3 px-4 border-r border-gray-200 font-medium text-gray-800">
+                      <td className="py-3 px-4 font-medium text-gray-800" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.nama}
                       </td>
-                      <td className="py-3 px-4 text-center border-r border-gray-200">
+                      <td className="py-3 px-4 text-center" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.kelas}
                       </td>
-                      <td className="py-3 px-4 text-center border-r border-gray-200">
+                      <td className="py-3 px-4 text-center" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.jumlahHafalan}
                       </td>
-                      <td className="py-3 px-4 text-center font-medium text-green-700">
+                      <td className="py-3 px-4 text-center font-medium text-green-700" style={{ borderBottom: "1px solid #6B7280" }}>
                         {candidate.juzDiujikan}
                       </td>
                     </tr>
@@ -241,15 +243,23 @@ export const TasmiCandidateCard = ({
               </p>
             </div>
 
-            {/* Footer */}
-            <div className="mt-8 flex items-center justify-center gap-8 text-gray-600">
-              <div className="flex items-center gap-2 px-6 py-2 bg-white/80 rounded-full shadow">
-                <span className="text-xl">🌐</span>
-                <span className="font-medium">www.imis.sch.id</span>
+            {/* Footer - Social Links */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+              <div className="flex items-center gap-2 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
+                <Globe className="w-5 h-5 text-green-700" />
+                <span className="font-semibold text-gray-700 text-sm">www.imis.sch.id</span>
               </div>
-              <div className="flex items-center gap-2 px-6 py-2 bg-white/80 rounded-full shadow">
-                <span className="text-xl">📱</span>
-                <span className="font-medium">@imammuslimislamicschool</span>
+              <div className="flex items-center gap-2 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
+                <Youtube className="w-5 h-5 text-red-600" />
+                <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
+              </div>
+              <div className="flex items-center gap-2 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
+                <Instagram className="w-5 h-5 text-pink-600" />
+                <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
+              </div>
+              <div className="flex items-center gap-2 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
+                <Facebook className="w-5 h-5 text-blue-600" />
+                <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
               </div>
             </div>
           </div>
