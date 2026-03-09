@@ -63,9 +63,18 @@ export const TasmiCandidateCard = ({
 
   const handleDownloadImage = async () => {
     if (!printRef.current) return;
-    
+
     setIsGenerating(true);
     try {
+      // Ensure webfonts are fully loaded before canvas render (important for html2canvas baseline alignment)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const fonts = (document as any).fonts as FontFaceSet | undefined;
+      if (fonts?.ready) {
+        await fonts.ready;
+      }
+      // Small buffer so layout settles
+      await new Promise((r) => setTimeout(r, 120));
+
       const canvas = await html2canvas(printRef.current, {
         scale: 2,
         useCORS: true,
@@ -203,11 +212,21 @@ export const TasmiCandidateCard = ({
               <table className="w-full" style={{ borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ background: currentScheme.header }}>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-xl w-16" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151", verticalAlign: "middle" }}>No.</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-xl" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151", verticalAlign: "middle" }}>Nama Lengkap</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-xl w-20" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151", verticalAlign: "middle" }}>Kelas</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-xl w-28" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151", verticalAlign: "middle" }}>Jumlah Hafalan</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-xl w-44" style={{ borderBottom: "2px solid #374151", verticalAlign: "middle" }}>Juz yang Diujikan</th>
+                    <th className="p-0 text-center font-semibold text-white text-xl w-16" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>
+                      <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>No.</div>
+                    </th>
+                    <th className="p-0 text-center font-semibold text-white text-xl" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>
+                      <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>Nama Lengkap</div>
+                    </th>
+                    <th className="p-0 text-center font-semibold text-white text-xl w-20" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>
+                      <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>Kelas</div>
+                    </th>
+                    <th className="p-0 text-center font-semibold text-white text-xl w-28" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>
+                      <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>Jumlah Hafalan</div>
+                    </th>
+                    <th className="p-0 text-center font-semibold text-white text-xl w-44" style={{ borderBottom: "2px solid #374151" }}>
+                      <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>Juz yang Diujikan</div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -216,20 +235,30 @@ export const TasmiCandidateCard = ({
                       key={candidate.no}
                       style={{ backgroundColor: getRowColor(index) }}
                     >
-                      <td className="py-3 px-4 text-center font-medium text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
-                        {candidate.no}
+                      <td className="p-0 text-center font-medium text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                        <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>
+                          {candidate.no}
+                        </div>
                       </td>
-                      <td className="py-3 px-4 font-medium text-gray-800 text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
-                        {candidate.nama}
+                      <td className="p-0 font-medium text-gray-800 text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                        <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "flex-start", lineHeight: 1.1 }}>
+                          {candidate.nama}
+                        </div>
                       </td>
-                      <td className="py-3 px-4 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
-                        {candidate.kelas}
+                      <td className="p-0 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                        <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>
+                          {candidate.kelas}
+                        </div>
                       </td>
-                      <td className="py-3 px-4 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
-                        {candidate.jumlahHafalan}
+                      <td className="p-0 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                        <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>
+                          {candidate.jumlahHafalan}
+                        </div>
                       </td>
-                      <td className="py-3 px-4 text-center font-medium text-green-700 text-lg" style={{ borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
-                        {candidate.juzDiujikan}
+                      <td className="p-0 text-center font-medium text-green-700 text-lg" style={{ borderBottom: "1px solid #6B7280" }}>
+                        <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>
+                          {candidate.juzDiujikan}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -251,7 +280,7 @@ export const TasmiCandidateCard = ({
                   <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: "2px solid #4B5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Globe className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <span style={{ fontWeight: 600, color: "#374151", fontSize: "20px", height: "32px", display: "inline-flex", alignItems: "center" }}>www.imis.sch.id</span>
+                  <span style={{ fontWeight: 600, color: "#374151", fontSize: "20px", height: "32px", display: "inline-flex", alignItems: "center", transform: "translateY(-1px)" }}>www.imis.sch.id</span>
                 </div>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
                   <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: "2px solid #4B5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -263,7 +292,7 @@ export const TasmiCandidateCard = ({
                   <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: "2px solid #4B5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Facebook className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <span style={{ fontWeight: 600, color: "#374151", fontSize: "20px", height: "32px", display: "inline-flex", alignItems: "center" }}>imammuslimislamicschool</span>
+                  <span style={{ fontWeight: 600, color: "#374151", fontSize: "20px", height: "32px", display: "inline-flex", alignItems: "center", transform: "translateY(-1px)" }}>imammuslimislamicschool</span>
                 </div>
               </div>
             </div>
