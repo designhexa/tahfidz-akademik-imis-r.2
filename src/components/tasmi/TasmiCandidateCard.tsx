@@ -165,6 +165,7 @@ export const TasmiCandidateCard = ({
           className="w-[1080px] min-h-[1080px] mx-auto relative overflow-hidden"
           style={{
             background: "linear-gradient(135deg, #e8f5e9 0%, #f5f5f5 50%, #e3f2fd 100%)",
+            fontFamily: "'Poppins', sans-serif",
           }}
         >
           {/* Background Image */}
@@ -249,15 +250,9 @@ export const TasmiCandidateCard = ({
                 <Globe className="w-5 h-5 text-green-700" />
                 <span className="font-semibold text-gray-700 text-sm">www.imis.sch.id</span>
               </div>
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
+              <div className="flex items-center gap-3 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
                 <Youtube className="w-5 h-5 text-red-600" />
-                <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
-              </div>
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
                 <Instagram className="w-5 h-5 text-pink-600" />
-                <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
-              </div>
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
                 <Facebook className="w-5 h-5 text-blue-600" />
                 <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
               </div>
