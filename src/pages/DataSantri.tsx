@@ -32,10 +32,8 @@ import {
   MOCK_SANTRI,
   MOCK_HALAQOH,
   MOCK_KELAS,
-  MOCK_WALI,
   getKelasNama,
   getHalaqohNama,
-  getWaliNama,
   MockSantri,
 } from "@/lib/mock-data";
 import { TILAWATI_JILID } from "@/lib/tilawah-data";
@@ -50,7 +48,6 @@ const INITIAL_FORM: Omit<MockSantri, "id"> = {
   nama: "",
   idKelas: "",
   idHalaqoh: "",
-  idWali: "",
   tanggalMasuk: new Date().toISOString().split("T")[0],
   status: "Aktif",
   jilidSaatIni: 1,
@@ -301,20 +298,9 @@ export default function DataSantri() {
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Wali Santri</Label>
-                <Select value={form.idWali} onValueChange={(v) => setForm({ ...form, idWali: v })}>
-                  <SelectTrigger><SelectValue placeholder="Pilih Wali" /></SelectTrigger>
-                  <SelectContent>
-                    {MOCK_WALI.map((w) => (<SelectItem key={w.id} value={w.id}>{w.nama}</SelectItem>))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Tanggal Masuk</Label>
-                <Input type="date" value={form.tanggalMasuk} onChange={(e) => setForm({ ...form, tanggalMasuk: e.target.value })} />
-              </div>
+            <div className="space-y-2">
+              <Label>Tanggal Masuk</Label>
+              <Input type="date" value={form.tanggalMasuk} onChange={(e) => setForm({ ...form, tanggalMasuk: e.target.value })} />
             </div>
 
             {/* ── Posisi Tilawah ── */}

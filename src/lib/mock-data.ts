@@ -63,7 +63,6 @@ export interface MockSantri {
   nama: string;
   idKelas: string;
   idHalaqoh: string;
-  idWali: string;
   tanggalMasuk: string;
   status: string;
   // Tilawah
@@ -77,82 +76,56 @@ export interface MockSantri {
 
 export const MOCK_SANTRI: MockSantri[] = [
   // KBTK A - Jilid 1-2
-  { id: "s16", nis: "016", nisn: "0120001001", nama: "Aisyah Putri", idKelas: "ka", idHalaqoh: "h5", idWali: "w1", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 1, halamanSaatIni: 12, posisiHafalanJuz: 30, posisiHafalanSurah: "An-Nas", pencapaianHafalan: "Juz 30 (1 surat)" },
-  { id: "s17", nis: "017", nisn: "0120001002", nama: "Ahmad Faris", idKelas: "ka", idHalaqoh: "h5", idWali: "w2", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 1, halamanSaatIni: 8, posisiHafalanJuz: 30, posisiHafalanSurah: "Al-Falaq", pencapaianHafalan: "Juz 30 (2 surat)" },
+  { id: "s16", nis: "016", nisn: "0120001001", nama: "Aisyah Putri", idKelas: "ka", idHalaqoh: "h5", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 1, halamanSaatIni: 12, posisiHafalanJuz: 30, posisiHafalanSurah: "An-Nas", pencapaianHafalan: "Juz 30 (1 surat)" },
+  { id: "s17", nis: "017", nisn: "0120001002", nama: "Ahmad Faris", idKelas: "ka", idHalaqoh: "h5", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 1, halamanSaatIni: 8, posisiHafalanJuz: 30, posisiHafalanSurah: "Al-Falaq", pencapaianHafalan: "Juz 30 (2 surat)" },
   
   // KBTK B - Jilid 1-2
-  { id: "s18", nis: "018", nisn: "0120001003", nama: "Hafidz Ramadhan", idKelas: "kb", idHalaqoh: "h5", idWali: "w3", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 2, halamanSaatIni: 5, posisiHafalanJuz: 30, posisiHafalanSurah: "Al-Ikhlas", pencapaianHafalan: "Juz 30 (3 surat)" },
-  { id: "s19", nis: "019", nisn: "0120001004", nama: "Zahra Amelia", idKelas: "kb", idHalaqoh: "h5", idWali: "w4", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 2, halamanSaatIni: 15, posisiHafalanJuz: 30, posisiHafalanSurah: "Al-Lahab", pencapaianHafalan: "Juz 30 (4 surat)" },
+  { id: "s18", nis: "018", nisn: "0120001003", nama: "Hafidz Ramadhan", idKelas: "kb", idHalaqoh: "h5", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 2, halamanSaatIni: 5, posisiHafalanJuz: 30, posisiHafalanSurah: "Al-Ikhlas", pencapaianHafalan: "Juz 30 (3 surat)" },
+  { id: "s19", nis: "019", nisn: "0120001004", nama: "Zahra Amelia", idKelas: "kb", idHalaqoh: "h5", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 2, halamanSaatIni: 15, posisiHafalanJuz: 30, posisiHafalanSurah: "Al-Lahab", pencapaianHafalan: "Juz 30 (4 surat)" },
   
   // Kelas 1 Paket A - Jilid 2-3, target Juz 30
-  { id: "s20", nis: "020", nisn: "0120001005", nama: "Muhammad Haikal", idKelas: "k1", idHalaqoh: "h1", idWali: "w5", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 2, halamanSaatIni: 28, posisiHafalanJuz: 30, posisiHafalanSurah: "An-Naba", pencapaianHafalan: "1 Juz" },
-  { id: "s21", nis: "021", nisn: "0120001006", nama: "Khadijah Nur", idKelas: "k1", idHalaqoh: "h1", idWali: "w6", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 3, halamanSaatIni: 10, posisiHafalanJuz: 30, posisiHafalanSurah: "Al-Muthaffifin", pencapaianHafalan: "1 Juz" },
-  { id: "s22", nis: "022", nisn: "0120001007", nama: "Yusuf Abdillah", idKelas: "k1", idHalaqoh: "h1", idWali: "w7", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 2, halamanSaatIni: 35, posisiHafalanJuz: 30, posisiHafalanSurah: "At-Takwir", pencapaianHafalan: "0.5 Juz" },
+  { id: "s20", nis: "020", nisn: "0120001005", nama: "Muhammad Haikal", idKelas: "k1", idHalaqoh: "h1", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 2, halamanSaatIni: 28, posisiHafalanJuz: 30, posisiHafalanSurah: "An-Naba", pencapaianHafalan: "1 Juz" },
+  { id: "s21", nis: "021", nisn: "0120001006", nama: "Khadijah Nur", idKelas: "k1", idHalaqoh: "h1", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 3, halamanSaatIni: 10, posisiHafalanJuz: 30, posisiHafalanSurah: "Al-Muthaffifin", pencapaianHafalan: "1 Juz" },
+  { id: "s22", nis: "022", nisn: "0120001007", nama: "Yusuf Abdillah", idKelas: "k1", idHalaqoh: "h1", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 2, halamanSaatIni: 35, posisiHafalanJuz: 30, posisiHafalanSurah: "At-Takwir", pencapaianHafalan: "0.5 Juz" },
   
   // Kelas 2 Paket A - Jilid 3-4, target Juz 29
-  { id: "s23", nis: "023", nisn: "0120001008", nama: "Fatimah Az-Zahra", idKelas: "k2", idHalaqoh: "h2", idWali: "w8", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 3, halamanSaatIni: 22, posisiHafalanJuz: 29, posisiHafalanSurah: "Al-Mulk", pencapaianHafalan: "2 Juz" },
-  { id: "s24", nis: "024", nisn: "0120001009", nama: "Abdullah Fauzan", idKelas: "k2", idHalaqoh: "h2", idWali: "w9", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 4, halamanSaatIni: 8, posisiHafalanJuz: 29, posisiHafalanSurah: "Al-Mulk", pencapaianHafalan: "2 Juz" },
-  { id: "s13", nis: "013", nisn: "0112960174", nama: "Fatimah Zahra", idKelas: "k3", idHalaqoh: "h5", idWali: "w13", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 3, halamanSaatIni: 20, posisiHafalanJuz: 28, posisiHafalanSurah: "Al-Mujadilah", pencapaianHafalan: "3 Juz" },
+  { id: "s23", nis: "023", nisn: "0120001008", nama: "Fatimah Az-Zahra", idKelas: "k2", idHalaqoh: "h2", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 3, halamanSaatIni: 22, posisiHafalanJuz: 29, posisiHafalanSurah: "Al-Mulk", pencapaianHafalan: "2 Juz" },
+  { id: "s24", nis: "024", nisn: "0120001009", nama: "Abdullah Fauzan", idKelas: "k2", idHalaqoh: "h2", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 4, halamanSaatIni: 8, posisiHafalanJuz: 29, posisiHafalanSurah: "Al-Mulk", pencapaianHafalan: "2 Juz" },
+  { id: "s13", nis: "013", nisn: "0112960174", nama: "Fatimah Zahra", idKelas: "k3", idHalaqoh: "h5", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 3, halamanSaatIni: 20, posisiHafalanJuz: 28, posisiHafalanSurah: "Al-Mujadilah", pencapaianHafalan: "3 Juz" },
   
   // Kelas 3 Paket A - Jilid 4-5, target Juz 28
-  { id: "s15", nis: "015", nisn: "0111138392", nama: "Muhammad Rizki", idKelas: "k3", idHalaqoh: "h1", idWali: "w15", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 4, halamanSaatIni: 35, posisiHafalanJuz: 28, posisiHafalanSurah: "Al-Mujadilah", pencapaianHafalan: "3 Juz" },
-  { id: "s25", nis: "025", nisn: "0120001010", nama: "Hafshah Salsabila", idKelas: "k3", idHalaqoh: "h1", idWali: "w10", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 4, halamanSaatIni: 28, posisiHafalanJuz: 28, posisiHafalanSurah: "Ar-Rahman", pencapaianHafalan: "3 Juz" },
+  { id: "s15", nis: "015", nisn: "0111138392", nama: "Muhammad Rizki", idKelas: "k3", idHalaqoh: "h1", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 4, halamanSaatIni: 35, posisiHafalanJuz: 28, posisiHafalanSurah: "Al-Mujadilah", pencapaianHafalan: "3 Juz" },
+  { id: "s25", nis: "025", nisn: "0120001010", nama: "Hafshah Salsabila", idKelas: "k3", idHalaqoh: "h1", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 4, halamanSaatIni: 28, posisiHafalanJuz: 28, posisiHafalanSurah: "Ar-Rahman", pencapaianHafalan: "3 Juz" },
   
   // Kelas 4 Paket A - Jilid 5-6 / Al-Qur'an, target Juz 27
-  { id: "s14", nis: "014", nisn: "0112049283", nama: "Ali Akbar", idKelas: "k4", idHalaqoh: "h5", idWali: "w14", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 5, halamanSaatIni: 8, posisiHafalanJuz: 27, posisiHafalanSurah: "Adz-Dzariyat", pencapaianHafalan: "4 Juz" },
-  { id: "s26", nis: "026", nisn: "0120001011", nama: "Bilal Ahmad", idKelas: "k4", idHalaqoh: "h2", idWali: "w11", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 6, halamanSaatIni: 15, posisiHafalanJuz: 27, posisiHafalanSurah: "Qaf", pencapaianHafalan: "4 Juz" },
+  { id: "s14", nis: "014", nisn: "0112049283", nama: "Ali Akbar", idKelas: "k4", idHalaqoh: "h5", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 5, halamanSaatIni: 8, posisiHafalanJuz: 27, posisiHafalanSurah: "Adz-Dzariyat", pencapaianHafalan: "4 Juz" },
+  { id: "s26", nis: "026", nisn: "0120001011", nama: "Bilal Ahmad", idKelas: "k4", idHalaqoh: "h2", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 6, halamanSaatIni: 15, posisiHafalanJuz: 27, posisiHafalanSurah: "Qaf", pencapaianHafalan: "4 Juz" },
   
   // Kelas 5 Paket A - Al-Qur'an, target Juz 25-26
-  { id: "s7", nis: "007", nisn: "0118374625", nama: "Muhammad Zidan Ar Rasyid", idKelas: "k5", idHalaqoh: "h2", idWali: "w7", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 38, posisiHafalanJuz: 26, posisiHafalanSurah: "Al-Ahqaf", pencapaianHafalan: "5 Juz" },
-  { id: "s8", nis: "008", nisn: "0117463528", nama: "Hamzah Abdurrohman", idKelas: "k5", idHalaqoh: "h1", idWali: "w8", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 15, posisiHafalanJuz: 25, posisiHafalanSurah: "Fushshilat", pencapaianHafalan: "6 Juz" },
-  { id: "s27", nis: "027", nisn: "0120001012", nama: "Aminah Safira", idKelas: "k5", idHalaqoh: "h3", idWali: "w12", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 25, posisiHafalanJuz: 26, posisiHafalanSurah: "Al-Jatsiyah", pencapaianHafalan: "5 Juz" },
+  { id: "s7", nis: "007", nisn: "0118374625", nama: "Muhammad Zidan Ar Rasyid", idKelas: "k5", idHalaqoh: "h2", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 38, posisiHafalanJuz: 26, posisiHafalanSurah: "Al-Ahqaf", pencapaianHafalan: "5 Juz" },
+  { id: "s8", nis: "008", nisn: "0117463528", nama: "Hamzah Abdurrohman", idKelas: "k5", idHalaqoh: "h1", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 15, posisiHafalanJuz: 25, posisiHafalanSurah: "Fushshilat", pencapaianHafalan: "6 Juz" },
+  { id: "s27", nis: "027", nisn: "0120001012", nama: "Aminah Safira", idKelas: "k5", idHalaqoh: "h3", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 25, posisiHafalanJuz: 26, posisiHafalanSurah: "Al-Jatsiyah", pencapaianHafalan: "5 Juz" },
   
   // Kelas 6 Paket A - Al-Qur'an, target surat pilihan
-  { id: "s6", nis: "006", nisn: "0119283745", nama: "Khadijah Alesha W.", idKelas: "k6", idHalaqoh: "h1", idWali: "w6", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 17, posisiHafalanJuz: 24, posisiHafalanSurah: "Az-Zumar", pencapaianHafalan: "7 Juz" },
-  { id: "s9", nis: "009", nisn: "0116584739", nama: "Fahimah Nadeen D.", idKelas: "k6", idHalaqoh: "h2", idWali: "w9", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 33, posisiHafalanJuz: 23, posisiHafalanSurah: "Yasin", pencapaianHafalan: "8 Juz" },
+  { id: "s6", nis: "006", nisn: "0119283745", nama: "Khadijah Alesha W.", idKelas: "k6", idHalaqoh: "h1", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 17, posisiHafalanJuz: 24, posisiHafalanSurah: "Az-Zumar", pencapaianHafalan: "7 Juz" },
+  { id: "s9", nis: "009", nisn: "0116584739", nama: "Fahimah Nadeen D.", idKelas: "k6", idHalaqoh: "h2", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 33, posisiHafalanJuz: 23, posisiHafalanSurah: "Yasin", pencapaianHafalan: "8 Juz" },
   
   // Kelas 7 Paket B - Al-Qur'an
-  { id: "s12", nis: "112", nisn: "0113871065", nama: "Aisyah Mentari Azzahra", idKelas: "k7", idHalaqoh: "h4", idWali: "w12", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 10, posisiHafalanJuz: 22, posisiHafalanSurah: "Al-Ahzab", pencapaianHafalan: "9 Juz" },
-  { id: "s28", nis: "028", nisn: "0120001013", nama: "Hasan Abdurrahman", idKelas: "k7", idHalaqoh: "h4", idWali: "w13", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 40, posisiHafalanJuz: 21, posisiHafalanSurah: "Al-Ankabut", pencapaianHafalan: "10 Juz" },
+  { id: "s12", nis: "112", nisn: "0113871065", nama: "Aisyah Mentari Azzahra", idKelas: "k7", idHalaqoh: "h4", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 10, posisiHafalanJuz: 22, posisiHafalanSurah: "Al-Ahzab", pencapaianHafalan: "9 Juz" },
+  { id: "s28", nis: "028", nisn: "0120001013", nama: "Hasan Abdurrahman", idKelas: "k7", idHalaqoh: "h4", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 40, posisiHafalanJuz: 21, posisiHafalanSurah: "Al-Ankabut", pencapaianHafalan: "10 Juz" },
   
   // Kelas 8 Paket B - Al-Qur'an
-  { id: "s1", nis: "161", nisn: "0113806416", nama: "Qurrata 'Ayun", idKelas: "k8", idHalaqoh: "h2", idWali: "w1", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 28, posisiHafalanJuz: 20, posisiHafalanSurah: "An-Naml", pencapaianHafalan: "11 Juz" },
-  { id: "s2", nis: "124", nisn: "0137489265", nama: "Azzahra Zainab", idKelas: "k8", idHalaqoh: "h2", idWali: "w2", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 22, posisiHafalanJuz: 19, posisiHafalanSurah: "Al-Furqan", pencapaianHafalan: "12 Juz" },
-  { id: "s3", nis: "128", nisn: "0116049771", nama: "Fayyadah Fayola", idKelas: "k8", idHalaqoh: "h3", idWali: "w3", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 12, posisiHafalanJuz: 18, posisiHafalanSurah: "Al-Mu'minun", pencapaianHafalan: "13 Juz" },
-  { id: "s4", nis: "101", nisn: "2115038077", nama: "Dzaki Ash Shiddiq", idKelas: "k8", idHalaqoh: "h1", idWali: "w4", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 35, posisiHafalanJuz: 17, posisiHafalanSurah: "Al-Anbiya", pencapaianHafalan: "14 Juz" },
-  { id: "s5", nis: "130", nisn: "0108552956", nama: "Salwah Lathifah Wasiso", idKelas: "k8", idHalaqoh: "h3", idWali: "w5", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 40, posisiHafalanJuz: 16, posisiHafalanSurah: "Maryam", pencapaianHafalan: "15 Juz" },
+  { id: "s1", nis: "161", nisn: "0113806416", nama: "Qurrata 'Ayun", idKelas: "k8", idHalaqoh: "h2", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 28, posisiHafalanJuz: 20, posisiHafalanSurah: "An-Naml", pencapaianHafalan: "11 Juz" },
+  { id: "s2", nis: "124", nisn: "0137489265", nama: "Azzahra Zainab", idKelas: "k8", idHalaqoh: "h2", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 22, posisiHafalanJuz: 19, posisiHafalanSurah: "Al-Furqan", pencapaianHafalan: "12 Juz" },
+  { id: "s3", nis: "128", nisn: "0116049771", nama: "Fayyadah Fayola", idKelas: "k8", idHalaqoh: "h3", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 12, posisiHafalanJuz: 18, posisiHafalanSurah: "Al-Mu'minun", pencapaianHafalan: "13 Juz" },
+  { id: "s4", nis: "101", nisn: "2115038077", nama: "Dzaki Ash Shiddiq", idKelas: "k8", idHalaqoh: "h1", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 35, posisiHafalanJuz: 17, posisiHafalanSurah: "Al-Anbiya", pencapaianHafalan: "14 Juz" },
+  { id: "s5", nis: "130", nisn: "0108552956", nama: "Salwah Lathifah Wasiso", idKelas: "k8", idHalaqoh: "h3", tanggalMasuk: "2024-07-15", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 40, posisiHafalanJuz: 16, posisiHafalanSurah: "Maryam", pencapaianHafalan: "15 Juz" },
   
   // Kelas 9 Paket B - Al-Qur'an (hafalan paling banyak)
-  { id: "s10", nis: "110", nisn: "0115693847", nama: "Mazzayanun Nisa Z.A.M.", idKelas: "k9", idHalaqoh: "h3", idWali: "w10", tanggalMasuk: "2024-01-10", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 30, posisiHafalanJuz: 10, posisiHafalanSurah: "Yunus", pencapaianHafalan: "21 Juz" },
-  { id: "s11", nis: "111", nisn: "0114782956", nama: "Umar Abdurrohman", idKelas: "k9", idHalaqoh: "h4", idWali: "w11", tanggalMasuk: "2024-01-10", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 20, posisiHafalanJuz: 5, posisiHafalanSurah: "An-Nisa", pencapaianHafalan: "26 Juz" },
-  { id: "s29", nis: "029", nisn: "0120001014", nama: "Ibrahim Hafidz", idKelas: "k9", idHalaqoh: "h3", idWali: "w14", tanggalMasuk: "2024-01-10", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 45, posisiHafalanJuz: 3, posisiHafalanSurah: "Al-Imran", pencapaianHafalan: "28 Juz" },
-  { id: "s30", nis: "030", nisn: "0120001015", nama: "Maryam Hafizah", idKelas: "k9", idHalaqoh: "h4", idWali: "w15", tanggalMasuk: "2024-01-10", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 50, posisiHafalanJuz: 1, posisiHafalanSurah: "Al-Baqarah", pencapaianHafalan: "30 Juz" },
-];
-
-// ============ WALI SANTRI ============
-export interface MockWali {
-  id: string;
-  nama: string;
-  email: string;
-  phone: string;
-}
-
-export const MOCK_WALI: MockWali[] = [
-  { id: "w1", nama: "Bapak Yusuf", email: "yusuf.wali@gmail.com", phone: "081345678901" },
-  { id: "w2", nama: "Ibu Maryam", email: "maryam.wali@gmail.com", phone: "081345678902" },
-  { id: "w3", nama: "Bapak Ridwan", email: "ridwan.wali@gmail.com", phone: "081345678903" },
-  { id: "w4", nama: "Bapak Hamid", email: "hamid.wali@gmail.com", phone: "081345678904" },
-  { id: "w5", nama: "Ibu Zahra", email: "zahra.wali@gmail.com", phone: "081345678905" },
-  { id: "w6", nama: "H. Abdullah", email: "abdullah.wali@gmail.com", phone: "081345678906" },
-  { id: "w7", nama: "Bapak Hasan", email: "hasan.wali@gmail.com", phone: "081345678907" },
-  { id: "w8", nama: "Bapak Umar", email: "umar.wali@gmail.com", phone: "081345678908" },
-  { id: "w9", nama: "Ibu Fatimah", email: "fatimah.wali@gmail.com", phone: "081345678909" },
-  { id: "w10", nama: "Bapak Ali", email: "ali.wali@gmail.com", phone: "081345678910" },
-  { id: "w11", nama: "Ibu Khadijah", email: "khadijah.wali@gmail.com", phone: "081345678911" },
-  { id: "w12", nama: "Bapak Bilal", email: "bilal.wali@gmail.com", phone: "081345678912" },
-  { id: "w13", nama: "Ibu Aisyah", email: "aisyah.wali@gmail.com", phone: "081345678913" },
-  { id: "w14", nama: "Bapak Salman", email: "salman.wali@gmail.com", phone: "081345678914" },
-  { id: "w15", nama: "Bapak Zaid", email: "zaid.wali@gmail.com", phone: "081345678915" },
+  { id: "s10", nis: "110", nisn: "0115693847", nama: "Mazzayanun Nisa Z.A.M.", idKelas: "k9", idHalaqoh: "h3", tanggalMasuk: "2024-01-10", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 30, posisiHafalanJuz: 10, posisiHafalanSurah: "Yunus", pencapaianHafalan: "21 Juz" },
+  { id: "s11", nis: "111", nisn: "0114782956", nama: "Umar Abdurrohman", idKelas: "k9", idHalaqoh: "h4", tanggalMasuk: "2024-01-10", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 20, posisiHafalanJuz: 5, posisiHafalanSurah: "An-Nisa", pencapaianHafalan: "26 Juz" },
+  { id: "s29", nis: "029", nisn: "0120001014", nama: "Ibrahim Hafidz", idKelas: "k9", idHalaqoh: "h3", tanggalMasuk: "2024-01-10", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 45, posisiHafalanJuz: 3, posisiHafalanSurah: "Al-Imran", pencapaianHafalan: "28 Juz" },
+  { id: "s30", nis: "030", nisn: "0120001015", nama: "Maryam Hafizah", idKelas: "k9", idHalaqoh: "h4", tanggalMasuk: "2024-01-10", status: "Aktif", jilidSaatIni: 7, halamanSaatIni: 50, posisiHafalanJuz: 1, posisiHafalanSurah: "Al-Baqarah", pencapaianHafalan: "30 Juz" },
 ];
 
 // ============ USERS (akun pengguna) ============
@@ -176,14 +149,14 @@ export const MOCK_USERS: MockUser[] = [
   { id: "usr6", nama: MOCK_USTADZ[2].nama, username: "m.yusuf", role: "Asatidz", email: MOCK_USTADZ[2].email, phone: MOCK_USTADZ[2].phone, status: "Aktif" },
   { id: "usr7", nama: MOCK_USTADZ[3].nama, username: "siti.aminah", role: "Asatidz", email: MOCK_USTADZ[3].email, phone: MOCK_USTADZ[3].phone, status: "Aktif" },
   { id: "usr8", nama: MOCK_USTADZ[4].nama, username: "hasan.basri", role: "Asatidz", email: MOCK_USTADZ[4].email, phone: MOCK_USTADZ[4].phone, status: "Aktif" },
-  // Wali santri accounts
-  ...MOCK_WALI.map((w, i) => ({
+  // Akun WaliSantri menggunakan nama santri
+  ...MOCK_SANTRI.slice(0, 15).map((s, i) => ({
     id: `usr${9 + i}`,
-    nama: w.nama,
-    username: w.nama.toLowerCase().replace(/[^a-z]/g, '').slice(0, 10),
+    nama: `Wali ${s.nama}`,
+    username: s.nama.toLowerCase().replace(/[^a-z]/g, '').slice(0, 12),
     role: "WaliSantri" as const,
-    email: w.email,
-    phone: w.phone,
+    email: `${s.nama.toLowerCase().replace(/[^a-z]/g, '').slice(0, 10)}@wali.imis.sch.id`,
+    phone: `08131${String(i + 1).padStart(7, '0')}`,
     status: "Aktif",
   })),
 ];
@@ -195,8 +168,6 @@ export const getUstadzById = (id: string) => MOCK_USTADZ.find(u => u.id === id);
 export const getUstadzNama = (id: string) => getUstadzById(id)?.nama || "-";
 export const getHalaqohById = (id: string) => MOCK_HALAQOH.find(h => h.id === id);
 export const getHalaqohNama = (id: string) => getHalaqohById(id)?.nama || "-";
-export const getWaliById = (id: string) => MOCK_WALI.find(w => w.id === id);
-export const getWaliNama = (id: string) => getWaliById(id)?.nama || "-";
 
 export const getSantriByHalaqoh = (halaqohId: string) =>
   MOCK_SANTRI.filter(s => s.idHalaqoh === halaqohId && s.status === "Aktif");
