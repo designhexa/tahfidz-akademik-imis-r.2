@@ -251,7 +251,7 @@ export const TasmiCandidateCard = ({
                   <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: "2px solid #4B5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Globe className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <span style={{ fontWeight: 600, color: "#374151", fontSize: "20px", lineHeight: "32px" }}>www.imis.sch.id</span>
+                  <span style={{ fontWeight: 600, color: "#374151", fontSize: "20px", height: "32px", display: "inline-flex", alignItems: "center" }}>www.imis.sch.id</span>
                 </div>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
                   <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: "2px solid #4B5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -263,7 +263,7 @@ export const TasmiCandidateCard = ({
                   <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: "2px solid #4B5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Facebook className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <span style={{ fontWeight: 600, color: "#374151", fontSize: "20px", lineHeight: "32px" }}>imammuslimislamicschool</span>
+                  <span style={{ fontWeight: 600, color: "#374151", fontSize: "20px", height: "32px", display: "inline-flex", alignItems: "center" }}>imammuslimislamicschool</span>
                 </div>
               </div>
             </div>
