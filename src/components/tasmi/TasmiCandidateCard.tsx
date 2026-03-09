@@ -203,11 +203,11 @@ export const TasmiCandidateCard = ({
               <table className="w-full" style={{ borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ background: currentScheme.header }}>
-                    <th className="py-3 px-4 text-center font-semibold text-white w-16" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>No.</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Nama Lengkap</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white w-20" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Kelas</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white w-28" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Jumlah Hafalan</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white w-44" style={{ borderBottom: "2px solid #374151" }}>Juz yang Diujikan</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-base w-16" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>No.</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-base" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Nama Lengkap</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-base w-20" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Kelas</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-base w-28" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Jumlah Hafalan</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-base w-44" style={{ borderBottom: "2px solid #374151" }}>Juz yang Diujikan</th>
                   </tr>
                 </thead>
                 <tbody>
