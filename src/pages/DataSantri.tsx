@@ -298,20 +298,9 @@ export default function DataSantri() {
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Wali Santri</Label>
-                <Select value={form.idWali} onValueChange={(v) => setForm({ ...form, idWali: v })}>
-                  <SelectTrigger><SelectValue placeholder="Pilih Wali" /></SelectTrigger>
-                  <SelectContent>
-                    {MOCK_WALI.map((w) => (<SelectItem key={w.id} value={w.id}>{w.nama}</SelectItem>))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Tanggal Masuk</Label>
-                <Input type="date" value={form.tanggalMasuk} onChange={(e) => setForm({ ...form, tanggalMasuk: e.target.value })} />
-              </div>
+            <div className="space-y-2">
+              <Label>Tanggal Masuk</Label>
+              <Input type="date" value={form.tanggalMasuk} onChange={(e) => setForm({ ...form, tanggalMasuk: e.target.value })} />
             </div>
 
             {/* ── Posisi Tilawah ── */}
