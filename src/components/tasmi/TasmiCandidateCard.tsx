@@ -203,11 +203,11 @@ export const TasmiCandidateCard = ({
               <table className="w-full" style={{ borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ background: currentScheme.header }}>
-                    <th className="py-3 px-4 text-center font-semibold text-white w-16" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>No.</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Nama Lengkap</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white w-20" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Kelas</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white w-28" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Jumlah Hafalan</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white w-44" style={{ borderBottom: "2px solid #374151" }}>Juz yang Diujikan</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-base w-16" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>No.</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-base" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Nama Lengkap</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-base w-20" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Kelas</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-base w-28" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>Jumlah Hafalan</th>
+                    <th className="py-3 px-4 text-center font-semibold text-white text-base w-44" style={{ borderBottom: "2px solid #374151" }}>Juz yang Diujikan</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -216,19 +216,19 @@ export const TasmiCandidateCard = ({
                       key={candidate.no}
                       style={{ backgroundColor: getRowColor(index) }}
                     >
-                      <td className="py-3 px-4 text-center font-medium" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center font-medium text-base" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.no}
                       </td>
-                      <td className="py-3 px-4 font-medium text-gray-800" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 font-medium text-gray-800 text-base" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.nama}
                       </td>
-                      <td className="py-3 px-4 text-center" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center text-base" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.kelas}
                       </td>
-                      <td className="py-3 px-4 text-center" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center text-base" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
                         {candidate.jumlahHafalan}
                       </td>
-                      <td className="py-3 px-4 text-center font-medium text-green-700" style={{ borderBottom: "1px solid #6B7280" }}>
+                      <td className="py-3 px-4 text-center font-medium text-green-700 text-base" style={{ borderBottom: "1px solid #6B7280" }}>
                         {candidate.juzDiujikan}
                       </td>
                     </tr>
@@ -245,16 +245,27 @@ export const TasmiCandidateCard = ({
             </div>
 
             {/* Footer - Social Links */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
-                <Globe className="w-5 h-5 text-green-700" />
-                <span className="font-semibold text-gray-700 text-sm">www.imis.sch.id</span>
-              </div>
-              <div className="flex items-center gap-3 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
-                <Youtube className="w-5 h-5 text-red-600" />
-                <Instagram className="w-5 h-5 text-pink-600" />
-                <Facebook className="w-5 h-5 text-blue-600" />
-                <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
+            <div className="mt-8 flex items-center justify-center">
+              <div className="flex items-center gap-5 px-6 py-3 rounded-full border-2 border-gray-500" style={{ backgroundColor: "transparent" }}>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                    <Globe className="w-4 h-4 text-gray-700" strokeWidth={2} />
+                  </div>
+                  <span className="font-semibold text-gray-700 text-sm">www.imis.sch.id</span>
+                </div>
+                <div className="w-px h-6 bg-gray-400" />
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                    <Youtube className="w-4 h-4 text-gray-700" strokeWidth={2} />
+                  </div>
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                    <Instagram className="w-4 h-4 text-gray-700" strokeWidth={2} />
+                  </div>
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                    <Facebook className="w-4 h-4 text-gray-700" strokeWidth={2} />
+                  </div>
+                  <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
+                </div>
               </div>
             </div>
           </div>
