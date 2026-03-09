@@ -48,11 +48,11 @@ export interface MockHalaqoh {
 }
 
 export const MOCK_HALAQOH: MockHalaqoh[] = [
-  { id: "h1", nama: "Halaqoh Al-Fatih", idUstadz: "u1", tingkat: "Pemula", jumlahSantri: 4 },
-  { id: "h2", nama: "Halaqoh An-Nur", idUstadz: "u2", tingkat: "Menengah", jumlahSantri: 4 },
-  { id: "h3", nama: "Halaqoh Al-Furqon", idUstadz: "u3", tingkat: "Lanjutan", jumlahSantri: 3 },
-  { id: "h4", nama: "Halaqoh Al-Hidayah", idUstadz: "u4", tingkat: "Pemula", jumlahSantri: 2 },
-  { id: "h5", nama: "Halaqoh As-Salam", idUstadz: "u5", tingkat: "Menengah", jumlahSantri: 2 },
+  { id: "h1", nama: "Halaqoh Al-Fatih", idUstadz: "u1", tingkat: "Pemula", jumlahSantri: 7 },
+  { id: "h2", nama: "Halaqoh An-Nur", idUstadz: "u2", tingkat: "Menengah", jumlahSantri: 7 },
+  { id: "h3", nama: "Halaqoh Al-Furqon", idUstadz: "u3", tingkat: "Lanjutan", jumlahSantri: 6 },
+  { id: "h4", nama: "Halaqoh Al-Hidayah", idUstadz: "u4", tingkat: "Pemula", jumlahSantri: 4 },
+  { id: "h5", nama: "Halaqoh As-Salam", idUstadz: "u5", tingkat: "Menengah", jumlahSantri: 6 },
 ];
 
 // ============ SANTRI ============
