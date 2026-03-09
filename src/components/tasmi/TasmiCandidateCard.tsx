@@ -63,9 +63,18 @@ export const TasmiCandidateCard = ({
 
   const handleDownloadImage = async () => {
     if (!printRef.current) return;
-    
+
     setIsGenerating(true);
     try {
+      // Ensure webfonts are fully loaded before canvas render (important for html2canvas baseline alignment)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const fonts = (document as any).fonts as FontFaceSet | undefined;
+      if (fonts?.ready) {
+        await fonts.ready;
+      }
+      // Small buffer so layout settles
+      await new Promise((r) => setTimeout(r, 120));
+
       const canvas = await html2canvas(printRef.current, {
         scale: 2,
         useCORS: true,
