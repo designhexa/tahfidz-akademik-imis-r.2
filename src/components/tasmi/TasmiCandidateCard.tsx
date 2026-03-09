@@ -246,24 +246,24 @@ export const TasmiCandidateCard = ({
 
             {/* Footer - Social Links */}
             <div className="mt-8 flex items-center justify-center">
-              <div className="flex items-center gap-5 px-6 py-3 rounded-full border-2 border-gray-500" style={{ backgroundColor: "transparent" }}>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "20px", padding: "10px 24px", borderRadius: "9999px", border: "2px solid #6B7280", backgroundColor: "transparent" }}>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                  <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: "2px solid #4B5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Globe className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <span className="font-semibold text-gray-700 text-xl">www.imis.sch.id</span>
+                  <span style={{ fontWeight: 600, color: "#374151", fontSize: "20px", lineHeight: "32px" }}>www.imis.sch.id</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                <div style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                  <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: "2px solid #4B5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Youtube className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                  <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: "2px solid #4B5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Instagram className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                  <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: "2px solid #4B5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Facebook className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <span className="font-semibold text-gray-700 text-xl">imammuslimislamicschool</span>
+                  <span style={{ fontWeight: 600, color: "#374151", fontSize: "20px", lineHeight: "32px" }}>imammuslimislamicschool</span>
                 </div>
               </div>
             </div>
