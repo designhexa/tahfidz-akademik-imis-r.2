@@ -149,10 +149,10 @@ export const MOCK_USERS: MockUser[] = [
   { id: "usr6", nama: MOCK_USTADZ[2].nama, username: "m.yusuf", role: "Asatidz", email: MOCK_USTADZ[2].email, phone: MOCK_USTADZ[2].phone, status: "Aktif" },
   { id: "usr7", nama: MOCK_USTADZ[3].nama, username: "siti.aminah", role: "Asatidz", email: MOCK_USTADZ[3].email, phone: MOCK_USTADZ[3].phone, status: "Aktif" },
   { id: "usr8", nama: MOCK_USTADZ[4].nama, username: "hasan.basri", role: "Asatidz", email: MOCK_USTADZ[4].email, phone: MOCK_USTADZ[4].phone, status: "Aktif" },
-  // Akun WaliSantri menggunakan nama santri
-  ...MOCK_SANTRI.slice(0, 15).map((s, i) => ({
+  // Akun WaliSantri menggunakan nama santri langsung (untuk semua santri)
+  ...MOCK_SANTRI.map((s, i) => ({
     id: `usr${9 + i}`,
-    nama: `Wali ${s.nama}`,
+    nama: s.nama,
     username: s.nama.toLowerCase().replace(/[^a-z]/g, '').slice(0, 12),
     role: "WaliSantri" as const,
     email: `${s.nama.toLowerCase().replace(/[^a-z]/g, '').slice(0, 10)}@wali.imis.sch.id`,
