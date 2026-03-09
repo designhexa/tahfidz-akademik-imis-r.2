@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, User, BookOpen, Award, TrendingUp, BookOpenCheck } from "lucide-react";
-import { MOCK_SANTRI, getKelasNama, getHalaqohNama, getWaliNama } from "@/lib/mock-data";
+import { ArrowLeft, BookOpen, Award, TrendingUp, BookOpenCheck } from "lucide-react";
+import { MOCK_SANTRI, getKelasNama, getHalaqohNama } from "@/lib/mock-data";
 import { MOCK_SETORAN_TILAWAH, TILAWATI_JILID, HALAMAN_PER_JILID } from "@/lib/tilawah-data";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
 
