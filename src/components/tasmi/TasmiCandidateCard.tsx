@@ -165,6 +165,7 @@ export const TasmiCandidateCard = ({
           className="w-[1080px] min-h-[1080px] mx-auto relative overflow-hidden"
           style={{
             background: "linear-gradient(135deg, #e8f5e9 0%, #f5f5f5 50%, #e3f2fd 100%)",
+            fontFamily: "'Poppins', sans-serif",
           }}
         >
           {/* Background Image */}
