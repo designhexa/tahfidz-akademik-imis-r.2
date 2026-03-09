@@ -212,11 +212,21 @@ export const TasmiCandidateCard = ({
               <table className="w-full" style={{ borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ background: currentScheme.header }}>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-xl w-16" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151", verticalAlign: "middle" }}>No.</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-xl" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151", verticalAlign: "middle" }}>Nama Lengkap</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-xl w-20" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151", verticalAlign: "middle" }}>Kelas</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-xl w-28" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151", verticalAlign: "middle" }}>Jumlah Hafalan</th>
-                    <th className="py-3 px-4 text-center font-semibold text-white text-xl w-44" style={{ borderBottom: "2px solid #374151", verticalAlign: "middle" }}>Juz yang Diujikan</th>
+                    <th className="p-0 text-center font-semibold text-white text-xl w-16" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>
+                      <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>No.</div>
+                    </th>
+                    <th className="p-0 text-center font-semibold text-white text-xl" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>
+                      <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>Nama Lengkap</div>
+                    </th>
+                    <th className="p-0 text-center font-semibold text-white text-xl w-20" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>
+                      <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>Kelas</div>
+                    </th>
+                    <th className="p-0 text-center font-semibold text-white text-xl w-28" style={{ borderRight: "2px solid #374151", borderBottom: "2px solid #374151" }}>
+                      <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>Jumlah Hafalan</div>
+                    </th>
+                    <th className="p-0 text-center font-semibold text-white text-xl w-44" style={{ borderBottom: "2px solid #374151" }}>
+                      <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>Juz yang Diujikan</div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
