@@ -250,15 +250,9 @@ export const TasmiCandidateCard = ({
                 <Globe className="w-5 h-5 text-green-700" />
                 <span className="font-semibold text-gray-700 text-sm">www.imis.sch.id</span>
               </div>
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
+              <div className="flex items-center gap-3 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
                 <Youtube className="w-5 h-5 text-red-600" />
-                <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
-              </div>
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
                 <Instagram className="w-5 h-5 text-pink-600" />
-                <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
-              </div>
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-white/90 rounded-xl shadow-md border border-gray-200">
                 <Facebook className="w-5 h-5 text-blue-600" />
                 <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
               </div>
