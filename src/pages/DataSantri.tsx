@@ -32,10 +32,8 @@ import {
   MOCK_SANTRI,
   MOCK_HALAQOH,
   MOCK_KELAS,
-  MOCK_WALI,
   getKelasNama,
   getHalaqohNama,
-  getWaliNama,
   MockSantri,
 } from "@/lib/mock-data";
 import { TILAWATI_JILID } from "@/lib/tilawah-data";
