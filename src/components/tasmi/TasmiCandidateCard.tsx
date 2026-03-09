@@ -235,20 +235,30 @@ export const TasmiCandidateCard = ({
                       key={candidate.no}
                       style={{ backgroundColor: getRowColor(index) }}
                     >
-                      <td className="py-3 px-4 text-center font-medium text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
-                        {candidate.no}
+                      <td className="p-0 text-center font-medium text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                        <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>
+                          {candidate.no}
+                        </div>
                       </td>
-                      <td className="py-3 px-4 font-medium text-gray-800 text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
-                        {candidate.nama}
+                      <td className="p-0 font-medium text-gray-800 text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                        <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "flex-start", lineHeight: 1.1 }}>
+                          {candidate.nama}
+                        </div>
                       </td>
-                      <td className="py-3 px-4 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
-                        {candidate.kelas}
+                      <td className="p-0 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                        <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>
+                          {candidate.kelas}
+                        </div>
                       </td>
-                      <td className="py-3 px-4 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
-                        {candidate.jumlahHafalan}
+                      <td className="p-0 text-center text-lg" style={{ borderRight: "1px solid #6B7280", borderBottom: "1px solid #6B7280" }}>
+                        <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>
+                          {candidate.jumlahHafalan}
+                        </div>
                       </td>
-                      <td className="py-3 px-4 text-center font-medium text-green-700 text-lg" style={{ borderBottom: "1px solid #6B7280", verticalAlign: "middle" }}>
-                        {candidate.juzDiujikan}
+                      <td className="p-0 text-center font-medium text-green-700 text-lg" style={{ borderBottom: "1px solid #6B7280" }}>
+                        <div style={{ minHeight: "56px", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1.1 }}>
+                          {candidate.juzDiujikan}
+                        </div>
                       </td>
                     </tr>
                   ))}
