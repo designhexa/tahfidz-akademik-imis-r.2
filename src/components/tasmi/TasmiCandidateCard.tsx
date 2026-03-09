@@ -251,7 +251,7 @@ export const TasmiCandidateCard = ({
                   <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
                     <Globe className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <span className="font-semibold text-gray-700 text-base">www.imis.sch.id</span>
+                  <span className="font-semibold text-gray-700 text-xl">www.imis.sch.id</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
