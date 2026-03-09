@@ -48,7 +48,6 @@ const INITIAL_FORM: Omit<MockSantri, "id"> = {
   nama: "",
   idKelas: "",
   idHalaqoh: "",
-  idWali: "",
   tanggalMasuk: new Date().toISOString().split("T")[0],
   status: "Aktif",
   jilidSaatIni: 1,
