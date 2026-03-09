@@ -251,9 +251,8 @@ export const TasmiCandidateCard = ({
                   <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
                     <Globe className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <span className="font-semibold text-gray-700 text-sm">www.imis.sch.id</span>
+                  <span className="font-semibold text-gray-700 text-base">www.imis.sch.id</span>
                 </div>
-                <div className="w-px h-6 bg-gray-400" />
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
                     <Youtube className="w-4 h-4 text-gray-700" strokeWidth={2} />
@@ -264,7 +263,7 @@ export const TasmiCandidateCard = ({
                   <div className="w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
                     <Facebook className="w-4 h-4 text-gray-700" strokeWidth={2} />
                   </div>
-                  <span className="font-semibold text-gray-700 text-sm">imammuslimislamicschool</span>
+                  <span className="font-semibold text-gray-700 text-base">imammuslimislamicschool</span>
                 </div>
               </div>
             </div>
