@@ -741,10 +741,6 @@ const DrillHafalan = () => {
 
                 <SelectContent className="w-[260px] p-2">
                   <div className="grid grid-cols-6 gap-1">
-                    
-                    <SelectItem value="all" className="justify-center text-center">
-                      Semua Juz
-                    </SelectItem>
 
                     {Array.from({ length: 30 }, (_, i) => (
                       <SelectItem
@@ -755,6 +751,10 @@ const DrillHafalan = () => {
                         {i + 1}
                       </SelectItem>
                     ))}
+                    
+                    <SelectItem value="all" className="justify-center text-center">
+                      Semua Juz
+                    </SelectItem>
 
                   </div>
                 </SelectContent>
