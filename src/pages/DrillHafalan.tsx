@@ -735,12 +735,28 @@ const DrillHafalan = () => {
                 <Input placeholder="Cari santri..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 h-9 md:h-10 text-sm" />
               </div>
               <Select value={filterJuz} onValueChange={setFilterJuz}>
-                <SelectTrigger className="h-9 md:h-10 text-sm"><SelectValue placeholder="Juz" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Juz</SelectItem>
-                  {Array.from({ length: 30 }, (_, i) => (
-                    <SelectItem key={i + 1} value={String(i + 1)}>Juz {i + 1}</SelectItem>
-                  ))}
+                <SelectTrigger className="h-9 md:h-10 text-sm">
+                  <SelectValue placeholder="Semua Juz" />
+                </SelectTrigger>
+
+                <SelectContent className="w-[260px] p-2">
+                  <div className="grid grid-cols-6 gap-1">
+                    
+                    <SelectItem value="all" className="justify-center text-center">
+                      Semua Juz
+                    </SelectItem>
+
+                    {Array.from({ length: 30 }, (_, i) => (
+                      <SelectItem
+                        key={i + 1}
+                        value={String(i + 1)}
+                        className="justify-center text-center"
+                      >
+                        {i + 1}
+                      </SelectItem>
+                    ))}
+
+                  </div>
                 </SelectContent>
               </Select>
               <Select value={filterHalaqoh} onValueChange={setFilterHalaqoh}>
