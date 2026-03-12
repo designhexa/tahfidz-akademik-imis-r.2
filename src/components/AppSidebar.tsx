@@ -71,6 +71,7 @@ const penilaianItems: MenuItem[] = [
       { title: "Ujian Tilawah Semester", url: "/tilawah/ujian-semester", icon: ClipboardCheck },
     ],
   },
+  { title: "Sertifikat Tasmi'", url: "/sertifikat-tasmi", icon: Award },
   { title: "Rapor Tahfidz", url: "/rapor", icon: FileSpreadsheet },
 ];
 
