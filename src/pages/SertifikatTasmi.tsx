@@ -1,61 +1,128 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import { Layout } from "@/components/Layout";
-import logoImis from "@/assets/logo-imis.png";
-import kopSurat from "@/assets/kop-surat-imis.png";
 import html2canvas from "html2canvas";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Download, Image, Award, Plus, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Download, Award, CheckCircle2, Upload, Image, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { toast } from "sonner";
+import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
+import { MOCK_SANTRI } from "@/lib/mock-data";
+import { getJuzName } from "@/lib/quran-data";
+import { SertifikatPreview, type SertifikatData } from "@/components/sertifikat/SertifikatPreview";
 
-interface CertificateData {
-  nama: string;
-  kelas: string;
-  nis: string;
-  jumlahHafalan: string;
-  juzLulus: string;
+// Dummy riwayat ujian yang lulus (sama dengan UjianTasmi)
+const dummyHasilUjian = [
+  { id: "1", santriId: "1", santriNama: "Ahmad Fauzi", juz: 30, tanggal: "2025-01-05", predikat: "Mumtaz", status: "Lulus" },
+  { id: "2", santriId: "1", santriNama: "Ahmad Fauzi", juz: 29, tanggal: "2025-01-06", predikat: "Jayyid Jiddan", status: "Lulus" },
+];
+
+interface LulusCandidate {
+  id: string;
+  santriId: string;
+  santriNama: string;
+  juz: number;
+  tanggal: string;
   predikat: string;
 }
-
-const predikatOptions = ["Mumtaz (Istimewa)", "Jayyid Jiddan (Sangat Baik)", "Jayyid (Baik)", "Maqbul (Cukup)"];
 
 export default function SertifikatTasmi() {
   const printRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState<string>("");
+  const [bgImage, setBgImage] = useState<string | null>(null);
 
-  const [tanggalUjian, setTanggalUjian] = useState(format(new Date(), "yyyy-MM-dd"));
+  // Settings
   const [nomorSertifikat, setNomorSertifikat] = useState("001/IMIS/TASMI/2026");
-  const [namaKepalaSekolah, setNamaKepalaSekolah] = useState("Ustadz Ahmad Fauzi, S.Pd.I");
-  const [namaKoordinator, setNamaKoordinator] = useState("Ustadz Muhammad Rizki, S.Q.");
+  const [namaKetuaPKBM, setNamaKetuaPKBM] = useState("NANANG KOSIM, S.SI");
 
-  const [data, setData] = useState<CertificateData>({
-    nama: "",
-    kelas: "",
-    nis: "",
-    jumlahHafalan: "",
-    juzLulus: "",
-    predikat: predikatOptions[0],
-  });
+  const { entries } = useSetoranPersistence();
 
-  const formattedDate = format(new Date(tanggalUjian), "d MMMM yyyy", { locale: idLocale });
+  // Merge persisted tasmi entries (lulus only) with dummy data
+  const lulusCandidates: LulusCandidate[] = useMemo(() => {
+    const fromPersisted = entries
+      .filter(e => e.jenis === "tasmi" && e.status !== "Mengulang")
+      .map(e => ({
+        id: e.id || `${e.santriId}-${e.juz}`,
+        santriId: e.santriId,
+        santriNama: MOCK_SANTRI.find(s => s.id === e.santriId)?.nama || "Santri",
+        juz: e.juz || 30,
+        tanggal: e.tanggal instanceof Date ? e.tanggal.toISOString() : String(e.tanggal),
+        predikat: e.status || "Mumtaz",
+      }));
+
+    const fromDummy = dummyHasilUjian
+      .filter(u => u.status === "Lulus")
+      .map(u => ({
+        id: u.id,
+        santriId: u.santriId,
+        santriNama: u.santriNama,
+        juz: u.juz,
+        tanggal: u.tanggal,
+        predikat: u.predikat,
+      }));
+
+    // Combine, deduplicate by id
+    const combined = [...fromPersisted, ...fromDummy];
+    const seen = new Set<string>();
+    return combined.filter(c => {
+      if (seen.has(c.id)) return false;
+      seen.add(c.id);
+      return true;
+    });
+  }, [entries]);
+
+  const selected = lulusCandidates.find(c => c.id === selectedCandidate);
+
+  const sertifikatData: SertifikatData = useMemo(() => {
+    if (!selected) {
+      return {
+        nama: "",
+        nomorSertifikat,
+        juzLulus: "",
+        tanggalUjian: "",
+        predikat: "",
+        namaKetuaPKBM,
+      };
+    }
+    const tgl = new Date(selected.tanggal);
+    return {
+      nama: selected.santriNama,
+      nomorSertifikat,
+      juzLulus: getJuzName(selected.juz),
+      tanggalUjian: format(tgl, "d MMMM yyyy", { locale: idLocale }),
+      predikat: selected.predikat,
+      namaKetuaPKBM,
+    };
+  }, [selected, nomorSertifikat, namaKetuaPKBM]);
 
   const handleDownloadImage = async () => {
-    if (!printRef.current) return;
-    if (!data.nama) {
-      toast.error("Nama santri harus diisi");
-      return;
-    }
+    if (!printRef.current || !selected) return;
 
     setIsGenerating(true);
     try {
       const fonts = (document as any).fonts as FontFaceSet | undefined;
       if (fonts?.ready) await fonts.ready;
-      await new Promise((r) => setTimeout(r, 150));
+      await new Promise((r) => setTimeout(r, 200));
 
       const canvas = await html2canvas(printRef.current, {
         scale: 2,
@@ -64,10 +131,9 @@ export default function SertifikatTasmi() {
       });
 
       const link = document.createElement("a");
-      link.download = `sertifikat-tasmi-${data.nama.replace(/\s+/g, "-").toLowerCase()}.png`;
+      link.download = `sertifikat-tasmi-${selected.santriNama.replace(/\s+/g, "-").toLowerCase()}.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
-
       toast.success("Sertifikat berhasil diunduh!");
     } catch (error) {
       console.error("Error generating certificate:", error);
@@ -75,6 +141,21 @@ export default function SertifikatTasmi() {
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handleBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("File harus berupa gambar");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setBgImage(reader.result as string);
+      toast.success("Background template berhasil diupload");
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -86,77 +167,88 @@ export default function SertifikatTasmi() {
             Sertifikat Lulus Ujian Tasmi'
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Generate sertifikat kelulusan sertifikasi hafalan Al-Qur'an
+            Generate sertifikat dari daftar santri yang lulus ujian tasmi'
           </p>
         </div>
 
-        {/* Form Input */}
+        {/* Daftar Santri Lulus */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <Image className="w-4 h-4" />
-              Data Sertifikat
+              <CheckCircle2 className="w-4 h-4 text-green-600" />
+              Daftar Santri Lulus Ujian Tasmi'
             </CardTitle>
+            <CardDescription>
+              Pilih santri untuk generate sertifikat kelulusan
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Nama Santri</Label>
-                <Input
-                  value={data.nama}
-                  onChange={(e) => setData({ ...data, nama: e.target.value })}
-                  placeholder="Masukkan nama santri"
-                />
+          <CardContent>
+            {lulusCandidates.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Award className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p className="font-medium">Belum ada santri yang lulus ujian tasmi'</p>
+                <p className="text-sm mt-1">Santri yang lulus ujian di halaman Ujian Tasmi' akan muncul di sini</p>
               </div>
-              <div className="space-y-2">
-                <Label>NIS</Label>
-                <Input
-                  value={data.nis}
-                  onChange={(e) => setData({ ...data, nis: e.target.value })}
-                  placeholder="Nomor Induk Santri"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Kelas</Label>
-                <Input
-                  value={data.kelas}
-                  onChange={(e) => setData({ ...data, kelas: e.target.value })}
-                  placeholder="Contoh: 7A"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Jumlah Hafalan</Label>
-                <Input
-                  value={data.jumlahHafalan}
-                  onChange={(e) => setData({ ...data, jumlahHafalan: e.target.value })}
-                  placeholder="Contoh: 5 Juz"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Juz yang Lulus Diujikan</Label>
-                <Input
-                  value={data.juzLulus}
-                  onChange={(e) => setData({ ...data, juzLulus: e.target.value })}
-                  placeholder="Contoh: Juz 1 - 5"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Predikat</Label>
-                <Select value={data.predikat} onValueChange={(v) => setData({ ...data, predikat: v })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {predikatOptions.map((p) => (
-                      <SelectItem key={p} value={p}>{p}</SelectItem>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12">No</TableHead>
+                      <TableHead>Nama Santri</TableHead>
+                      <TableHead>Juz</TableHead>
+                      <TableHead>Tanggal Ujian</TableHead>
+                      <TableHead>Predikat</TableHead>
+                      <TableHead className="text-center">Aksi</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {lulusCandidates.map((c, idx) => (
+                      <TableRow
+                        key={c.id}
+                        className={selectedCandidate === c.id ? "bg-primary/5" : ""}
+                      >
+                        <TableCell>{idx + 1}</TableCell>
+                        <TableCell className="font-medium">{c.santriNama}</TableCell>
+                        <TableCell>{getJuzName(c.juz)}</TableCell>
+                        <TableCell>
+                          {new Date(c.tanggal).toLocaleDateString("id-ID", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className="bg-green-500 text-white">{c.predikat}</Badge>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Button
+                            variant={selectedCandidate === c.id ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setSelectedCandidate(c.id)}
+                          >
+                            {selectedCandidate === c.id ? "Dipilih" : "Pilih"}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </TableBody>
+                </Table>
               </div>
-            </div>
+            )}
+          </CardContent>
+        </Card>
 
-            <div className="border-t pt-4 space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground">Informasi Tambahan</h3>
+        {/* Settings & Download */}
+        {selected && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Image className="w-4 h-4" />
+                Pengaturan Sertifikat
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Nomor Sertifikat</Label>
@@ -166,202 +258,72 @@ export default function SertifikatTasmi() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Tanggal Ujian</Label>
+                  <Label>Nama Ketua PKBM</Label>
                   <Input
-                    type="date"
-                    value={tanggalUjian}
-                    onChange={(e) => setTanggalUjian(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Nama Kepala Sekolah</Label>
-                  <Input
-                    value={namaKepalaSekolah}
-                    onChange={(e) => setNamaKepalaSekolah(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Nama Koordinator Tahfidz</Label>
-                  <Input
-                    value={namaKoordinator}
-                    onChange={(e) => setNamaKoordinator(e.target.value)}
+                    value={namaKetuaPKBM}
+                    onChange={(e) => setNamaKetuaPKBM(e.target.value)}
                   />
                 </div>
               </div>
-            </div>
 
-            <Button
-              onClick={handleDownloadImage}
-              disabled={isGenerating || !data.nama}
-              className="w-full"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              {isGenerating ? "Generating..." : "Download Sertifikat"}
-            </Button>
-          </CardContent>
-        </Card>
+              {/* Background template upload */}
+              <div className="space-y-2">
+                <Label>Template Background (Opsional)</Label>
+                <div className="flex items-center gap-3">
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBgUpload}
+                      className="hidden"
+                    />
+                    <div className="flex items-center gap-2 px-4 py-2 border rounded-md text-sm hover:bg-muted transition-colors">
+                      <Upload className="w-4 h-4" />
+                      {bgImage ? "Ganti Template" : "Upload Template BG"}
+                    </div>
+                  </label>
+                  {bgImage && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive"
+                      onClick={() => {
+                        setBgImage(null);
+                        toast.info("Background template dihapus");
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Hapus
+                    </Button>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Upload gambar background sertifikat (landscape 1120×794px). Jika tidak diupload, akan menggunakan desain default.
+                </p>
+              </div>
+
+              <Button
+                onClick={handleDownloadImage}
+                disabled={isGenerating}
+                className="w-full"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                {isGenerating ? "Generating..." : `Download Sertifikat - ${selected.santriNama}`}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Certificate Preview */}
-        <div className="overflow-auto border rounded-lg bg-muted/50 p-4">
-          <div
-            ref={printRef}
-            style={{
-              width: "1120px",
-              minHeight: "800px",
-              backgroundColor: "#ffffff",
-              fontFamily: "'Times New Roman', serif",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
-            {/* Decorative border */}
-            <div style={{
-              position: "absolute",
-              inset: "12px",
-              border: "3px solid #15803d",
-              borderRadius: "4px",
-              pointerEvents: "none",
-            }} />
-            <div style={{
-              position: "absolute",
-              inset: "18px",
-              border: "1px solid #15803d",
-              borderRadius: "2px",
-              pointerEvents: "none",
-            }} />
-
-            {/* Content */}
-            <div style={{ padding: "40px 60px", position: "relative", zIndex: 1 }}>
-              {/* Header */}
-              <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "8px" }}>
-                <img src={logoImis} alt="Logo IMIS" style={{ width: "90px", height: "90px", objectFit: "contain" }} />
-                <div style={{ flex: 1, textAlign: "center" }}>
-                  <div style={{ fontSize: "13px", color: "#374151", letterSpacing: "1px" }}>YAYASAN IMAM MUSLIM</div>
-                  <div style={{ fontSize: "22px", fontWeight: "bold", color: "#15803d", letterSpacing: "2px", marginTop: "2px" }}>
-                    PKBM IMAM MUSLIM ISLAMIC SCHOOL
-                  </div>
-                  <div style={{ fontSize: "11px", color: "#6B7280", marginTop: "4px" }}>
-                    Jl. Raya Cibeureum No. 222, Kota Tasikmalaya, Jawa Barat 46196
-                  </div>
-                  <div style={{ fontSize: "11px", color: "#6B7280" }}>
-                    Telp: (0265) 123456 | Email: info@imis.sch.id | www.imis.sch.id
-                  </div>
-                </div>
-                <div style={{ width: "90px" }} />
-              </div>
-
-              {/* Divider */}
-              <div style={{ borderBottom: "3px double #15803d", marginBottom: "24px" }} />
-
-              {/* Title */}
-              <div style={{ textAlign: "center", marginBottom: "24px" }}>
-                <div style={{
-                  fontSize: "28px",
-                  fontWeight: "bold",
-                  color: "#15803d",
-                  letterSpacing: "4px",
-                  textTransform: "uppercase",
-                }}>
-                  SERTIFIKAT
-                </div>
-                <div style={{ fontSize: "16px", color: "#374151", marginTop: "4px", letterSpacing: "2px" }}>
-                  KELULUSAN SERTIFIKASI HAFALAN AL-QUR'AN
-                </div>
-                <div style={{ fontSize: "12px", color: "#6B7280", marginTop: "8px" }}>
-                  No: {nomorSertifikat}
-                </div>
-              </div>
-
-              {/* Body */}
-              <div style={{ fontSize: "15px", color: "#1F2937", lineHeight: "2", maxWidth: "900px", margin: "0 auto" }}>
-                <p style={{ textAlign: "center", marginBottom: "16px" }}>
-                  Diberikan kepada:
-                </p>
-
-                {/* Name highlight */}
-                <div style={{
-                  textAlign: "center",
-                  margin: "16px 0",
-                  padding: "12px 0",
-                  borderBottom: "2px solid #15803d",
-                }}>
-                  <div style={{
-                    fontSize: "32px",
-                    fontWeight: "bold",
-                    color: "#15803d",
-                    fontFamily: "'Times New Roman', serif",
-                  }}>
-                    {data.nama || "Nama Santri"}
-                  </div>
-                </div>
-
-                {/* Details table */}
-                <table style={{ margin: "16px auto", borderCollapse: "collapse", fontSize: "15px" }}>
-                  <tbody>
-                    <tr>
-                      <td style={{ padding: "4px 16px 4px 0", color: "#374151" }}>NIS</td>
-                      <td style={{ padding: "4px 8px" }}>:</td>
-                      <td style={{ padding: "4px 0", fontWeight: 600 }}>{data.nis || "-"}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: "4px 16px 4px 0", color: "#374151" }}>Kelas</td>
-                      <td style={{ padding: "4px 8px" }}>:</td>
-                      <td style={{ padding: "4px 0", fontWeight: 600 }}>{data.kelas || "-"}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: "4px 16px 4px 0", color: "#374151" }}>Jumlah Hafalan</td>
-                      <td style={{ padding: "4px 8px" }}>:</td>
-                      <td style={{ padding: "4px 0", fontWeight: 600 }}>{data.jumlahHafalan || "-"}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: "4px 16px 4px 0", color: "#374151" }}>Juz yang Diujikan</td>
-                      <td style={{ padding: "4px 8px" }}>:</td>
-                      <td style={{ padding: "4px 0", fontWeight: 600 }}>{data.juzLulus || "-"}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: "4px 16px 4px 0", color: "#374151" }}>Predikat</td>
-                      <td style={{ padding: "4px 8px" }}>:</td>
-                      <td style={{ padding: "4px 0", fontWeight: "bold", color: "#15803d" }}>{data.predikat}</td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <p style={{ textAlign: "center", marginTop: "16px", fontSize: "14px", color: "#374151" }}>
-                  Telah dinyatakan <strong style={{ color: "#15803d" }}>LULUS</strong> dalam Ujian Sertifikasi Hafalan Al-Qur'an (Tasmi')
-                  <br />yang diselenggarakan pada tanggal <strong>{formattedDate}</strong>
-                </p>
-              </div>
-
-              {/* Signatures */}
-              <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginTop: "40px",
-                padding: "0 40px",
-              }}>
-                <div style={{ textAlign: "center", width: "260px" }}>
-                  <div style={{ fontSize: "13px", color: "#374151" }}>Koordinator Tahfidz</div>
-                  <div style={{ height: "70px" }} />
-                  <div style={{ fontSize: "14px", fontWeight: "bold", color: "#1F2937", borderBottom: "1px solid #374151", paddingBottom: "4px" }}>
-                    {namaKoordinator}
-                  </div>
-                </div>
-                <div style={{ textAlign: "center", width: "260px" }}>
-                  <div style={{ fontSize: "13px", color: "#374151" }}>Kepala Sekolah</div>
-                  <div style={{ height: "70px" }} />
-                  <div style={{ fontSize: "14px", fontWeight: "bold", color: "#1F2937", borderBottom: "1px solid #374151", paddingBottom: "4px" }}>
-                    {namaKepalaSekolah}
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div style={{ textAlign: "center", marginTop: "24px", fontSize: "11px", color: "#9CA3AF" }}>
-                Tasikmalaya, {formattedDate}
-              </div>
-            </div>
+        {selected && (
+          <div className="overflow-auto border rounded-lg bg-muted/50 p-4">
+            <SertifikatPreview
+              ref={printRef}
+              data={sertifikatData}
+              bgImage={bgImage}
+            />
           </div>
-        </div>
+        )}
       </div>
     </Layout>
   );
