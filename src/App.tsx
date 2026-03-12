@@ -35,6 +35,7 @@ import TilawahUjianSemester from "./pages/TilawahUjianSemester";
 import DetailSantri from "./pages/DetailSantri";
 // import TambahDrill from "./pages/TambahDrill";
 import TambahSetoran from "./pages/TambahSetoran";
+import SertifikatTasmi from "./pages/SertifikatTasmi";
 // Profil & Pengaturan
 import Profil from "./pages/Profil";
 import Pengaturan from "./pages/Pengaturan";
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/laporan" element={<LaporanHafalan />} />
             <Route path="/ujian-tasmi" element={<UjianTasmi />} />
             <Route path="/ujian-tahfidz" element={<UjianTahfidz />} />
+            <Route path="/sertifikat-tasmi" element={<SertifikatTasmi />} />
             <Route path="/rapor" element={<RaporSemester />} />
             <Route path="/santri" element={<DataSantri />} />
             <Route path="/santri/:id" element={<DetailSantri />} />
