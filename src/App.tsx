@@ -59,6 +59,7 @@ const App = () => (
             <Route path="/laporan" element={<LaporanHafalan />} />
             <Route path="/ujian-tasmi" element={<UjianTasmi />} />
             <Route path="/ujian-tahfidz" element={<UjianTahfidz />} />
+            <Route path="/sertifikat-tasmi" element={<SertifikatTasmi />} />
             <Route path="/rapor" element={<RaporSemester />} />
             <Route path="/santri" element={<DataSantri />} />
             <Route path="/santri/:id" element={<DetailSantri />} />

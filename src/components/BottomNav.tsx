@@ -126,6 +126,7 @@ export function BottomNav() {
           items={[
             { title: "Laporan Harian", url: "/laporan", icon: ClipboardList },
             { title: "Riwayat Drill", url: "/drill", icon: Target },
+            { title: "Sertifikat Tasmi'", url: "/sertifikat-tasmi", icon: Award },
             { title: "Rapor Tahfidz", url: "/rapor", icon: Award },
           ]}
         />
