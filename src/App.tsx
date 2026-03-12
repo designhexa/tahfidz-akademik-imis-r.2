@@ -35,6 +35,7 @@ import TilawahUjianSemester from "./pages/TilawahUjianSemester";
 import DetailSantri from "./pages/DetailSantri";
 // import TambahDrill from "./pages/TambahDrill";
 import TambahSetoran from "./pages/TambahSetoran";
+import SertifikatTasmi from "./pages/SertifikatTasmi";
 // Profil & Pengaturan
 import Profil from "./pages/Profil";
 import Pengaturan from "./pages/Pengaturan";
