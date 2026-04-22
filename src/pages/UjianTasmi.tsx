@@ -554,7 +554,7 @@ const UjianTasmi = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {mockSantriProgress
+                      {allCandidates
                         .filter(s => tasmiType === "5juz" ? s.jumlahJuzHafal >= 5 : s.eligibleForTasmi)
                         .map((student, index) => {
                           const nextJuz = getNextTasmiJuz(student.juzSelesai);
@@ -713,7 +713,7 @@ const UjianTasmi = () => {
               </Select>
             </div>
             <TasmiCandidateCard
-              candidates={mockSantriProgress
+              candidates={allCandidates
                 .filter(s => tasmiType === "5juz" ? s.jumlahJuzHafal >= 5 : s.eligibleForTasmi)
                 .map((s, i) => {
                   const nextJuz = getNextTasmiJuz(s.juzSelesai);
