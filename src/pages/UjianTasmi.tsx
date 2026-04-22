@@ -196,6 +196,66 @@ const UjianTasmi = () => {
 
   const { entries, addEntries } = useSetoranPersistence();
 
+  // Derive santri yang sudah lulus drill tahap terakhir dari juz yang sedang dihafal.
+  // Sumber: entries kalender dengan jenis "drill", status "Lulus", dan level === total drill juz tsb.
+  const drillDerivedCandidates = useMemo<StudentProgress[]>(() => {
+    // Map santriId -> Set of juz numbers yang lulus drill tahap terakhir
+    const passedLastDrillByJuz = new Map<string, Set<number>>();
+    entries.forEach((e) => {
+      if (e.jenis !== "drill" || !e.juz || !e.level) return;
+      if (e.status !== "Lulus") return;
+      const totalLevels = getDrillsForJuz(e.juz).length;
+      if (totalLevels > 0 && e.level === totalLevels) {
+        if (!passedLastDrillByJuz.has(e.santriId)) {
+          passedLastDrillByJuz.set(e.santriId, new Set());
+        }
+        passedLastDrillByJuz.get(e.santriId)!.add(e.juz);
+      }
+    });
+
+    const derived: StudentProgress[] = [];
+    passedLastDrillByJuz.forEach((juzSet, santriId) => {
+      // Skip jika santri sudah ada di mock list (sumber utama)
+      if (mockSantriProgress.some((m) => m.id === santriId)) return;
+      const santri = MOCK_SANTRI.find((s) => s.id === santriId);
+      if (!santri) return;
+      const juzSelesai = Array.from(juzSet).sort((a, b) => b - a);
+      derived.push({
+        id: santri.id,
+        nama: santri.nama,
+        nis: santri.nis || santri.id,
+        kelas: getKelasNama(santri.idKelas),
+        kelasNumber: "",
+        halaqoh: getHalaqohNama(santri.idHalaqoh),
+        jumlahJuzHafal: juzSelesai.length,
+        juzSelesai,
+        drillSelesai: true,
+        eligibleForTasmi: true,
+      });
+    });
+    return derived;
+  }, [entries]);
+
+  // Gabungan kandidat: mock + dari riwayat drill
+  const allCandidates = useMemo<StudentProgress[]>(() => {
+    return [...mockSantriProgress, ...drillDerivedCandidates];
+  }, [drillDerivedCandidates]);
+
+  // Bulk action: daftarkan otomatis semua santri yang sudah lulus drill tahap terakhir
+  const handleAutoDaftarDariDrill = () => {
+    const eligibleIds = allCandidates
+      .filter((s) => s.eligibleForTasmi)
+      .map((s) => s.id);
+    const newOnes = eligibleIds.filter((id) => !registeredCandidates.includes(id));
+    if (newOnes.length === 0) {
+      toast.info("Semua santri yang sudah lulus drill tahap akhir sudah terdaftar");
+      return;
+    }
+    saveRegistered([...registeredCandidates, ...newOnes]);
+    toast.success(`${newOnes.length} santri otomatis didaftarkan dari riwayat drill`);
+  };
+
+
   const handleSelectJuz5Juz = (juzIndex: number, juzValue: string) => {
     const juzNumber = parseInt(juzValue);
 
