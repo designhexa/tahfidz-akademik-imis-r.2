@@ -64,10 +64,12 @@ import { JuzSelector } from "@/components/JuzSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { TasmiCandidateCard } from "@/components/tasmi/TasmiCandidateCard";
 import { TasmiForm1Juz } from "@/components/tasmi/TasmiForm1Juz";
-import { mockSantriProgress, getNextTasmiJuz } from "@/lib/target-hafalan";
+import { mockSantriProgress, getNextTasmiJuz, type StudentProgress } from "@/lib/target-hafalan";
 import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
+import { getDrillsForJuz } from "@/lib/drill-data";
 import { toast } from "sonner";
 import { MOCK_SANTRI, MOCK_HALAQOH, MOCK_KELAS, getHalaqohNama, getKelasNama, getSantriByNama } from "@/lib/mock-data";
+import { Sparkles } from "lucide-react";
 
 const JUZ_ORDER = [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
 
