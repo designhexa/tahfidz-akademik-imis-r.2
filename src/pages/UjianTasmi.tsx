@@ -64,10 +64,12 @@ import { JuzSelector } from "@/components/JuzSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { TasmiCandidateCard } from "@/components/tasmi/TasmiCandidateCard";
 import { TasmiForm1Juz } from "@/components/tasmi/TasmiForm1Juz";
-import { mockSantriProgress, getNextTasmiJuz } from "@/lib/target-hafalan";
+import { mockSantriProgress, getNextTasmiJuz, type StudentProgress } from "@/lib/target-hafalan";
 import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
+import { getDrillsForJuz } from "@/lib/drill-data";
 import { toast } from "sonner";
 import { MOCK_SANTRI, MOCK_HALAQOH, MOCK_KELAS, getHalaqohNama, getKelasNama, getSantriByNama } from "@/lib/mock-data";
+import { Sparkles } from "lucide-react";
 
 const JUZ_ORDER = [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
 
@@ -193,6 +195,66 @@ const UjianTasmi = () => {
   const [diberhentikan5Juz, setDiberhentikan5Juz] = useState(false);
 
   const { entries, addEntries } = useSetoranPersistence();
+
+  // Derive santri yang sudah lulus drill tahap terakhir dari juz yang sedang dihafal.
+  // Sumber: entries kalender dengan jenis "drill", status "Lulus", dan level === total drill juz tsb.
+  const drillDerivedCandidates = useMemo<StudentProgress[]>(() => {
+    // Map santriId -> Set of juz numbers yang lulus drill tahap terakhir
+    const passedLastDrillByJuz = new Map<string, Set<number>>();
+    entries.forEach((e) => {
+      if (e.jenis !== "drill" || !e.juz || !e.level) return;
+      if (e.status !== "Lulus") return;
+      const totalLevels = getDrillsForJuz(e.juz).length;
+      if (totalLevels > 0 && e.level === totalLevels) {
+        if (!passedLastDrillByJuz.has(e.santriId)) {
+          passedLastDrillByJuz.set(e.santriId, new Set());
+        }
+        passedLastDrillByJuz.get(e.santriId)!.add(e.juz);
+      }
+    });
+
+    const derived: StudentProgress[] = [];
+    passedLastDrillByJuz.forEach((juzSet, santriId) => {
+      // Skip jika santri sudah ada di mock list (sumber utama)
+      if (mockSantriProgress.some((m) => m.id === santriId)) return;
+      const santri = MOCK_SANTRI.find((s) => s.id === santriId);
+      if (!santri) return;
+      const juzSelesai = Array.from(juzSet).sort((a, b) => b - a);
+      derived.push({
+        id: santri.id,
+        nama: santri.nama,
+        nis: santri.nis || santri.id,
+        kelas: getKelasNama(santri.idKelas),
+        kelasNumber: "",
+        halaqoh: getHalaqohNama(santri.idHalaqoh),
+        jumlahJuzHafal: juzSelesai.length,
+        juzSelesai,
+        drillSelesai: true,
+        eligibleForTasmi: true,
+      });
+    });
+    return derived;
+  }, [entries]);
+
+  // Gabungan kandidat: mock + dari riwayat drill
+  const allCandidates = useMemo<StudentProgress[]>(() => {
+    return [...mockSantriProgress, ...drillDerivedCandidates];
+  }, [drillDerivedCandidates]);
+
+  // Bulk action: daftarkan otomatis semua santri yang sudah lulus drill tahap terakhir
+  const handleAutoDaftarDariDrill = () => {
+    const eligibleIds = allCandidates
+      .filter((s) => s.eligibleForTasmi)
+      .map((s) => s.id);
+    const newOnes = eligibleIds.filter((id) => !registeredCandidates.includes(id));
+    if (newOnes.length === 0) {
+      toast.info("Semua santri yang sudah lulus drill tahap akhir sudah terdaftar");
+      return;
+    }
+    saveRegistered([...registeredCandidates, ...newOnes]);
+    toast.success(`${newOnes.length} santri otomatis didaftarkan dari riwayat drill`);
+  };
+
 
   const handleSelectJuz5Juz = (juzIndex: number, juzValue: string) => {
     const juzNumber = parseInt(juzValue);
@@ -444,13 +506,27 @@ const UjianTasmi = () => {
           <TabsContent value="candidates" className="mt-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Award className="w-5 h-5 text-amber-500" />
-                  Calon Peserta Ujian Tasmi'
-                </CardTitle>
-                <CardDescription>
-                  Santri yang telah menyelesaikan drill dan siap mengikuti ujian
-                </CardDescription>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                  <div>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Award className="w-5 h-5 text-amber-500" />
+                      Calon Peserta Ujian Tasmi'
+                    </CardTitle>
+                    <CardDescription>
+                      Santri yang telah menyelesaikan drill dan siap mengikuti ujian
+                    </CardDescription>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAutoDaftarDariDrill}
+                    className="border-amber-500 text-amber-700 hover:bg-amber-50"
+                    title="Daftarkan otomatis santri yang sudah lulus drill tahap terakhir juz yang sedang dihafal"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Daftarkan dari Riwayat Drill
+                  </Button>
+                </div>
                 <div className="pt-2">
                   <Select value={tasmiType} onValueChange={(v) => setTasmiType(v as "1juz" | "5juz")}>
                     <SelectTrigger className="w-full sm:w-60">
@@ -478,7 +554,7 @@ const UjianTasmi = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {mockSantriProgress
+                      {allCandidates
                         .filter(s => tasmiType === "5juz" ? s.jumlahJuzHafal >= 5 : s.eligibleForTasmi)
                         .map((student, index) => {
                           const nextJuz = getNextTasmiJuz(student.juzSelesai);
@@ -637,7 +713,7 @@ const UjianTasmi = () => {
               </Select>
             </div>
             <TasmiCandidateCard
-              candidates={mockSantriProgress
+              candidates={allCandidates
                 .filter(s => tasmiType === "5juz" ? s.jumlahJuzHafal >= 5 : s.eligibleForTasmi)
                 .map((s, i) => {
                   const nextJuz = getNextTasmiJuz(s.juzSelesai);
