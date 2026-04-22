@@ -506,13 +506,27 @@ const UjianTasmi = () => {
           <TabsContent value="candidates" className="mt-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Award className="w-5 h-5 text-amber-500" />
-                  Calon Peserta Ujian Tasmi'
-                </CardTitle>
-                <CardDescription>
-                  Santri yang telah menyelesaikan drill dan siap mengikuti ujian
-                </CardDescription>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                  <div>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Award className="w-5 h-5 text-amber-500" />
+                      Calon Peserta Ujian Tasmi'
+                    </CardTitle>
+                    <CardDescription>
+                      Santri yang telah menyelesaikan drill dan siap mengikuti ujian
+                    </CardDescription>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAutoDaftarDariDrill}
+                    className="border-amber-500 text-amber-700 hover:bg-amber-50"
+                    title="Daftarkan otomatis santri yang sudah lulus drill tahap terakhir juz yang sedang dihafal"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Daftarkan dari Riwayat Drill
+                  </Button>
+                </div>
                 <div className="pt-2">
                   <Select value={tasmiType} onValueChange={(v) => setTasmiType(v as "1juz" | "5juz")}>
                     <SelectTrigger className="w-full sm:w-60">
