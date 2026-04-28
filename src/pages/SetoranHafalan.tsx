@@ -246,11 +246,13 @@ const SetoranHafalan = () => {
             toast.error(`Drill sebelumnya belum lulus. Selesaikan drill secara berurutan.`);
             return;
           }
-          // Cek apakah cakupan setoran untuk drill ini sudah cukup
-          if (!next.passed) {
-            // Boleh dibuka (untuk dicatat hasil drill), namun beri info area cakupan
-            toast.info(`Siap Drill Juz ${activeJuz} — Level ${next.drillNumber}: ${formatDrillDescription(next)}`);
+          if (!next.setoranReady) {
+            toast.warning(
+              `Cakupan setoran untuk Level ${next.drillNumber} belum lengkap (${formatDrillDescription(next)}). Lengkapi setoran hafalan dulu.`
+            );
+            return;
           }
+          toast.info(`Siap Drill Juz ${activeJuz} — Level ${next.drillNumber}: ${formatDrillDescription(next)}`);
           setOpenDrill(true);
         } else if (subType === "tasmi") {
           if (!registeredCandidates.includes(selectedSantri)) {
