@@ -495,6 +495,41 @@ const SetoranHafalan = () => {
             </div>
           )}
 
+          {/* Drill progress info */}
+          {selectedSantri &&
+            activeTab === "setoran_hafalan" &&
+            subType === "drill" &&
+            activeJuz && (
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">
+                  Progress Drill Juz {activeJuz}:
+                </span>
+                <span>
+                  {drillProgressCount.passed} / {drillProgressCount.total} lulus
+                </span>
+                <div className="flex gap-0.5">
+                  {drillProgressActive.map((d) => (
+                    <div
+                      key={d.drillNumber}
+                      title={`Level ${d.drillNumber} — ${
+                        d.passed ? "Lulus" : d.unlocked ? "Siap" : "Terkunci"
+                      }`}
+                      className={cn(
+                        "w-4 h-4 rounded-sm border text-[8px] font-semibold flex items-center justify-center",
+                        d.passed
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : d.unlocked
+                          ? "bg-amber-500/20 text-amber-700 border-amber-500/40"
+                          : "bg-muted text-muted-foreground border-border"
+                      )}
+                    >
+                      {d.drillNumber}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
           {/* Month navigation */}
           <div className="flex items-center justify-between mt-3">
             <Button variant="outline" size="icon" className="h-8 w-8" onClick={handlePrevMonth}>
