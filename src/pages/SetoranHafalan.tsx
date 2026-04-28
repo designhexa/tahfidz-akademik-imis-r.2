@@ -129,6 +129,42 @@ const SetoranHafalan = () => {
 
   const santriData = MOCK_SANTRI.find((s) => s.id === selectedSantri);
 
+  // Derive juz aktif: juz terkecil yang masih punya drill belum lulus & sudah ada setoran.
+  // Fallback: juz dengan setoran_hafalan terbaru.
+  const activeJuz = useMemo(() => {
+    if (!selectedSantri) return null;
+    const setoranByJuz = new Map<number, Date>();
+    entries.forEach((e) => {
+      if (e.santriId === selectedSantri && e.jenis === "setoran_hafalan" && e.juz) {
+        const prev = setoranByJuz.get(e.juz);
+        if (!prev || e.tanggal > prev) setoranByJuz.set(e.juz, e.tanggal);
+      }
+    });
+    if (setoranByJuz.size === 0) return null;
+    // Cari juz terkecil yang masih punya drill belum lulus
+    const juzList = Array.from(setoranByJuz.keys()).sort((a, b) => a - b);
+    for (const juz of juzList) {
+      const next = getNextDrillForJuz(entries, selectedSantri, juz);
+      if (next) return juz;
+    }
+    // Semua sudah lulus → ambil juz dengan setoran terbaru
+    return juzList.sort((a, b) =>
+      (setoranByJuz.get(b)!.getTime() - setoranByJuz.get(a)!.getTime())
+    )[0];
+  }, [entries, selectedSantri]);
+
+  const drillProgressActive = useMemo(() => {
+    if (!selectedSantri || !activeJuz) return [];
+    return getDrillProgressForJuz(entries, selectedSantri, activeJuz);
+  }, [entries, selectedSantri, activeJuz]);
+
+  const drillProgressCount = useMemo(() => {
+    return {
+      passed: drillProgressActive.filter((d) => d.passed).length,
+      total: drillProgressActive.length,
+    };
+  }, [drillProgressActive]);
+
   // Filter entries for current tab and santri - each tab has its own calendar
   const filteredEntries = useMemo(() => {
     if (!selectedSantri) return [];
