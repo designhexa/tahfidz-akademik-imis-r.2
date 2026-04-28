@@ -73,12 +73,19 @@ function isPageRangeCovered(
   return true;
 }
 
+function normalizeSurahName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/['’`ʿʾ\-_\s\.]/g, "");
+}
+
 function isSurahRangeCovered(
   setoran: CalendarEntry[],
   range: NonNullable<DrillDefinition["surahRanges"]>[number]
 ): boolean {
   const coveredAyat = new Set<number>();
-  let fullySetor = false;
+  let surahTouched = false;
+  const targetName = normalizeSurahName(range.surahName);
 
   setoran.forEach((s) => {
     const matchByNumber =
@@ -86,8 +93,10 @@ function isSurahRangeCovered(
     const matchByName =
       !matchByNumber &&
       s.surah !== undefined &&
-      s.surah.trim().toLowerCase() === range.surahName.trim().toLowerCase();
+      normalizeSurahName(s.surah) === targetName;
     if (!matchByNumber && !matchByName) return;
+
+    surahTouched = true;
 
     let ayatRange: [number, number] | null = null;
     if (s.ayatDari !== undefined && s.ayatSampai !== undefined) {
@@ -101,19 +110,19 @@ function isSurahRangeCovered(
 
     if (ayatRange) {
       for (let a = ayatRange[0]; a <= ayatRange[1]; a++) coveredAyat.add(a);
-    } else {
-      // Tidak ada info ayat → anggap full surah disetorkan
-      fullySetor = true;
     }
   });
 
   if (range.fullSurah) {
-    return fullySetor;
+    // Panjang akhir tiap surah tidak tersedia di sini, jadi cukup
+    // dianggap memenuhi target full-surah bila surah sudah pernah
+    // disetorkan (cocok by number atau by name).
+    return surahTouched;
   }
 
   const start = range.ayatStart ?? 1;
   const end = range.ayatEnd ?? start;
-  if (fullySetor) return true;
+  if (!surahTouched) return false;
   for (let a = start; a <= end; a++) {
     if (!coveredAyat.has(a)) return false;
   }
