@@ -1,15 +1,22 @@
-// Engine validasi kelulusan Drill berdasarkan riwayat Setoran Hafalan.
+// Engine validasi Drill Hafalan.
 //
-// Aturan:
-// - Drill dianggap "passed" jika seluruh cakupan (halaman atau surah/ayat)
-//   sudah pernah disetorkan oleh santri pada juz terkait dengan
-//   status setoran "Lancar" (atau "Lulus" untuk kompatibilitas).
-// - Drill harus berurutan: drill ke-N hanya bisa diakses bila drill ke-(N-1)
-//   sudah lulus (kecuali drill pertama).
+// Tiga konsep terpisah:
+// 1. setoranReady  → cakupan halaman / surah-ayat target drill sudah pernah
+//                    disetorkan (status "Lancar"/"Lulus") di setoran_hafalan.
+//                    => Syarat agar santri BOLEH mengikuti drill tsb.
+// 2. passed        → ada entry jenis "drill" pada juz & level yang sama
+//                    dengan status "Lulus".
+//                    => Tandanya santri sudah LULUS drill tsb.
+// 3. unlocked      → drill ke-(N-1) sudah passed (atau N == 1).
+//                    => Tandanya level drill ini boleh dipilih (kunci terbuka).
+//
+// Aturan progresi: setelah Drill N lulus, secara otomatis Drill (N+1) menjadi
+// unlocked. Untuk benar-benar mencatat hasil Drill (N+1) santri juga butuh
+// setoranReady = true (cakupan setoran sudah cukup).
 //
 // Catatan parsing:
-// - CalendarEntry menyimpan `halaman` & `ayat` sebagai string range (contoh
-//   "1-5" atau "6"). Helper parseRange menanganinya.
+// - CalendarEntry menyimpan `halaman` & `ayat` sebagai string range
+//   (contoh "1-5" / "6"). Helper parseRange menanganinya.
 // - Untuk setoran berbasis surah, kita mencocokkan via `surahNumber` bila ada,
 //   atau via nama surah (case-insensitive) sebagai fallback.
 
@@ -20,6 +27,7 @@ import {
 } from "@/lib/drill-data";
 
 const PASSED_SETORAN_STATUS = new Set(["Lancar", "Lulus"]);
+const PASSED_DRILL_STATUS = new Set(["Lulus"]);
 
 function parseRange(value?: string | number): [number, number] | null {
   if (value === undefined || value === null || value === "") return null;
@@ -69,7 +77,6 @@ function isSurahRangeCovered(
   setoran: CalendarEntry[],
   range: NonNullable<DrillDefinition["surahRanges"]>[number]
 ): boolean {
-  // Kumpulkan ayat yang sudah disetor untuk surah ini
   const coveredAyat = new Set<number>();
   let fullySetor = false;
 
@@ -82,7 +89,6 @@ function isSurahRangeCovered(
       s.surah.trim().toLowerCase() === range.surahName.trim().toLowerCase();
     if (!matchByNumber && !matchByName) return;
 
-    // Range ayat dari ayatDari/ayatSampai numerik atau dari string `ayat`
     let ayatRange: [number, number] | null = null;
     if (s.ayatDari !== undefined && s.ayatSampai !== undefined) {
       ayatRange = [
@@ -102,7 +108,7 @@ function isSurahRangeCovered(
   });
 
   if (range.fullSurah) {
-    return fullySetor; // butuh setoran full surah eksplisit
+    return fullySetor;
   }
 
   const start = range.ayatStart ?? 1;
@@ -114,15 +120,15 @@ function isSurahRangeCovered(
   return true;
 }
 
-export function checkDrillEligibility(
+/** Apakah cakupan SETORAN sudah cukup untuk mengikuti drill ini. */
+export function isSetoranReadyForDrill(
   entries: CalendarEntry[],
   santriId: string,
   juz: number,
   drillNumber: number
 ): boolean {
   if (!santriId || !juz || !drillNumber) return false;
-  const drills = getDrillsForJuz(juz);
-  const drill = drills.find((d) => d.drillNumber === drillNumber);
+  const drill = getDrillsForJuz(juz).find((d) => d.drillNumber === drillNumber);
   if (!drill) return false;
 
   const setoran = getSantriSetoranForJuz(entries, santriId, juz);
@@ -132,17 +138,47 @@ export function checkDrillEligibility(
     if (drill.pageStart === undefined || drill.pageEnd === undefined) return false;
     return isPageRangeCovered(setoran, drill.pageStart, drill.pageEnd);
   }
-
   if (drill.type === "surah" && drill.surahRanges) {
     return drill.surahRanges.every((r) => isSurahRangeCovered(setoran, r));
   }
-
   return false;
 }
 
+/** Apakah santri SUDAH LULUS drill ini (ada entry drill status "Lulus"). */
+export function isDrillPassed(
+  entries: CalendarEntry[],
+  santriId: string,
+  juz: number,
+  drillNumber: number
+): boolean {
+  return entries.some(
+    (e) =>
+      e.santriId === santriId &&
+      e.jenis === "drill" &&
+      e.juz === juz &&
+      (e as any).level === drillNumber &&
+      e.status !== undefined &&
+      PASSED_DRILL_STATUS.has(e.status)
+  );
+}
+
+/**
+ * Backward-compat: dipakai sebagai alias "lulus".
+ * Sekarang HANYA TRUE jika ada entry drill berstatus "Lulus".
+ */
+export function checkDrillEligibility(
+  entries: CalendarEntry[],
+  santriId: string,
+  juz: number,
+  drillNumber: number
+): boolean {
+  return isDrillPassed(entries, santriId, juz, drillNumber);
+}
+
 export interface DrillProgressItem extends DrillDefinition {
-  passed: boolean;
-  unlocked: boolean; // drill sebelumnya sudah lulus (atau ini drill pertama)
+  passed: boolean;        // sudah lulus drill (entry drill "Lulus")
+  unlocked: boolean;      // drill sebelumnya sudah lulus (atau N == 1)
+  setoranReady: boolean;  // cakupan setoran sudah cukup untuk mengikuti drill
 }
 
 export function getDrillProgressForJuz(
@@ -153,10 +189,11 @@ export function getDrillProgressForJuz(
   const drills = getDrillsForJuz(juz);
   let prevPassed = true; // drill pertama selalu unlocked
   return drills.map((d) => {
-    const passed = checkDrillEligibility(entries, santriId, juz, d.drillNumber);
+    const passed = isDrillPassed(entries, santriId, juz, d.drillNumber);
+    const setoranReady = isSetoranReadyForDrill(entries, santriId, juz, d.drillNumber);
     const unlocked = prevPassed;
-    prevPassed = passed;
-    return { ...d, passed, unlocked };
+    prevPassed = passed; // hanya kelulusan drill yang membuka level berikutnya
+    return { ...d, passed, unlocked, setoranReady };
   });
 }
 
