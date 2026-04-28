@@ -510,24 +510,33 @@ const SetoranHafalan = () => {
                   {drillProgressCount.passed} / {drillProgressCount.total} lulus
                 </span>
                 <div className="flex gap-0.5">
-                  {drillProgressActive.map((d) => (
-                    <div
-                      key={d.drillNumber}
-                      title={`Level ${d.drillNumber} — ${
-                        d.passed ? "Lulus" : d.unlocked ? "Siap" : "Terkunci"
-                      }`}
-                      className={cn(
-                        "w-4 h-4 rounded-sm border text-[8px] font-semibold flex items-center justify-center",
-                        d.passed
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : d.unlocked
-                          ? "bg-amber-500/20 text-amber-700 border-amber-500/40"
-                          : "bg-muted text-muted-foreground border-border"
-                      )}
-                    >
-                      {d.drillNumber}
-                    </div>
-                  ))}
+                  {drillProgressActive.map((d) => {
+                    const state = d.passed
+                      ? "Lulus"
+                      : d.unlocked && d.setoranReady
+                      ? "Siap drill"
+                      : d.unlocked
+                      ? "Terbuka • setoran belum lengkap"
+                      : "Terkunci";
+                    return (
+                      <div
+                        key={d.drillNumber}
+                        title={`Level ${d.drillNumber} — ${state}`}
+                        className={cn(
+                          "w-4 h-4 rounded-sm border text-[8px] font-semibold flex items-center justify-center",
+                          d.passed
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : d.unlocked && d.setoranReady
+                            ? "bg-amber-500/20 text-amber-700 border-amber-500/40"
+                            : d.unlocked
+                            ? "bg-sky-500/10 text-sky-700 border-sky-500/30"
+                            : "bg-muted text-muted-foreground border-border"
+                        )}
+                      >
+                        {d.drillNumber}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
