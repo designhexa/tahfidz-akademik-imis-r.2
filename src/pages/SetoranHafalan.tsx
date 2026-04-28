@@ -37,6 +37,11 @@ import { TilawatiUjianForm } from "@/components/tilawah/TilawatiUjianForm";
 import { TilawahSetoranForm } from "@/components/tilawah/TilawahSetoranForm";
 import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
 import { toast } from "sonner";
+import {
+  getDrillProgressForJuz,
+  getNextDrillForJuz,
+} from "@/lib/drill-eligibility";
+import { formatDrillDescription } from "@/lib/drill-data";
 
 
 type MainTab = "setoran_hafalan" | "murojaah" | "tilawah" | "murojaah_rumah";
