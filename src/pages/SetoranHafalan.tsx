@@ -37,6 +37,11 @@ import { TilawatiUjianForm } from "@/components/tilawah/TilawatiUjianForm";
 import { TilawahSetoranForm } from "@/components/tilawah/TilawahSetoranForm";
 import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
 import { toast } from "sonner";
+import {
+  getDrillProgressForJuz,
+  getNextDrillForJuz,
+} from "@/lib/drill-eligibility";
+import { formatDrillDescription } from "@/lib/drill-data";
 
 
 type MainTab = "setoran_hafalan" | "murojaah" | "tilawah" | "murojaah_rumah";
@@ -124,6 +129,42 @@ const SetoranHafalan = () => {
 
   const santriData = MOCK_SANTRI.find((s) => s.id === selectedSantri);
 
+  // Derive juz aktif: juz terkecil yang masih punya drill belum lulus & sudah ada setoran.
+  // Fallback: juz dengan setoran_hafalan terbaru.
+  const activeJuz = useMemo(() => {
+    if (!selectedSantri) return null;
+    const setoranByJuz = new Map<number, Date>();
+    entries.forEach((e) => {
+      if (e.santriId === selectedSantri && e.jenis === "setoran_hafalan" && e.juz) {
+        const prev = setoranByJuz.get(e.juz);
+        if (!prev || e.tanggal > prev) setoranByJuz.set(e.juz, e.tanggal);
+      }
+    });
+    if (setoranByJuz.size === 0) return null;
+    // Cari juz terkecil yang masih punya drill belum lulus
+    const juzList = Array.from(setoranByJuz.keys()).sort((a, b) => a - b);
+    for (const juz of juzList) {
+      const next = getNextDrillForJuz(entries, selectedSantri, juz);
+      if (next) return juz;
+    }
+    // Semua sudah lulus → ambil juz dengan setoran terbaru
+    return juzList.sort((a, b) =>
+      (setoranByJuz.get(b)!.getTime() - setoranByJuz.get(a)!.getTime())
+    )[0];
+  }, [entries, selectedSantri]);
+
+  const drillProgressActive = useMemo(() => {
+    if (!selectedSantri || !activeJuz) return [];
+    return getDrillProgressForJuz(entries, selectedSantri, activeJuz);
+  }, [entries, selectedSantri, activeJuz]);
+
+  const drillProgressCount = useMemo(() => {
+    return {
+      passed: drillProgressActive.filter((d) => d.passed).length,
+      total: drillProgressActive.length,
+    };
+  }, [drillProgressActive]);
+
   // Filter entries for current tab and santri - each tab has its own calendar
   const filteredEntries = useMemo(() => {
     if (!selectedSantri) return [];
@@ -192,6 +233,24 @@ const SetoranHafalan = () => {
 
       if (activeTab === "setoran_hafalan") {
         if (subType === "drill") {
+          if (!activeJuz) {
+            toast.error("Belum ada setoran hafalan. Tambahkan setoran terlebih dahulu sebelum drill.");
+            return;
+          }
+          const next = getNextDrillForJuz(entries, selectedSantri, activeJuz);
+          if (!next) {
+            toast.success(`Semua drill Juz ${activeJuz} sudah selesai ✅`);
+            return;
+          }
+          if (!next.unlocked) {
+            toast.error(`Drill sebelumnya belum lulus. Selesaikan drill secara berurutan.`);
+            return;
+          }
+          // Cek apakah cakupan setoran untuk drill ini sudah cukup
+          if (!next.passed) {
+            // Boleh dibuka (untuk dicatat hasil drill), namun beri info area cakupan
+            toast.info(`Siap Drill Juz ${activeJuz} — Level ${next.drillNumber}: ${formatDrillDescription(next)}`);
+          }
           setOpenDrill(true);
         } else if (subType === "tasmi") {
           if (!registeredCandidates.includes(selectedSantri)) {
@@ -223,7 +282,7 @@ const SetoranHafalan = () => {
       // Tab lainnya tetap pakai entry modal
       setOpenEntry(true);
     },
-    [selectedSantri, activeTab, subType, filteredEntries]
+    [selectedSantri, activeTab, subType, filteredEntries, entries, activeJuz, registeredCandidates]
   );
 
   const handleSaveEntry = useCallback(
@@ -435,6 +494,41 @@ const SetoranHafalan = () => {
               ))}
             </div>
           )}
+
+          {/* Drill progress info */}
+          {selectedSantri &&
+            activeTab === "setoran_hafalan" &&
+            subType === "drill" &&
+            activeJuz && (
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">
+                  Progress Drill Juz {activeJuz}:
+                </span>
+                <span>
+                  {drillProgressCount.passed} / {drillProgressCount.total} lulus
+                </span>
+                <div className="flex gap-0.5">
+                  {drillProgressActive.map((d) => (
+                    <div
+                      key={d.drillNumber}
+                      title={`Level ${d.drillNumber} — ${
+                        d.passed ? "Lulus" : d.unlocked ? "Siap" : "Terkunci"
+                      }`}
+                      className={cn(
+                        "w-4 h-4 rounded-sm border text-[8px] font-semibold flex items-center justify-center",
+                        d.passed
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : d.unlocked
+                          ? "bg-amber-500/20 text-amber-700 border-amber-500/40"
+                          : "bg-muted text-muted-foreground border-border"
+                      )}
+                    >
+                      {d.drillNumber}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
           {/* Month navigation */}
           <div className="flex items-center justify-between mt-3">
