@@ -29,6 +29,8 @@ import {
   getSurahListByJuz,
 } from "@/lib/mushaf-madinah";
 import { SurahAyatLimitInfo, PageRangeDetailInfo } from "@/components/setoran/AyatRangeInfo";
+import { useSetoranPersistence } from "@/hooks/use-setoran-persistence";
+import { getDrillProgressForJuz } from "@/lib/drill-eligibility";
 
 const mockSantri = [
   { id: "1", nama: "Muhammad Faiz", nis: "S001", halaqoh: "Halaqoh Al-Azhary" },
