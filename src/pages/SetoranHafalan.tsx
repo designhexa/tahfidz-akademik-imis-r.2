@@ -282,7 +282,7 @@ const SetoranHafalan = () => {
       // Tab lainnya tetap pakai entry modal
       setOpenEntry(true);
     },
-    [selectedSantri, activeTab, subType, filteredEntries]
+    [selectedSantri, activeTab, subType, filteredEntries, entries, activeJuz, registeredCandidates]
   );
 
   const handleSaveEntry = useCallback(
