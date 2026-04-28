@@ -171,19 +171,18 @@ export const AddDrillModal = ({
     setAyatSampai("");
   }, [juz]);
 
-  // 🔒 FUNCTION PENGUNCI LEVEL
+  // 🔒 PENGUNCI LEVEL berdasarkan engine eligibility (cakupan setoran nyata)
+  const { entries: allEntries } = useSetoranPersistence();
+  const drillProgressList = useMemo(() => {
+    const sid = initialSantriId || selectedSantri;
+    if (!sid || !juz) return [];
+    return getDrillProgressForJuz(allEntries, sid, Number(juz));
+  }, [allEntries, initialSantriId, selectedSantri, juz]);
+
   const isDrillUnlocked = (drillNumber: number) => {
-    if (!selectedSantri || !juz) return false;
-    if (drillNumber === 1) return true;
-    const santri = mockSantri.find(s => s.id === selectedSantri);
-    if (!santri) return false;
-    const previousLevelLulus = (drillHistory ?? []).some(d =>
-      d.santri === santri.nama &&
-      d.juz === Number(juz) &&
-      d.level === drillNumber - 1 &&
-      d.status === "Lulus"
-    );
-    return previousLevelLulus;
+    const item = drillProgressList.find((d) => d.drillNumber === drillNumber);
+    if (!item) return drillNumber === 1;
+    return item.unlocked;
   };
 
   const handleSave = (status: "Lulus" | "Mengulang") => {
