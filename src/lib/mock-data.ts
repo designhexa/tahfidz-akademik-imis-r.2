@@ -72,6 +72,13 @@ export interface MockSantri {
   posisiHafalanJuz: number;
   posisiHafalanSurah: string;
   pencapaianHafalan: string; // e.g. "1 Juz" or "2.5 Juz"
+  // Placement & Target Hafalan IMIS
+  // Urutan target: 30 -> 29 -> 28 -> 27 -> 26 -> surat pilihan
+  juzAktif?: number;            // juz yang sedang ditempuh (default 30)
+  hafalanAwalJuz?: number;      // juz yang sudah dihafal saat masuk IMIS
+  placementStatus?: "belum" | "terdaftar" | "lulus" | "tidak_lulus" | "tidak_perlu";
+  placementTanggal?: string;
+  suratPilihan?: boolean;       // true bila sudah lulus juz 26
 }
 
 export const MOCK_SANTRI: MockSantri[] = [
