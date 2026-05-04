@@ -41,6 +41,7 @@ import { JuzSelector } from "@/components/JuzSelector";
 import { getSurahsByJuz } from "@/lib/quran-data";
 import { getSurahListByJuz, getPageCountForJuz } from "@/lib/mushaf-madinah";
 import { toast } from "sonner";
+import { decideInitialPlacement } from "@/lib/placement";
 
 const INITIAL_FORM: Omit<MockSantri, "id"> = {
   nis: "",
@@ -55,6 +56,10 @@ const INITIAL_FORM: Omit<MockSantri, "id"> = {
   posisiHafalanJuz: 30,
   posisiHafalanSurah: "",
   pencapaianHafalan: "0 Juz",
+  juzAktif: 30,
+  hafalanAwalJuz: undefined,
+  placementStatus: "belum",
+  suratPilihan: false,
 };
 
 type ModalMode = "add" | "edit";
@@ -159,8 +164,26 @@ export default function DataSantri() {
         toast.success(`Data ${form.nama} berhasil diperbarui`);
       }
     } else {
-      MOCK_SANTRI.push({ ...form, id: `s${Date.now()}` });
-      toast.success(`Santri ${form.nama} berhasil ditambahkan`);
+      // Terapkan aturan placement IMIS untuk santri baru
+      const decision = decideInitialPlacement({ hafalanAwalJuz: form.hafalanAwalJuz });
+      const newSantri: MockSantri = {
+        ...form,
+        id: `s${Date.now()}`,
+        juzAktif: decision.juzAktif,
+        placementStatus: decision.placementStatus,
+        placementTanggal: decision.daftarUjianPlacement
+          ? new Date().toISOString().split("T")[0]
+          : undefined,
+        suratPilihan: false,
+      };
+      MOCK_SANTRI.push(newSantri);
+      if (decision.daftarUjianPlacement) {
+        toast.success(
+          `Santri ${form.nama} ditambahkan & didaftarkan ke Ujian Tasmi Placement Juz ${decision.ujianJuz}`
+        );
+      } else {
+        toast.success(`Santri ${form.nama} ditambahkan. ${decision.reason}`);
+      }
     }
     setForm(INITIAL_FORM);
     setShowModal(false);
