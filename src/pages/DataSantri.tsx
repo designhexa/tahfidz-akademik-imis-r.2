@@ -499,6 +499,59 @@ export default function DataSantri() {
                 )}
               </>
             )}
+
+            {/* ── Placement IMIS (hanya saat Tambah) ── */}
+            {modalMode === "add" && (
+              <>
+                <div className="border-t pt-4 mt-2">
+                  <Label className="text-sm font-semibold text-muted-foreground">
+                    Placement Hafalan IMIS
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Urutan target IMIS: Juz 30 → 29 → 28 → 27 → 26 → Surat Pilihan.
+                    Jika santri mengaku sudah hafal Juz 30, sistem otomatis mendaftarkan
+                    ke Ujian Tasmi Placement Juz 30.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label>Sudah Hafal Juz Berapa Saat Masuk?</Label>
+                  <Select
+                    value={
+                      form.hafalanAwalJuz === undefined
+                        ? "none"
+                        : String(form.hafalanAwalJuz)
+                    }
+                    onValueChange={(v) =>
+                      setForm({
+                        ...form,
+                        hafalanAwalJuz: v === "none" ? undefined : Number(v),
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Belum punya hafalan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Belum punya hafalan</SelectItem>
+                      <SelectItem value="30">Juz 30</SelectItem>
+                      <SelectItem value="29">Juz 29 (di luar urutan target)</SelectItem>
+                      <SelectItem value="other">Juz lain (selain 30 / 26-29)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {form.hafalanAwalJuz === 30 && (
+                    <p className="text-xs text-primary">
+                      ✓ Santri akan didaftarkan otomatis ke Ujian Tasmi Placement Juz 30.
+                    </p>
+                  )}
+                  {form.hafalanAwalJuz !== undefined && form.hafalanAwalJuz !== 30 && (
+                    <p className="text-xs text-muted-foreground">
+                      Hafalan di luar urutan target IMIS — santri tetap mulai dari Juz 30
+                      (tanpa ujian placement).
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowModal(false)}>Batal</Button>
