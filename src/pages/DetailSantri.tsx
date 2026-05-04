@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, BookOpen, Award, TrendingUp, BookOpenCheck } from "lucide-react";
+import { ArrowLeft, BookOpen, Award, TrendingUp, BookOpenCheck, GraduationCap } from "lucide-react";
 import { MOCK_SANTRI, getKelasNama, getHalaqohNama } from "@/lib/mock-data";
+import { toast } from "sonner";
 import { MOCK_SETORAN_TILAWAH, TILAWATI_JILID, HALAMAN_PER_JILID } from "@/lib/tilawah-data";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
 
@@ -100,6 +101,75 @@ export default function DetailSantri() {
           </div>
           <Badge variant="default" className="bg-primary/10 text-primary">{santri.status}</Badge>
         </div>
+
+        {/* Placement & Target Hafalan IMIS */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <GraduationCap className="w-5 h-5 text-primary" />
+                  Placement & Target Hafalan IMIS
+                </CardTitle>
+                <CardDescription>
+                  Urutan target: 30 → 29 → 28 → 27 → 26 → Surat Pilihan
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground">Juz Aktif</p>
+                  <p className="text-lg font-semibold text-primary">
+                    {santri.suratPilihan ? "Surat Pilihan" : `Juz ${santri.juzAktif ?? 30}`}
+                  </p>
+                </div>
+                <Badge
+                  variant="outline"
+                  className={
+                    santri.placementStatus === "lulus"
+                      ? "border-primary text-primary"
+                      : santri.placementStatus === "terdaftar"
+                      ? "border-amber-500 text-amber-700 dark:text-amber-400"
+                      : santri.placementStatus === "tidak_lulus"
+                      ? "border-destructive text-destructive"
+                      : "border-muted-foreground text-muted-foreground"
+                  }
+                >
+                  {santri.placementStatus === "lulus"
+                    ? "Placement Lulus"
+                    : santri.placementStatus === "terdaftar"
+                    ? "Terdaftar Placement"
+                    : santri.placementStatus === "tidak_lulus"
+                    ? "Placement Belum Lulus"
+                    : santri.placementStatus === "tidak_perlu"
+                    ? "Tidak Perlu Placement"
+                    : "Belum Placement"}
+                </Badge>
+                {(santri.placementStatus === "belum" ||
+                  santri.placementStatus === "tidak_lulus") && (
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      const idx = MOCK_SANTRI.findIndex((s) => s.id === santri.id);
+                      if (idx === -1) return;
+                      const targetJuz = santri.juzAktif ?? 30;
+                      MOCK_SANTRI[idx] = {
+                        ...MOCK_SANTRI[idx],
+                        placementStatus: "terdaftar",
+                        placementTanggal: new Date().toISOString().split("T")[0],
+                      };
+                      toast.success(
+                        `${santri.nama} didaftarkan ke Ujian Tasmi Placement Juz ${targetJuz}`
+                      );
+                      navigate(`/ujian-tasmi`);
+                    }}
+                  >
+                    Daftar Ujian Placement
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
 
         {/* Info Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
