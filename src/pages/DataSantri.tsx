@@ -41,6 +41,7 @@ import { JuzSelector } from "@/components/JuzSelector";
 import { getSurahsByJuz } from "@/lib/quran-data";
 import { getSurahListByJuz, getPageCountForJuz } from "@/lib/mushaf-madinah";
 import { toast } from "sonner";
+import { decideInitialPlacement } from "@/lib/placement";
 
 const INITIAL_FORM: Omit<MockSantri, "id"> = {
   nis: "",
@@ -55,6 +56,10 @@ const INITIAL_FORM: Omit<MockSantri, "id"> = {
   posisiHafalanJuz: 30,
   posisiHafalanSurah: "",
   pencapaianHafalan: "0 Juz",
+  juzAktif: 30,
+  hafalanAwalJuz: undefined,
+  placementStatus: "belum",
+  suratPilihan: false,
 };
 
 type ModalMode = "add" | "edit";
@@ -159,8 +164,26 @@ export default function DataSantri() {
         toast.success(`Data ${form.nama} berhasil diperbarui`);
       }
     } else {
-      MOCK_SANTRI.push({ ...form, id: `s${Date.now()}` });
-      toast.success(`Santri ${form.nama} berhasil ditambahkan`);
+      // Terapkan aturan placement IMIS untuk santri baru
+      const decision = decideInitialPlacement({ hafalanAwalJuz: form.hafalanAwalJuz });
+      const newSantri: MockSantri = {
+        ...form,
+        id: `s${Date.now()}`,
+        juzAktif: decision.juzAktif,
+        placementStatus: decision.placementStatus,
+        placementTanggal: decision.daftarUjianPlacement
+          ? new Date().toISOString().split("T")[0]
+          : undefined,
+        suratPilihan: false,
+      };
+      MOCK_SANTRI.push(newSantri);
+      if (decision.daftarUjianPlacement) {
+        toast.success(
+          `Santri ${form.nama} ditambahkan & didaftarkan ke Ujian Tasmi Placement Juz ${decision.ujianJuz}`
+        );
+      } else {
+        toast.success(`Santri ${form.nama} ditambahkan. ${decision.reason}`);
+      }
     }
     setForm(INITIAL_FORM);
     setShowModal(false);
@@ -474,6 +497,62 @@ export default function DataSantri() {
                       onChange={(e) => setHafalanHalaman(e.target.value)} />
                   </div>
                 )}
+              </>
+            )}
+
+            {/* ── Placement IMIS (hanya saat Tambah) ── */}
+            {modalMode === "add" && (
+              <>
+                <div className="border-t pt-4 mt-2">
+                  <Label className="text-sm font-semibold text-muted-foreground">
+                    Placement Hafalan IMIS
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Urutan target IMIS: Juz 30 → 29 → 28 → 27 → 26 → Surat Pilihan.
+                    Jika santri mengaku sudah hafal Juz 30, sistem otomatis mendaftarkan
+                    ke Ujian Tasmi Placement Juz 30.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label>Sudah Hafal Juz Berapa Saat Masuk?</Label>
+                  <Select
+                      value={
+                        form.hafalanAwalJuz === undefined
+                          ? "none"
+                          : form.hafalanAwalJuz === 0
+                          ? "other"
+                          : String(form.hafalanAwalJuz)
+                      }
+                    onValueChange={(v) =>
+                      setForm({
+                        ...form,
+                        hafalanAwalJuz:
+                          v === "none" ? undefined : v === "other" ? 0 : Number(v),
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Belum punya hafalan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Belum punya hafalan</SelectItem>
+                      <SelectItem value="30">Juz 30</SelectItem>
+                      <SelectItem value="29">Juz 29 (di luar urutan target)</SelectItem>
+                      <SelectItem value="other">Juz lain (selain 30 / 26-29)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {form.hafalanAwalJuz === 30 && (
+                    <p className="text-xs text-primary">
+                      ✓ Santri akan didaftarkan otomatis ke Ujian Tasmi Placement Juz 30.
+                    </p>
+                  )}
+                  {form.hafalanAwalJuz !== undefined && form.hafalanAwalJuz !== 30 && (
+                    <p className="text-xs text-muted-foreground">
+                      Hafalan di luar urutan target IMIS — santri tetap mulai dari Juz 30
+                      (tanpa ujian placement).
+                    </p>
+                  )}
+                </div>
               </>
             )}
           </div>

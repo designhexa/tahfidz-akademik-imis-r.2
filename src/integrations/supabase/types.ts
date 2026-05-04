@@ -209,6 +209,45 @@ export type Database = {
           },
         ]
       }
+      placement_ujian: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          id: string
+          id_penguji: string | null
+          id_santri: string
+          juz: number
+          status: string
+          tanggal_daftar: string
+          tanggal_ujian: string | null
+          updated_at: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          id_penguji?: string | null
+          id_santri: string
+          juz: number
+          status?: string
+          tanggal_daftar?: string
+          tanggal_ujian?: string | null
+          updated_at?: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          id_penguji?: string | null
+          id_santri?: string
+          juz?: number
+          status?: string
+          tanggal_daftar?: string
+          tanggal_ujian?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           aktif: boolean | null
@@ -245,37 +284,52 @@ export type Database = {
       santri: {
         Row: {
           created_at: string | null
+          hafalan_awal_juz: number | null
           id: string
           id_halaqoh: string | null
           id_kelas: string | null
           id_wali: string | null
+          juz_aktif: number
           nama_santri: string
           nis: string
+          placement_status: string
+          placement_tanggal: string | null
           status: string | null
+          surat_pilihan: boolean
           tanggal_masuk: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
+          hafalan_awal_juz?: number | null
           id?: string
           id_halaqoh?: string | null
           id_kelas?: string | null
           id_wali?: string | null
+          juz_aktif?: number
           nama_santri: string
           nis: string
+          placement_status?: string
+          placement_tanggal?: string | null
           status?: string | null
+          surat_pilihan?: boolean
           tanggal_masuk?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
+          hafalan_awal_juz?: number | null
           id?: string
           id_halaqoh?: string | null
           id_kelas?: string | null
           id_wali?: string | null
+          juz_aktif?: number
           nama_santri?: string
           nis?: string
+          placement_status?: string
+          placement_tanggal?: string | null
           status?: string | null
+          surat_pilihan?: boolean
           tanggal_masuk?: string | null
           updated_at?: string | null
         }

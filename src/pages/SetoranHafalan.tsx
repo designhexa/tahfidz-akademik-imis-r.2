@@ -290,6 +290,24 @@ const SetoranHafalan = () => {
   const handleSaveEntry = useCallback(
     (data: any | any[]) => {
       const dataArray = Array.isArray(data) ? data : [data];
+
+      // Aturan IMIS: setoran hafalan & drill hanya untuk juz aktif santri.
+      const santri = MOCK_SANTRI.find((s) => s.id === selectedSantri);
+      const juzAktifSantri = santri?.juzAktif ?? 30;
+      const lockedTypes = new Set(["setoran_hafalan", "drill"]);
+      const offending = dataArray.find(
+        (item) =>
+          lockedTypes.has(item.jenis) &&
+          item.juz !== undefined &&
+          item.juz !== juzAktifSantri
+      );
+      if (offending) {
+        toast.error(
+          `Setoran hanya boleh untuk Juz ${juzAktifSantri} (juz aktif santri). Juz ${offending.juz} tidak diizinkan.`
+        );
+        return;
+      }
+
       const newEntries = dataArray.map((item) => ({
         tanggal: item.tanggal,
         santriId: selectedSantri,
