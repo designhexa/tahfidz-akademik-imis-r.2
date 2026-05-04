@@ -516,15 +516,18 @@ export default function DataSantri() {
                 <div className="space-y-2">
                   <Label>Sudah Hafal Juz Berapa Saat Masuk?</Label>
                   <Select
-                    value={
-                      form.hafalanAwalJuz === undefined
-                        ? "none"
-                        : String(form.hafalanAwalJuz)
-                    }
+                      value={
+                        form.hafalanAwalJuz === undefined
+                          ? "none"
+                          : form.hafalanAwalJuz === 0
+                          ? "other"
+                          : String(form.hafalanAwalJuz)
+                      }
                     onValueChange={(v) =>
                       setForm({
                         ...form,
-                        hafalanAwalJuz: v === "none" ? undefined : Number(v),
+                        hafalanAwalJuz:
+                          v === "none" ? undefined : v === "other" ? 0 : Number(v),
                       })
                     }
                   >
