@@ -38,7 +38,21 @@ export interface PlacementDecision {
 export function decideInitialPlacement(input: PlacementInput): PlacementDecision {
   const { hafalanAwalJuz } = input;
 
-  if (hafalanAwalJuz === undefined || hafalanAwalJuz === null) {
+  if (
+    hafalanAwalJuz === undefined ||
+    hafalanAwalJuz === null ||
+    hafalanAwalJuz === 0
+  ) {
+    if (hafalanAwalJuz === 0) {
+      // sentinel "juz lain di luar 26-30"
+      return {
+        juzAktif: 30,
+        placementStatus: "tidak_perlu",
+        daftarUjianPlacement: false,
+        reason:
+          "Hafalan awal di luar urutan target IMIS (30→26) — mulai dari Juz 30 tanpa ujian placement.",
+      };
+    }
     return {
       juzAktif: 30,
       placementStatus: "belum",
