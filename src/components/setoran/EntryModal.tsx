@@ -359,6 +359,7 @@ export function EntryModal({
                 }}
                 required
                 lockedJuz={lockedJuz}
+              />
 
               {/* Toggle halaman/surah mode */}
               {juz && (
