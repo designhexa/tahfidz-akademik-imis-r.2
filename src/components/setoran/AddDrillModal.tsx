@@ -45,6 +45,8 @@ interface AddDrillModalProps {
   date: Date | null;
   santriName: string;
   initialSantriId?: string;
+  /** Bila diset, juz drill dikunci ke juz aktif santri. */
+  lockedJuz?: number;
   drillHistory: {
     santri: string;
     juz: number;
@@ -63,6 +65,7 @@ export const AddDrillModal = ({
   date,
   santriName,
   initialSantriId,
+  lockedJuz,
   drillHistory = []
 }: AddDrillModalProps) => {
 
