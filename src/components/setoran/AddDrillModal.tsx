@@ -153,7 +153,7 @@ export const AddDrillModal = ({
   useEffect(() => {
     if (open) {
       setSelectedSantri(initialSantriId || "");
-      setJuz("");
+      setJuz(lockedJuz ? String(lockedJuz) : "");
       setLevel("");
       setKesalahan("0");
       setCatatan("");
