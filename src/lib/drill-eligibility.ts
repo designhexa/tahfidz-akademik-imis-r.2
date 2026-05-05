@@ -25,6 +25,8 @@ import {
   DrillDefinition,
   getDrillsForJuz,
 } from "@/lib/drill-data";
+import { surahList } from "@/lib/quran-data";
+import { getAyatRangeForSurahInJuz } from "@/lib/mushaf-madinah";
 
 const PASSED_SETORAN_STATUS = new Set(["Lancar", "Lulus"]);
 const PASSED_DRILL_STATUS = new Set(["Lulus"]);
