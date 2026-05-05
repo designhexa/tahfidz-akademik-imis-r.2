@@ -55,6 +55,16 @@ interface EntryModalProps {
   onSave: (data: any) => void;
   existingRecords?: SetoranRecord[];
   santriId?: string;
+  /** Bila diset, juz dikunci (mis. juz aktif santri). */
+  lockedJuz?: number;
+}
+
+interface PendingSegment {
+  surahNumber: number;
+  surahName: string;
+  ayatDari: number;
+  ayatSampai: number;
+  halaman?: string;
 }
 
 export function EntryModal({
@@ -67,8 +77,9 @@ export function EntryModal({
   onSave,
   existingRecords = [],
   santriId = "",
+  lockedJuz,
 }: EntryModalProps) {
-  const [juz, setJuz] = useState("");
+  const [juz, setJuz] = useState(lockedJuz ? String(lockedJuz) : "");
   const [surah, setSurah] = useState("");
   const [halamanDari, setHalamanDari] = useState("");
   const [halamanSampai, setHalamanSampai] = useState("");
@@ -78,7 +89,8 @@ export function EntryModal({
   const [catatan, setCatatan] = useState("");
   const [jilid, setJilid] = useState("");
   const [inputMode, setInputMode] = useState<"halaman" | "surah">("surah");
-  
+  const [pendingSegments, setPendingSegments] = useState<PendingSegment[]>([]);
+
 
   const surahByJuz: Surah[] = useMemo(() => {
     if (!juz) return [];
