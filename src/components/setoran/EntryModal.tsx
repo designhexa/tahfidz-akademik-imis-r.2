@@ -358,7 +358,7 @@ export function EntryModal({
                   setInputMode("surah");
                 }}
                 required
-              />
+                lockedJuz={lockedJuz}
 
               {/* Toggle halaman/surah mode */}
               {juz && (
