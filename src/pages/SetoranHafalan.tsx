@@ -643,6 +643,11 @@ const SetoranHafalan = () => {
           onSave={handleSaveEntry}
           santriId={selectedSantri}
           existingRecords={entries as any}
+          lockedJuz={
+            activeTab === "setoran_hafalan" && (subType === "setoran_hafalan" || subType === "drill")
+              ? santriData?.juzAktif ?? 30
+              : undefined
+          }
         />
 
         <AddDrillModal
@@ -653,6 +658,7 @@ const SetoranHafalan = () => {
           initialSantriId={selectedSantri || undefined}
           onSuccess={handleSaveEntry}
           drillHistory={[]}
+          lockedJuz={santriData?.juzAktif ?? 30}
         />
 
         <TasmiForm1Juz 

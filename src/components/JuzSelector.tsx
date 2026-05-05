@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface JuzSelectorProps {
@@ -12,15 +12,48 @@ interface JuzSelectorProps {
   required?: boolean;
   /** "asc" = 1→30, "desc" = 30→1. Default: "desc" (for hafalan) */
   order?: "asc" | "desc";
+  /** Bila diset, hanya juz ini yang boleh dipilih (dikunci). */
+  lockedJuz?: number;
 }
 
-export const JuzSelector = ({ value, onValueChange, label = "Juz", required = false, order = "desc" }: JuzSelectorProps) => {
+export const JuzSelector = ({
+  value,
+  onValueChange,
+  label = "Juz",
+  required = false,
+  order = "desc",
+  lockedJuz,
+}: JuzSelectorProps) => {
   const [open, setOpen] = useState(false);
 
+  // Sinkronkan otomatis bila terkunci
+  useEffect(() => {
+    if (lockedJuz !== undefined && value !== String(lockedJuz)) {
+      onValueChange(String(lockedJuz));
+    }
+  }, [lockedJuz, value, onValueChange]);
+
   const handleSelect = (juz: string) => {
+    if (lockedJuz !== undefined && Number(juz) !== lockedJuz) return;
     onValueChange(juz);
     setOpen(false);
   };
+
+  if (lockedJuz !== undefined) {
+    return (
+      <div className="space-y-2">
+        <Label>{label}{required && " *"}</Label>
+        <Button
+          variant="outline"
+          disabled
+          className="w-full justify-between opacity-100 cursor-not-allowed"
+        >
+          <span>Juz {lockedJuz} (terkunci - juz aktif santri)</span>
+          <Lock className="ml-2 h-4 w-4 shrink-0 opacity-70" />
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2">

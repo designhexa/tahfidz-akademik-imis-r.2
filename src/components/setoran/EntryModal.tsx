@@ -55,6 +55,16 @@ interface EntryModalProps {
   onSave: (data: any) => void;
   existingRecords?: SetoranRecord[];
   santriId?: string;
+  /** Bila diset, juz dikunci (mis. juz aktif santri). */
+  lockedJuz?: number;
+}
+
+interface PendingSegment {
+  surahNumber: number;
+  surahName: string;
+  ayatDari: number;
+  ayatSampai: number;
+  halaman?: string;
 }
 
 export function EntryModal({
@@ -67,8 +77,9 @@ export function EntryModal({
   onSave,
   existingRecords = [],
   santriId = "",
+  lockedJuz,
 }: EntryModalProps) {
-  const [juz, setJuz] = useState("");
+  const [juz, setJuz] = useState(lockedJuz ? String(lockedJuz) : "");
   const [surah, setSurah] = useState("");
   const [halamanDari, setHalamanDari] = useState("");
   const [halamanSampai, setHalamanSampai] = useState("");
@@ -78,7 +89,8 @@ export function EntryModal({
   const [catatan, setCatatan] = useState("");
   const [jilid, setJilid] = useState("");
   const [inputMode, setInputMode] = useState<"halaman" | "surah">("surah");
-  
+  const [pendingSegments, setPendingSegments] = useState<PendingSegment[]>([]);
+
 
   const surahByJuz: Surah[] = useMemo(() => {
     if (!juz) return [];
@@ -125,22 +137,97 @@ export function EntryModal({
   const isTilawahQuran = isTilawahTab && jilid === "quran";
   const maxHalaman = juz ? getPageCountForJuz(Number(juz)) : 20;
 
+  // Bangun ranges dari input saat ini. Mengembalikan null bila tidak valid.
+  const buildCurrentRanges = (silent = false): any[] | null => {
+    if (!isTilawahTab && !juz) {
+      if (!silent) toast.error("Pilih Juz terlebih dahulu");
+      return null;
+    }
+
+    let ranges: any[] = [];
+
+    if (inputMode === "surah") {
+      if (!surah) {
+        if (!silent) toast.error("Pilih surah terlebih dahulu");
+        return null;
+      }
+      if (!ayatDari || !ayatSampai) {
+        if (!silent) toast.error("Isi ayat dari dan sampai");
+        return null;
+      }
+      if (Number(ayatSampai) < Number(ayatDari)) {
+        if (!silent) toast.error("Ayat sampai tidak boleh lebih kecil dari ayat dari");
+        return null;
+      }
+      const validBoundaries = getAyatRangeForSurahInJuz(Number(juz), Number(surah));
+      if (validBoundaries) {
+        if (Number(ayatDari) < validBoundaries.ayatMin || Number(ayatSampai) > validBoundaries.ayatMax) {
+          if (!silent) toast.error(`Range ayat tidak valid untuk Juz ${juz}. Batas: ${validBoundaries.ayatMin}-${validBoundaries.ayatMax}`);
+          return null;
+        }
+      }
+      ranges.push({
+        surahNumber: Number(surah),
+        surahName: selectedSurah?.name || surah,
+        ayatDari: Number(ayatDari),
+        ayatSampai: Number(ayatSampai),
+        halaman: halamanDari && halamanSampai ? `${halamanDari}–${halamanSampai}` : halamanDari || undefined,
+      });
+    } else {
+      if (!halamanDari || !halamanSampai) {
+        if (!silent) toast.error("Isi halaman dari dan sampai");
+        return null;
+      }
+      if (Number(halamanSampai) < Number(halamanDari)) {
+        if (!silent) toast.error("Halaman sampai tidak boleh lebih kecil dari halaman dari");
+        return null;
+      }
+      if (Number(halamanSampai) > maxHalaman) {
+        if (!silent) toast.error("Halaman melebihi batas juz");
+        return null;
+      }
+      const detailedSegments = getDetailedContentForPageRange(
+        Number(juz),
+        Number(halamanDari),
+        Number(halamanSampai)
+      );
+      if (detailedSegments.length === 0) {
+        if (!silent) toast.error("Mapping halaman tidak ditemukan");
+        return null;
+      }
+      ranges = detailedSegments.map((s) => ({
+        surahNumber: s.surahNumber,
+        surahName: s.surahName,
+        ayatDari: s.ayatStart,
+        ayatSampai: s.ayatEnd,
+        halaman: `${halamanDari}–${halamanSampai}`,
+      }));
+    }
+    return ranges;
+  };
+
+  const handleAddSegment = () => {
+    const ranges = buildCurrentRanges();
+    if (!ranges) return;
+    setPendingSegments((prev) => [...prev, ...ranges]);
+    setSurah("");
+    setHalamanDari("");
+    setHalamanSampai("");
+    setAyatDari("1");
+    setAyatSampai("7");
+    toast.success("Surat ditambahkan ke daftar setoran");
+  };
+
+  const handleRemoveSegment = (idx: number) => {
+    setPendingSegments((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   const handleSave = () => {
     if (!date) return;
-    if (!isTilawahTab && !juz) {
-      toast.error("Pilih Juz terlebih dahulu");
-      return;
-    }
     if (!status) {
       toast.error("Pilih status terlebih dahulu");
       return;
     }
-
-    // Anti-duplication check
-    // ==============================
-    // 🔒 VALIDASI TOTAL (SURAH & HALAMAN)
-    // ==============================
-
     if (!santriId) {
       toast.error("Santri tidak valid");
       return;
@@ -153,85 +240,21 @@ export function EntryModal({
         ? "murojaah_rumah"
         : subType || "setoran_hafalan";
 
-    // 1️⃣ CONVERT INPUT → RANGES
-    let rangesToSave: any[] = [];
-
-    if (inputMode === "surah") {
-      if (!surah) {
-        toast.error("Pilih surah terlebih dahulu");
-        return;
-      }
-
-      if (!ayatDari || !ayatSampai) {
-        toast.error("Isi ayat dari dan sampai");
-        return;
-      }
-
-      if (Number(ayatSampai) < Number(ayatDari)) {
-        toast.error("Ayat sampai tidak boleh lebih kecil dari ayat dari");
-        return;
-      }
-
-      // Check against valid juz boundaries
-      const validBoundaries = getAyatRangeForSurahInJuz(Number(juz), Number(surah));
-      if (validBoundaries) {
-        if (Number(ayatDari) < validBoundaries.ayatMin || Number(ayatSampai) > validBoundaries.ayatMax) {
-          toast.error(`Range ayat tidak valid untuk Juz ${juz}. Batas: ${validBoundaries.ayatMin}-${validBoundaries.ayatMax}`);
-          return;
-        }
-      }
-
-      rangesToSave.push({
-        surahNumber: Number(surah),
-        surahName: selectedSurah?.name || surah,
-        ayatDari: Number(ayatDari),
-        ayatSampai: Number(ayatSampai),
-        halaman: halamanDari && halamanSampai ? `${halamanDari}–${halamanSampai}` : halamanDari || undefined,
-      });
+    let allRanges: any[] = [...pendingSegments];
+    const hasCurrentInput =
+      (inputMode === "surah" && !!surah) ||
+      (inputMode === "halaman" && !!halamanDari);
+    if (hasCurrentInput || allRanges.length === 0) {
+      const current = buildCurrentRanges();
+      if (!current) return;
+      allRanges = [...allRanges, ...current];
     }
 
-    if (inputMode === "halaman") {
-      if (!halamanDari || !halamanSampai) {
-        toast.error("Isi halaman dari dan sampai");
-        return;
-      }
-
-      if (Number(halamanSampai) < Number(halamanDari)) {
-        toast.error("Halaman sampai tidak boleh lebih kecil dari halaman dari");
-        return;
-      }
-
-      if (Number(halamanSampai) > maxHalaman) {
-        toast.error("Halaman melebihi batas juz");
-        return;
-      }
-
-      const detailedSegments = getDetailedContentForPageRange(
-        Number(juz),
-        Number(halamanDari),
-        Number(halamanSampai)
-      );
-
-      if (detailedSegments.length === 0) {
-        toast.error("Mapping halaman tidak ditemukan");
-        return;
-      }
-
-      rangesToSave = detailedSegments.map(s => ({
-        surahNumber: s.surahNumber,
-        surahName: s.surahName,
-        ayatDari: s.ayatStart,
-        ayatSampai: s.ayatEnd,
-        halaman: `${halamanDari}–${halamanSampai}`, // Keep original page range as reference
-      }));
-    }
-
-    if (rangesToSave.length === 0) {
-      toast.error("Range tidak valid");
+    if (allRanges.length === 0) {
+      toast.error("Tidak ada surat/halaman yang akan disetor");
       return;
     }
 
-    // 2️⃣ CEK DUPLICATE & SAVE
     const jenisMap: Record<string, string> = {
       setoran_hafalan: "setoran_hafalan",
       drill: "drill",
@@ -239,33 +262,21 @@ export function EntryModal({
       tilawah_harian: "tilawah",
       ujian_jilid: "ujian_jilid",
     };
-
     const finalJenis = activeTab === "murojaah"
       ? "murojaah"
       : activeTab === "murojaah_rumah"
       ? "murojaah_rumah"
       : jenisMap[subType || "setoran_hafalan"] || activeTab;
 
-    let overlapFound = false;
-    for (const range of rangesToSave) {
-      const overlap = checkDuplicateSetoran(
-        range,
-        existingRecords,
-        santriId,
-        jenisKey
-      );
-
+    for (const range of allRanges) {
+      const overlap = checkDuplicateSetoran(range, existingRecords, santriId, jenisKey);
       if (overlap) {
         toast.error(`Overlap di ${range.surahName} ayat ${range.ayatDari}-${range.ayatSampai}`);
-        overlapFound = true;
-        break;
+        return;
       }
     }
 
-    if (overlapFound) return;
-
-    // 3️⃣ SAVE ALL SEGMENTS
-    const segmentsToSave = rangesToSave.map((range) => ({
+    const segmentsToSave = allRanges.map((range) => ({
       tanggal: date,
       jenis: finalJenis,
       juz: juz ? Number(juz) : undefined,
@@ -283,8 +294,7 @@ export function EntryModal({
 
     onSave(segmentsToSave);
 
-    // Reset
-    setJuz("");
+    setJuz(lockedJuz ? String(lockedJuz) : "");
     setSurah("");
     setHalamanDari("");
     setHalamanSampai("");
@@ -294,8 +304,9 @@ export function EntryModal({
     setCatatan("");
     setJilid("");
     setInputMode("surah");
+    setPendingSegments([]);
     onOpenChange(false);
-    toast.success("Data berhasil disimpan!");
+    toast.success(`${segmentsToSave.length} setoran berhasil disimpan!`);
   };
 
   if (!date) return null;
@@ -347,6 +358,7 @@ export function EntryModal({
                   setInputMode("surah");
                 }}
                 required
+                lockedJuz={lockedJuz}
               />
 
               {/* Toggle halaman/surah mode */}
@@ -621,9 +633,44 @@ export function EntryModal({
             />
           </div>
 
+          {/* Daftar segmen yang sudah ditambahkan (multi-setoran) */}
+          {pendingSegments.length > 0 && (
+            <div className="space-y-1.5 p-2 rounded-md border bg-muted/30">
+              <p className="text-xs font-medium">Antrean setoran ({pendingSegments.length}):</p>
+              {pendingSegments.map((seg, idx) => (
+                <div key={idx} className="flex items-center justify-between text-xs">
+                  <span>
+                    {seg.surahName} : {seg.ayatDari}-{seg.ayatSampai}
+                  </span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 px-2 text-destructive"
+                    onClick={() => handleRemoveSegment(idx)}
+                  >
+                    Hapus
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!isTilawahTab && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAddSegment}
+              className="w-full"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Tambah Surat Lagi
+            </Button>
+          )}
+
           <Button onClick={handleSave} className="w-full">
             <Plus className="w-4 h-4 mr-2" />
-            Simpan
+            Simpan {pendingSegments.length > 0 ? `(${pendingSegments.length}+)` : ""}
           </Button>
         </div>
       </DialogContent>

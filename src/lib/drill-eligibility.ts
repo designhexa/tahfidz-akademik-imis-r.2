@@ -25,6 +25,8 @@ import {
   DrillDefinition,
   getDrillsForJuz,
 } from "@/lib/drill-data";
+import { surahList } from "@/lib/quran-data";
+import { getAyatRangeForSurahInJuz } from "@/lib/mushaf-madinah";
 
 const PASSED_SETORAN_STATUS = new Set(["Lancar", "Lulus"]);
 const PASSED_DRILL_STATUS = new Set(["Lulus"]);
@@ -81,7 +83,8 @@ function normalizeSurahName(name: string): string {
 
 function isSurahRangeCovered(
   setoran: CalendarEntry[],
-  range: NonNullable<DrillDefinition["surahRanges"]>[number]
+  range: NonNullable<DrillDefinition["surahRanges"]>[number],
+  juz: number
 ): boolean {
   const coveredAyat = new Set<number>();
   let surahTouched = false;
@@ -113,16 +116,28 @@ function isSurahRangeCovered(
     }
   });
 
+  if (!surahTouched) return false;
+
+  // Tentukan range ayat target
+  let start: number;
+  let end: number;
   if (range.fullSurah) {
-    // Panjang akhir tiap surah tidak tersedia di sini, jadi cukup
-    // dianggap memenuhi target full-surah bila surah sudah pernah
-    // disetorkan (cocok by number atau by name).
-    return surahTouched;
+    // Cari batas ayat dari surah ini yang berada di juz tsb
+    const bounds = getAyatRangeForSurahInJuz(juz, range.surahNumber);
+    if (bounds) {
+      start = bounds.ayatMin;
+      end = bounds.ayatMax;
+    } else {
+      // fallback: ambil seluruh surah
+      const surah = surahList.find((s) => s.number === range.surahNumber);
+      start = 1;
+      end = surah?.numberOfAyahs ?? 1;
+    }
+  } else {
+    start = range.ayatStart ?? 1;
+    end = range.ayatEnd ?? start;
   }
 
-  const start = range.ayatStart ?? 1;
-  const end = range.ayatEnd ?? start;
-  if (!surahTouched) return false;
   for (let a = start; a <= end; a++) {
     if (!coveredAyat.has(a)) return false;
   }
@@ -148,7 +163,7 @@ export function isSetoranReadyForDrill(
     return isPageRangeCovered(setoran, drill.pageStart, drill.pageEnd);
   }
   if (drill.type === "surah" && drill.surahRanges) {
-    return drill.surahRanges.every((r) => isSurahRangeCovered(setoran, r));
+    return drill.surahRanges.every((r) => isSurahRangeCovered(setoran, r, juz));
   }
   return false;
 }

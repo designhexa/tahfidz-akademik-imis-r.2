@@ -45,6 +45,8 @@ interface AddDrillModalProps {
   date: Date | null;
   santriName: string;
   initialSantriId?: string;
+  /** Bila diset, juz drill dikunci ke juz aktif santri. */
+  lockedJuz?: number;
   drillHistory: {
     santri: string;
     juz: number;
@@ -63,11 +65,12 @@ export const AddDrillModal = ({
   date,
   santriName,
   initialSantriId,
+  lockedJuz,
   drillHistory = []
 }: AddDrillModalProps) => {
 
   const [selectedSantri, setSelectedSantri] = useState("");
-  const [juz, setJuz] = useState("");
+  const [juz, setJuz] = useState(lockedJuz ? String(lockedJuz) : "");
   const [level, setLevel] = useState("");
   const [kesalahan, setKesalahan] = useState("0");
   const [catatan, setCatatan] = useState("");
@@ -150,7 +153,7 @@ export const AddDrillModal = ({
   useEffect(() => {
     if (open) {
       setSelectedSantri(initialSantriId || "");
-      setJuz("");
+      setJuz(lockedJuz ? String(lockedJuz) : "");
       setLevel("");
       setKesalahan("0");
       setCatatan("");
@@ -250,7 +253,7 @@ export const AddDrillModal = ({
             </div>
           )}
 
-          <JuzSelector value={juz} onValueChange={setJuz} required />
+          <JuzSelector value={juz} onValueChange={setJuz} required lockedJuz={lockedJuz} />
 
           {/* LEVEL DENGAN PENGUNCI */}
           <div className="space-y-2">
