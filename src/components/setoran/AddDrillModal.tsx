@@ -253,7 +253,7 @@ export const AddDrillModal = ({
             </div>
           )}
 
-          <JuzSelector value={juz} onValueChange={setJuz} required />
+          <JuzSelector value={juz} onValueChange={setJuz} required lockedJuz={lockedJuz} />
 
           {/* LEVEL DENGAN PENGUNCI */}
           <div className="space-y-2">
