@@ -633,9 +633,44 @@ export function EntryModal({
             />
           </div>
 
+          {/* Daftar segmen yang sudah ditambahkan (multi-setoran) */}
+          {pendingSegments.length > 0 && (
+            <div className="space-y-1.5 p-2 rounded-md border bg-muted/30">
+              <p className="text-xs font-medium">Antrean setoran ({pendingSegments.length}):</p>
+              {pendingSegments.map((seg, idx) => (
+                <div key={idx} className="flex items-center justify-between text-xs">
+                  <span>
+                    {seg.surahName} : {seg.ayatDari}-{seg.ayatSampai}
+                  </span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 px-2 text-destructive"
+                    onClick={() => handleRemoveSegment(idx)}
+                  >
+                    Hapus
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!isTilawahTab && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAddSegment}
+              className="w-full"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Tambah Surat Lagi
+            </Button>
+          )}
+
           <Button onClick={handleSave} className="w-full">
             <Plus className="w-4 h-4 mr-2" />
-            Simpan
+            Simpan {pendingSegments.length > 0 ? `(${pendingSegments.length}+)` : ""}
           </Button>
         </div>
       </DialogContent>
