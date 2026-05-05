@@ -70,7 +70,7 @@ export const AddDrillModal = ({
 }: AddDrillModalProps) => {
 
   const [selectedSantri, setSelectedSantri] = useState("");
-  const [juz, setJuz] = useState("");
+  const [juz, setJuz] = useState(lockedJuz ? String(lockedJuz) : "");
   const [level, setLevel] = useState("");
   const [kesalahan, setKesalahan] = useState("0");
   const [catatan, setCatatan] = useState("");
