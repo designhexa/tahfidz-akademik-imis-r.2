@@ -163,7 +163,7 @@ export function isSetoranReadyForDrill(
     return isPageRangeCovered(setoran, drill.pageStart, drill.pageEnd);
   }
   if (drill.type === "surah" && drill.surahRanges) {
-    return drill.surahRanges.every((r) => isSurahRangeCovered(setoran, r));
+    return drill.surahRanges.every((r) => isSurahRangeCovered(setoran, r, juz));
   }
   return false;
 }
