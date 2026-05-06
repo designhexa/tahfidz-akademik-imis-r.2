@@ -203,32 +203,74 @@ export const AddDrillModal = ({
     return item.unlocked;
   };
 
+  const buildCurrentSegment = (silent = false): PendingDrillSegment | null => {
+    if (!halamanDari && !surah) {
+      if (!silent) toast.error("Pilih halaman atau surah yang disetor");
+      return null;
+    }
+    return {
+      inputMode,
+      surahNumber: surah ? Number(surah) : undefined,
+      surahName: surahByJuz.find(s => String(s.number) === surah)?.name || surah || undefined,
+      ayatDari: ayatDari ? Number(ayatDari) : undefined,
+      ayatSampai: ayatSampai ? Number(ayatSampai) : undefined,
+      halaman: halamanDari && halamanSampai ? `${halamanDari}–${halamanSampai}` : halamanDari || undefined,
+    };
+  };
+
+  const handleAddSegment = () => {
+    const seg = buildCurrentSegment();
+    if (!seg) return;
+    setPendingSegments((prev) => [...prev, seg]);
+    setSurah("");
+    setHalamanDari("");
+    setHalamanSampai("");
+    setAyatDari("");
+    setAyatSampai("");
+    toast.success("Surat ditambahkan ke antrean drill");
+  };
+
+  const handleRemoveSegment = (idx: number) => {
+    setPendingSegments((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   const handleSave = (status: "Lulus" | "Mengulang") => {
     if (!date || !selectedSantri || !juz || !level) {
       toast.error("Lengkapi data wajib (*)");
       return;
     }
 
-    if (!halamanDari && !surah) {
-      toast.error("Pilih halaman atau surah yang disetor");
+    let segments: PendingDrillSegment[] = [...pendingSegments];
+    const hasCurrent = !!halamanDari || !!surah;
+    if (hasCurrent || segments.length === 0) {
+      const cur = buildCurrentSegment();
+      if (!cur) return;
+      segments = [...segments, cur];
+    }
+
+    if (segments.length === 0) {
+      toast.error("Tidak ada surat/halaman yang akan didrill");
       return;
     }
 
-    onSuccess({
-      tanggal: date,
-      santriId: selectedSantri,
-      jenis: "drill",
-      juz: Number(juz),
-      level: Number(level),
-      halaman: halamanDari && halamanSampai ? `${halamanDari}–${halamanSampai}` : halamanDari || undefined,
-      surah: surahByJuz.find(s => String(s.number) === surah)?.name || surah || undefined,
-      surahNumber: surah ? Number(surah) : undefined,
-      ayatDari: ayatDari ? Number(ayatDari) : undefined,
-      ayatSampai: ayatSampai ? Number(ayatSampai) : undefined,
-      status,
-      catatan
+    segments.forEach((seg) => {
+      onSuccess({
+        tanggal: date,
+        santriId: selectedSantri,
+        jenis: "drill",
+        juz: Number(juz),
+        level: Number(level),
+        halaman: seg.halaman,
+        surah: seg.surahName,
+        surahNumber: seg.surahNumber,
+        ayatDari: seg.ayatDari,
+        ayatSampai: seg.ayatSampai,
+        status,
+        catatan,
+      });
     });
 
+    toast.success(`${segments.length} entri drill disimpan`);
     onOpenChange(false);
   };
 
