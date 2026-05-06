@@ -83,6 +83,17 @@ export const AddDrillModal = ({
   const [ayatDari, setAyatDari] = useState("");
   const [ayatSampai, setAyatSampai] = useState("");
 
+  // Antrean multi-segmen (multi-surat dalam satu form drill)
+  interface PendingDrillSegment {
+    surahNumber?: number;
+    surahName?: string;
+    ayatDari?: number;
+    ayatSampai?: number;
+    halaman?: string;
+    inputMode: "halaman" | "surah";
+  }
+  const [pendingSegments, setPendingSegments] = useState<PendingDrillSegment[]>([]);
+
   const drills: DrillDefinition[] = useMemo(
     () => (juz ? getDrillsForJuz(Number(juz)) : []),
     [juz]
