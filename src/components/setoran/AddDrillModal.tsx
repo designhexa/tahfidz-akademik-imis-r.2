@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { 
-  Unlock, Lock, Save, Trophy, RotateCcw, CheckCircle, AlertCircle, Info, BookOpen
+  Unlock, Lock, Save, Trophy, RotateCcw, CheckCircle, AlertCircle, Info, BookOpen, Plus, X
 } from "lucide-react";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
