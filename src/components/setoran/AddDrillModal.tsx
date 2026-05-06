@@ -556,6 +556,43 @@ export const AddDrillModal = ({
             </div>
           </div>
 
+          {/* Antrean multi-segmen drill */}
+          {pendingSegments.length > 0 && (
+            <div className="space-y-1.5 p-2 rounded-md border bg-muted/30">
+              <p className="text-xs font-medium">Antrean drill ({pendingSegments.length}):</p>
+              {pendingSegments.map((seg, idx) => (
+                <div key={idx} className="flex items-center justify-between text-xs">
+                  <span>
+                    {seg.surahName ? `${seg.surahName}` : ""}
+                    {seg.ayatDari ? ` : ${seg.ayatDari}-${seg.ayatSampai}` : ""}
+                    {seg.halaman ? ` (hal ${seg.halaman})` : ""}
+                  </span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 px-2 text-destructive"
+                    onClick={() => handleRemoveSegment(idx)}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {juz && level && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAddSegment}
+              className="w-full"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Tambah Surat Lagi
+            </Button>
+          )}
+
           {/* Action */}
           <div className="grid grid-cols-3 gap-2 pt-4">
             <Button
