@@ -174,6 +174,7 @@ export const AddDrillModal = ({
       setSurah("");
       setAyatDari("");
       setAyatSampai("");
+      setPendingSegments([]);
     }
   }, [open, initialSantriId]);
 
@@ -185,6 +186,7 @@ export const AddDrillModal = ({
     setSurah("");
     setAyatDari("");
     setAyatSampai("");
+    setPendingSegments([]);
   }, [juz]);
 
   // 🔒 PENGUNCI LEVEL berdasarkan engine eligibility (cakupan setoran nyata)
