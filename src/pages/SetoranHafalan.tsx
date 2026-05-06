@@ -449,10 +449,19 @@ const SetoranHafalan = () => {
             </div>
 
             {santriData && (
-              <div className="mt-3 p-2 bg-primary/10 rounded text-xs md:text-sm">
-                <span className="font-medium">{santriData.nama}</span> •{" "}
-                NIS: {santriData.nis} •{" "}
-                {MOCK_HALAQOH.find((h) => h.id === santriData.idHalaqoh)?.nama || "-"}
+              <div className="mt-3 p-2 bg-primary/10 rounded text-xs md:text-sm flex flex-wrap items-center gap-2">
+                <span className="font-medium">{santriData.nama}</span>
+                <span>• NIS: {santriData.nis}</span>
+                <span>• {MOCK_HALAQOH.find((h) => h.id === santriData.idHalaqoh)?.nama || "-"}</span>
+                <span className="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded bg-primary text-primary-foreground font-semibold">
+                  Juz Aktif: {santriData.juzAktif ?? 30}
+                  {santriData.suratPilihan ? " (Surat Pilihan)" : ""}
+                </span>
+                {santriData.placementStatus && santriData.placementStatus !== "lulus" && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 text-[11px]">
+                    Placement: {santriData.placementStatus}
+                  </span>
+                )}
               </div>
             )}
           </CardContent>
