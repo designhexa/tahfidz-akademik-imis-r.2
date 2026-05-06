@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { 
-  Unlock, Lock, Save, Trophy, RotateCcw, CheckCircle, AlertCircle, Info, BookOpen
+  Unlock, Lock, Save, Trophy, RotateCcw, CheckCircle, AlertCircle, Info, BookOpen, Plus, X
 } from "lucide-react";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
@@ -82,6 +82,17 @@ export const AddDrillModal = ({
   const [surah, setSurah] = useState("");
   const [ayatDari, setAyatDari] = useState("");
   const [ayatSampai, setAyatSampai] = useState("");
+
+  // Antrean multi-segmen (multi-surat dalam satu form drill)
+  interface PendingDrillSegment {
+    surahNumber?: number;
+    surahName?: string;
+    ayatDari?: number;
+    ayatSampai?: number;
+    halaman?: string;
+    inputMode: "halaman" | "surah";
+  }
+  const [pendingSegments, setPendingSegments] = useState<PendingDrillSegment[]>([]);
 
   const drills: DrillDefinition[] = useMemo(
     () => (juz ? getDrillsForJuz(Number(juz)) : []),
@@ -163,6 +174,7 @@ export const AddDrillModal = ({
       setSurah("");
       setAyatDari("");
       setAyatSampai("");
+      setPendingSegments([]);
     }
   }, [open, initialSantriId]);
 
@@ -174,6 +186,7 @@ export const AddDrillModal = ({
     setSurah("");
     setAyatDari("");
     setAyatSampai("");
+    setPendingSegments([]);
   }, [juz]);
 
   // 🔒 PENGUNCI LEVEL berdasarkan engine eligibility (cakupan setoran nyata)
@@ -190,32 +203,74 @@ export const AddDrillModal = ({
     return item.unlocked;
   };
 
+  const buildCurrentSegment = (silent = false): PendingDrillSegment | null => {
+    if (!halamanDari && !surah) {
+      if (!silent) toast.error("Pilih halaman atau surah yang disetor");
+      return null;
+    }
+    return {
+      inputMode,
+      surahNumber: surah ? Number(surah) : undefined,
+      surahName: surahByJuz.find(s => String(s.number) === surah)?.name || surah || undefined,
+      ayatDari: ayatDari ? Number(ayatDari) : undefined,
+      ayatSampai: ayatSampai ? Number(ayatSampai) : undefined,
+      halaman: halamanDari && halamanSampai ? `${halamanDari}–${halamanSampai}` : halamanDari || undefined,
+    };
+  };
+
+  const handleAddSegment = () => {
+    const seg = buildCurrentSegment();
+    if (!seg) return;
+    setPendingSegments((prev) => [...prev, seg]);
+    setSurah("");
+    setHalamanDari("");
+    setHalamanSampai("");
+    setAyatDari("");
+    setAyatSampai("");
+    toast.success("Surat ditambahkan ke antrean drill");
+  };
+
+  const handleRemoveSegment = (idx: number) => {
+    setPendingSegments((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   const handleSave = (status: "Lulus" | "Mengulang") => {
     if (!date || !selectedSantri || !juz || !level) {
       toast.error("Lengkapi data wajib (*)");
       return;
     }
 
-    if (!halamanDari && !surah) {
-      toast.error("Pilih halaman atau surah yang disetor");
+    let segments: PendingDrillSegment[] = [...pendingSegments];
+    const hasCurrent = !!halamanDari || !!surah;
+    if (hasCurrent || segments.length === 0) {
+      const cur = buildCurrentSegment();
+      if (!cur) return;
+      segments = [...segments, cur];
+    }
+
+    if (segments.length === 0) {
+      toast.error("Tidak ada surat/halaman yang akan didrill");
       return;
     }
 
-    onSuccess({
-      tanggal: date,
-      santriId: selectedSantri,
-      jenis: "drill",
-      juz: Number(juz),
-      level: Number(level),
-      halaman: halamanDari && halamanSampai ? `${halamanDari}–${halamanSampai}` : halamanDari || undefined,
-      surah: surahByJuz.find(s => String(s.number) === surah)?.name || surah || undefined,
-      surahNumber: surah ? Number(surah) : undefined,
-      ayatDari: ayatDari ? Number(ayatDari) : undefined,
-      ayatSampai: ayatSampai ? Number(ayatSampai) : undefined,
-      status,
-      catatan
+    segments.forEach((seg) => {
+      onSuccess({
+        tanggal: date,
+        santriId: selectedSantri,
+        jenis: "drill",
+        juz: Number(juz),
+        level: Number(level),
+        halaman: seg.halaman,
+        surah: seg.surahName,
+        surahNumber: seg.surahNumber,
+        ayatDari: seg.ayatDari,
+        ayatSampai: seg.ayatSampai,
+        status,
+        catatan,
+      });
     });
 
+    toast.success(`${segments.length} entri drill disimpan`);
     onOpenChange(false);
   };
 
@@ -500,6 +555,43 @@ export const AddDrillModal = ({
               />
             </div>
           </div>
+
+          {/* Antrean multi-segmen drill */}
+          {pendingSegments.length > 0 && (
+            <div className="space-y-1.5 p-2 rounded-md border bg-muted/30">
+              <p className="text-xs font-medium">Antrean drill ({pendingSegments.length}):</p>
+              {pendingSegments.map((seg, idx) => (
+                <div key={idx} className="flex items-center justify-between text-xs">
+                  <span>
+                    {seg.surahName ? `${seg.surahName}` : ""}
+                    {seg.ayatDari ? ` : ${seg.ayatDari}-${seg.ayatSampai}` : ""}
+                    {seg.halaman ? ` (hal ${seg.halaman})` : ""}
+                  </span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 px-2 text-destructive"
+                    onClick={() => handleRemoveSegment(idx)}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {juz && level && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAddSegment}
+              className="w-full"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Tambah Surat Lagi
+            </Button>
+          )}
 
           {/* Action */}
           <div className="grid grid-cols-3 gap-2 pt-4">
