@@ -160,7 +160,26 @@ export default function DataSantri() {
     if (modalMode === "edit" && editId) {
       const idx = MOCK_SANTRI.findIndex(s => s.id === editId);
       if (idx !== -1) {
-        MOCK_SANTRI[idx] = { ...form, id: editId };
+        const prev = MOCK_SANTRI[idx];
+        // Jika hafalanAwalJuz berubah, sinkronkan ulang placement & juzAktif
+        const hafalanChanged = prev.hafalanAwalJuz !== form.hafalanAwalJuz;
+        let synced = { ...form };
+        if (hafalanChanged) {
+          const decision = decideInitialPlacement({ hafalanAwalJuz: form.hafalanAwalJuz });
+          synced = {
+            ...synced,
+            juzAktif: decision.juzAktif,
+            placementStatus: decision.placementStatus,
+            placementTanggal: decision.daftarUjianPlacement
+              ? new Date().toISOString().split("T")[0]
+              : prev.placementTanggal,
+            suratPilihan: false,
+          };
+          if (decision.daftarUjianPlacement) {
+            toast.info(`Placement diperbarui — santri didaftarkan Ujian Tasmi Juz ${decision.ujianJuz}`);
+          }
+        }
+        MOCK_SANTRI[idx] = { ...synced, id: editId };
         toast.success(`Data ${form.nama} berhasil diperbarui`);
       }
     } else {
